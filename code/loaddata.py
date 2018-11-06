@@ -13,7 +13,6 @@ if __name__ == "__main__":
     individual = 'studentenenvakken.csv'
     mutual = 'tegelijkvolgbaar.csv'
 
-
     with open(course) as courses:
         courses = csv.reader(courses, delimiter=';')
 
