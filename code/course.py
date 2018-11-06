@@ -6,13 +6,17 @@ class Course(object):
     Representation of a course in CollegeClass.
     """
 
-    def __init__(self, name, course_id, lecture, tutorial, practicum, max_students):
+    def __init__(self, name, course_id, lecture, tutorial, practical, max_students):
         self.name = name
         self.course_id = course_id
         self.lecture = lecture
         self.tutorial = tutorial
-        self.practicum = practicum
+        self.practical = practical
         self.max_students = max_students
+        self.session_lecture = session_lecture
+        self.session_tutorial = session_turorial
+        self.sessoin_practical = session_practical
+
 
     if __name__ == "__main__":
 
@@ -32,5 +36,8 @@ class Course(object):
                 course_dict.update({counter: row[0]})
                 counter += 1
 
+        # vul de hoeveelheid sessions als dat er hc's zijn
+            # return al deze sessions
 
+        # vul
             print(course_dict)

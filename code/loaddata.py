@@ -1,6 +1,6 @@
 # Loads original data from heuristieken.nl
 # November 5
-
+from pathlib import Path
 import csv
 
 if __name__ == "__main__":
@@ -12,7 +12,6 @@ if __name__ == "__main__":
     room = 'zalen.csv'
     individual = 'studentenenvakken.csv'
     mutual = 'tegelijkvolgbaar.csv'
-
 
     with open(course) as courses:
         courses = csv.reader(courses, delimiter=';')
