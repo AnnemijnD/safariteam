@@ -1,6 +1,6 @@
 from schedule import Schedule
 
-class CollegeClass():
+class Session():
     """
     Representation of a class (lecture, tutorial or practicum).
     """
@@ -10,9 +10,10 @@ class CollegeClass():
         self.class_id = class_id
         self.type = type
         self.mutual_courses = mutual_courses
-        self.group = group
+        self.group = groups
 
 
 if __name__ == "__main__":
     self.schedule = Schedule()
+
     print(self.schedule)

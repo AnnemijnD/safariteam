@@ -1,6 +1,6 @@
 # Loads original data from heuristieken.nl
 # November 5
-
+from pathlib import Path
 import csv
 
 if __name__ == "__main__":
