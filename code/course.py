@@ -1,5 +1,4 @@
 import csv
-import os
 
 class Course(object):
     """
@@ -15,8 +14,6 @@ class Course(object):
         self.max_students = max_students
 
     if __name__ == "__main__":
-
-
         course = 'vakken.csv'
 
         with open(course) as courses:
@@ -31,6 +28,5 @@ class Course(object):
             for row in courses:
                 course_dict.update({counter: row[0]})
                 counter += 1
-
 
             print(course_dict)
