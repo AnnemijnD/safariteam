@@ -1,5 +1,6 @@
 import loaddata
 import csv
+from group import Group
 
 class Schedule(object):
     """
@@ -12,10 +13,8 @@ class Schedule(object):
     def __init__(self, slot):
         self.slot = slot
 
-    def print_schedule(self):
-        print(self.slot)
-        #if day == 'monday':
-        #    print(self.slots)
+    def print_schedule(self, min, max):
+        print(self.slot[min:max])
 
 
 if __name__ == "__main__":
@@ -31,9 +30,9 @@ if __name__ == "__main__":
         # Optional code to visualize data
         for row in rooms:
             zaalnummers.append(row[0])
-        print(zaalnummers)
-
 
     # Make schedule of 140 slots, can be changed to 175 when timeslot 17 - 19 is used
     Schedule = Schedule(slot = [zaalnummers] * 140)
-    Schedule.print_schedule()
+
+    # Print schedule from the first 10 room-timeslots
+    Schedule.print_schedule(0,2)
