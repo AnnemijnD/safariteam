@@ -5,7 +5,7 @@ import csv
 
 if __name__ == "__main__":
     """
-    Get a csv input file (and prints every row).
+    Get a csv input file (and print every row).
     Choose csv files saved in the same folder as loaddata.py.
     """
     course = 'vakken.csv'
