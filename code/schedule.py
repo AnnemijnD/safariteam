@@ -35,4 +35,4 @@ if __name__ == "__main__":
     Schedule = Schedule(slot = [zaalnummers] * 140)
 
     # Print schedule from the first 10 room-timeslots
-    Schedule.print_schedule(0,2)
+    Schedule.print_schedule(0, 2)
