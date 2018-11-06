@@ -1,4 +1,6 @@
-class CollegeClass(object):
+from schedule import Schedule
+
+class CollegeClass():
     """
     Representation of a class (lecture, tutorial or practicum).
     """
@@ -10,4 +12,7 @@ class CollegeClass(object):
         self.mutual_courses = mutual_courses
         self.group = group
 
-    
+
+if __name__ == "__main__":
+    self.schedule = Schedule()
+    print(self.schedule)
