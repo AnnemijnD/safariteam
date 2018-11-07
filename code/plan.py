@@ -106,14 +106,13 @@ class Plan():
             rooms = csv.reader(rooms, delimiter=';')
             next(rooms)
 
-            zaalnummers = []
+            roomnumbers = []
 
             # Optional code to visualize data
             for row in rooms:
-                zaalnummers.append(row[0])
+                roomnumbers.append(row[0])
 
-        return zaalnummers
-
+        return roomnumbers
 
     def schedule():
         """
@@ -126,10 +125,16 @@ class Plan():
         for i in range(0 , len(Plan.load_sessions())):
             name = Plan.load_sessions()[i].name
             type = Plan.load_sessions()[i].type
-            #print(Plan.load_rooms())
             room = []
             schedule = Schedule(name, type, room)
             schedules.append(schedule)
+
+        # Fill the rooms, should be built as a seperate function
+        rooms = 11 * Plan.load_rooms()
+        for i in range(0, 72):
+            schedules[i].room = rooms[i]
+        print(schedules[0])
+
 
         # write the CSV file to disk
         with open('schedule.csv', 'w', newline='') as output_file:
@@ -176,4 +181,3 @@ if __name__ == "__main__":
     Plan.load_sessions()
     Plan.schedule()
     Plan.load_rooms()
-    Plan.get_days()
