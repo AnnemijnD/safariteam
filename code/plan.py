@@ -5,6 +5,9 @@ import csv
 
 
 class Plan():
+    """
+    Main scripts to make a schedule.
+    """
 
     def __init__(self):
         pass
@@ -118,23 +121,34 @@ class Plan():
         """
         Initialize schedule using Schedule().
         """
-        # Determine slots, can be changed to 175 when timeslot of 17 - 19 is used.
+
         schedules = []
 
         # Put every session into schedule
         for i in range(0 , len(Plan.load_sessions())):
             name = Plan.load_sessions()[i].name
             type = Plan.load_sessions()[i].type
-            room = []
-            schedule = Schedule(name, type, room)
+            room = ''
+            timeslot = ''
+            day = ''
+            schedule = Schedule(name, type, room, timeslot, day)
             schedules.append(schedule)
 
-        # Fill the rooms, should be built as a seperate function
-        rooms = 11 * Plan.load_rooms()
-        for i in range(0, 72):
-            schedules[i].room = rooms[i]
-        print(schedules[0])
+        # Quinten vindt dit vast ook niet leuk, moeten we even inladen eigenlijk?
+        timeslots = 35 * ['9:00 - 11:00', '11:00 - 13:00', '13:00 - 15:00', '15:00 - 17:00']
 
+        # Get lenght of the sessions-list to determine for-loop range.
+        session_count = len(Plan.load_sessions())
+        # range 0 until 72 in steps of 7 (7 rooms)
+        for i in range(0, session_count, 7):
+            schedules[i].timeslot = timeslots[i]
+
+        # Fill the rooms, should be built as a seperate function
+        # iterate over 11 * list of rooms
+        rooms = 11 * Plan.load_rooms()
+        # In range of (0, len(sessions))
+        for i in range(0, session_count):
+            schedules[i].room = rooms[i]
 
         # write the CSV file to disk
         with open('schedule.csv', 'w', newline='') as output_file:
@@ -169,9 +183,9 @@ class Plan():
         Print into csv-file to visualize schedule.
         """
         writer = csv.writer(outfile)
-        writer.writerow(['Course', 'Type', 'Room'])
+        writer.writerow(['Course', 'Type', 'Room', 'Timeslot', 'Day'])
         for row in schedules:
-            writer.writerow([row.session, row.type, row.room])
+            writer.writerow([row.session, row.type, row.room, row.timeslot, row.day])
 
 
 if __name__ == "__main__":
