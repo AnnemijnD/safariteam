@@ -96,6 +96,24 @@ class Plan():
 
         return sessions
 
+    def load_rooms():
+        """
+        loads all the rooms.
+        """
+        room = 'zalen.csv'
+
+        with open(room) as rooms:
+            rooms = csv.reader(rooms, delimiter=';')
+            next(rooms)
+
+            zaalnummers = []
+
+            # Optional code to visualize data
+            for row in rooms:
+                zaalnummers.append(row[0])
+
+        return zaalnummers
+
 
     def schedule():
         """
@@ -108,7 +126,8 @@ class Plan():
         for i in range(0 , len(Plan.load_sessions())):
             name = Plan.load_sessions()[i].name
             type = Plan.load_sessions()[i].type
-            room = ['assign room ...']
+            #print(Plan.load_rooms())
+            room = []
             schedule = Schedule(name, type, room)
             schedules.append(schedule)
 
@@ -156,4 +175,5 @@ if __name__ == "__main__":
     Plan.load_courses()
     Plan.load_sessions()
     Plan.schedule()
+    Plan.load_rooms()
     Plan.get_days()

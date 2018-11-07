@@ -20,7 +20,7 @@ class Schedule(object):
         #for item in range(0, TIMESLOTS):
         #    self.empty_schedule[item] = session, type, room
 
-    def load_schedule():
+    def load_rooms():
         room = 'zalen.csv'
 
         with open(room) as rooms:
@@ -32,7 +32,8 @@ class Schedule(object):
             # Optional code to visualize data
             for row in rooms:
                 zaalnummers.append(row[0])
-        print(zaalnummers)
+                
+        return zaalnummers
 
 
     def __str__(self):
