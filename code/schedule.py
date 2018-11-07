@@ -19,16 +19,18 @@ class Schedule(object):
         for item in range(0, TIMESLOTS):
             self.empty_schedule[item] = session, type
 
+    def get_days(schedule):
+        """
+        Returns a schedule of a specific day.
+        """
 
+        # #  bedenken op welke manier we dag willen 'aanroepen' (maandag 0 en vrijdag 4?)
+        # def schedule_day(self, day):
+        #     classes = []
+        #     for i in range(TIMESLOTS, DAYS):
+        #         classes.append(slots[])
 
-    #def print_schedule(self, min, max):
-    #    print(self.slots[min:max])
-
-    # #  bedenken op welke manier we dag willen 'aanroepen' (maandag 0 en vrijdag 4?)
-    # def schedule_day(self, day):
-    #     classes = []
-    #     for i in range(TIMESLOTS, DAYS):
-    #         classes.append(slots[])
+        pass
 
 
 
@@ -46,6 +48,14 @@ class Schedule(object):
                 zaalnummers.append(row[0])
 
         print(zaalnummers)
+
+
+
+
+
+
+
+
 
 if __name__ == "__main__":
 

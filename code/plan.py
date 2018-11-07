@@ -113,7 +113,7 @@ class Plan():
 
         print(schedules)
 
-        # write the CSV file to disk (including a header)
+        # write the CSV file to disk
         with open('schedule.csv', 'w', newline='') as output_file:
             Plan.save_csv(output_file, schedules)
 
@@ -123,7 +123,7 @@ class Plan():
         Print into csv-file to visualize schedule.
         """
         writer = csv.writer(outfile)
-        writer.writerow(['Course', 'Type' ])
+        writer.writerow(['Course', 'Type'])
         for row in schedules:
             writer.writerow([row.session, row.type])
 
