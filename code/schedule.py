@@ -15,6 +15,7 @@ class Schedule(object):
         self.type = type
         self.empty_schedule = [None] * TIMESLOTS
 
+        # Initialize schedule
         for item in range(0, TIMESLOTS):
             self.empty_schedule[item] = session, type
 

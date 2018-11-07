@@ -98,8 +98,10 @@ class Plan():
 
 
     def schedule():
+        """
+        Initialize schedule using Schedule().
+        """
         # Determine slots, can be changed to 175 when timeslot of 17 - 19 is used.
-        slots = 140
         schedules = []
 
         # Put every session into schedule
@@ -110,6 +112,20 @@ class Plan():
             schedules.append(schedule)
 
         print(schedules)
+
+        # write the CSV file to disk (including a header)
+        with open('schedule.csv', 'w', newline='') as output_file:
+            Plan.save_csv(output_file, schedules)
+
+
+    def save_csv(outfile, schedules):
+        """
+        Print into csv-file to visualize schedule.
+        """
+        writer = csv.writer(outfile)
+        writer.writerow(['Course', 'Type' ])
+        for row in schedules:
+            writer.writerow([row.session, row.type])
 
 
 if __name__ == "__main__":
