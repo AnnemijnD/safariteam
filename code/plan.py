@@ -1,6 +1,8 @@
 from course import Course
 from session import Session
 from schedule import Schedule
+from pathlib import Path
+import os
 import csv
 
 
@@ -16,9 +18,7 @@ class Plan():
         """
         Loads all the courses. Used by Session().
         """
-
-        # THIS IS HARDCODING, MUST BE OPTIMIZED!
-        course = 'vakken.csv'
+        course = 'data/vakken.csv'
 
         with open(course) as courses:
             courses = csv.reader(courses, delimiter=';')
@@ -52,7 +52,7 @@ class Plan():
 
     def load_sessions():
         """
-        Loads all the session type for every course. Used by Schedule().
+        Loads all the session types for every course. Used by Schedule().
 
         # Pseudocode to create all the sessions:
         #
@@ -103,7 +103,7 @@ class Plan():
         """
         loads all the rooms.
         """
-        room = 'zalen.csv'
+        room = 'data/zalen.csv'
 
         with open(room) as rooms:
             rooms = csv.reader(rooms, delimiter=';')
@@ -151,7 +151,7 @@ class Plan():
             schedules[i].room = rooms[i]
 
         # write the CSV file to disk
-        with open('schedule.csv', 'w', newline='') as output_file:
+        with open('data/schedule.csv', 'w', newline='') as output_file:
             Plan.save_csv(output_file, schedules)
 
         return schedules
@@ -171,7 +171,7 @@ class Plan():
 
 
         # Voor maandag zijn er maximaal 28 sessions (timeslots * zalen)
-        monday = Plan.schedule()[0:(4*7)]
+        monday = Plan.schedule()[0:(4 * 7)]
         # Print alle courses op maandag
         day = []
         for object in monday:
