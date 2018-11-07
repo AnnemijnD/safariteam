@@ -49,16 +49,17 @@ class Plan():
     def load_sessions():
         """
         Loads all the session type for every course. Used by Schedule().
-        """
+
         # Pseudocode to create all the sessions:
         #
         # For every course:
         #   For every session type (lectures, tutorials, practicals)
-        #       Calculate number of sessions for this course
-        #       Make a Session(), input = (self, name, class_id, type, mutual_courses, group):
+        #       Make a Session(). input of Session = (self, name, class_id, type, mutual_courses, group):
+        #
         # VOLGENS MIJ MOET MUTUAL_COURSES AL BIJ LOAD_COURSES IN DE COURSE GEZET WORDEN!
+        # Geen idee hoe we group moeten definiëren...
+        """
 
-        # Zet alle sessions in een lijst
         sessions = []
 
         for course in Plan.load_courses():
@@ -67,6 +68,7 @@ class Plan():
             mutual_courses = []
             group = []
 
+            # Make session for each lecture, tutorial and practical.
             for row in range(0, int(course.lecture)):
                 type = 'lecture'
                 session = Session(name, class_id, type, mutual_courses, group)
@@ -84,6 +86,7 @@ class Plan():
 
         # Nu zijn er bijvoorbeeld voor het vak 'Architectuur en computerorganisatie'
         # twee sessions aangemaakt met hoorcolleges; controleer met print-statement
+        # Kan weggehaald worden als jullie het snappen :)
         print(sessions[3].name)
         print(sessions[4].name)
 
@@ -91,8 +94,12 @@ class Plan():
         print(len(sessions))
 
 
+    def schedule():
+        pass
+
+
 if __name__ == "__main__":
 
-    # Load all the courses
+    # Load all the courses and sessions
     Plan.load_courses()
     Plan.load_sessions()

@@ -14,6 +14,7 @@ class Course(object):
         self.practical = practical
         self.max_students = max_students
 
+    # Zonder de __str__ methode krijg je dus alleen <object at position 0x107b5e4...>
     def __str__(self):
         return f"Course number {self.course_id} is {self.name}"
 
