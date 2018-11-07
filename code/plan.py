@@ -88,11 +88,11 @@ class Plan():
         # Nu zijn er bijvoorbeeld voor het vak 'Architectuur en computerorganisatie'
         # twee sessions aangemaakt met hoorcolleges; controleer met print-statement
         # Kan weggehaald worden als jullie het snappen :)
-        print(sessions[3].name)
-        print(sessions[4].name)
+        # print(sessions[3].name)
+        # print(sessions[4].name)
 
         # Succesfully created 72 sessions!
-        print(len(sessions))
+        # print(len(sessions))
 
         return sessions
 
@@ -100,13 +100,16 @@ class Plan():
     def schedule():
         # Determine slots, can be changed to 175 when timeslot of 17 - 19 is used.
         slots = 140
+        schedules = []
 
-        print(Plan.load_sessions()[0].name)
+        # Put every session into schedule
+        for i in range(0 , len(Plan.load_sessions())):
+            name = Plan.load_sessions()[i].name
+            type = Plan.load_sessions()[i].type
+            schedule = Schedule(name, type)
+            schedules.append(schedule)
 
-
-        schedule = Schedule(Plan.load_sessions()[0].name)
-
-        # schedule = Schedule(session[0])
+        print(schedules)
 
 
 if __name__ == "__main__":

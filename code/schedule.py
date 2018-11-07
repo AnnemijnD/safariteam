@@ -10,17 +10,13 @@ class Schedule(object):
     Representation of a schedule.
     """
 
-    # temporarily set slot to None, can be removed when class is used by other class
-    slots = [None] * TIMESLOTS
-
-    def __init__(self, session):
+    def __init__(self, session, type):
         self.session = session
+        self.type = type
         self.empty_schedule = [None] * TIMESLOTS
 
         for item in range(0, TIMESLOTS):
-            self.empty_schedule[item] = session
-
-        print(self.empty_schedule)
+            self.empty_schedule[item] = session, type
 
 
 
@@ -49,7 +45,6 @@ class Schedule(object):
                 zaalnummers.append(row[0])
 
         print(zaalnummers)
-
 
 if __name__ == "__main__":
 
