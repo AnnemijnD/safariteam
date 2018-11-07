@@ -10,29 +10,15 @@ class Schedule(object):
     Representation of a schedule.
     """
 
-    def __init__(self, session, type):
+    def __init__(self, session, type, room):
         self.session = session
         self.type = type
-        self.empty_schedule = [None] * TIMESLOTS
+        self.room = room
+        #self.empty_schedule = [None] * TIMESLOTS
 
         # Initialize schedule
-        for item in range(0, TIMESLOTS):
-            self.empty_schedule[item] = session, type
-
-    def get_days(schedule):
-        """
-        Returns a schedule of a specific day.
-        """
-
-        # #  bedenken op welke manier we dag willen 'aanroepen' (maandag 0 en vrijdag 4?)
-        # def schedule_day(self, day):
-        #     classes = []
-        #     for i in range(TIMESLOTS, DAYS):
-        #         classes.append(slots[])
-
-        pass
-
-
+        #for item in range(0, TIMESLOTS):
+        #    self.empty_schedule[item] = session, type, room
 
     def load_schedule():
         room = 'zalen.csv'
@@ -46,8 +32,11 @@ class Schedule(object):
             # Optional code to visualize data
             for row in rooms:
                 zaalnummers.append(row[0])
-
         print(zaalnummers)
+
+
+    def __str__(self):
+        return f'course: {self.session}, type: {self.type}, in room {self.room}'
 
 
 

@@ -1,73 +1,73 @@
-Course,Type
-Advanced Heuristics,lecture
-Advanced Heuristics,practical
-Algoritmen en complexiteit,lecture
-Algoritmen en complexiteit,tutorial
-Algoritmen en complexiteit,practical
-Analysemethoden en -technieken,lecture
-Architectuur en computerorganisatie,lecture
-Architectuur en computerorganisatie,lecture
-Autonomous Agents 2,lecture
-Autonomous Agents 2,lecture
-Autonomous Agents 2,tutorial
-Autonomous Agents 2,practical
-Bioinformatica,lecture
-Bioinformatica,lecture
-Bioinformatica,lecture
-Bioinformatica,tutorial
-Bioinformatica,practical
-Calculus 2,lecture
-Calculus 2,tutorial
-Collectieve Intelligentie,lecture
-Collectieve Intelligentie,lecture
-Collectieve Intelligentie,lecture
-Collectieve Intelligentie,tutorial
-Collectieve Intelligentie,practical
-Compilerbouw,lecture
-Compilerbouw,lecture
-Compilerbouw,tutorial
-Compilerbouw,practical
-Compilerbouw (practicum),practical
-Data Mining,lecture
-Data Mining,lecture
-Data Mining,tutorial
-Data Mining,practical
-Databases 2,lecture
-Databases 2,tutorial
-Heuristieken 1,lecture
-Heuristieken 1,tutorial
-Heuristieken 2,lecture
-Heuristieken 2,tutorial
-Informatie- en organisatieontwerp,lecture
-Informatie- en organisatieontwerp,lecture
-Informatie- en organisatieontwerp,tutorial
-Informatie- en organisatieontwerp,practical
-Interactie-ontwerp,lecture
-Interactie-ontwerp,lecture
-Kansrekenen 2,lecture
-Kansrekenen 2,lecture
-Lineaire Algebra,lecture
-Lineaire Algebra,lecture
-Machine Learning,lecture
-Machine Learning,lecture
-Moderne Databases,lecture
-Moderne Databases,tutorial
-Moderne Databases,practical
-Netwerken en systeembeveiliging,practical
-Programmeren in Java 2,practical
-Project Genetic Algorithms,practical
-Project Numerical Recipes,practical
-Reflectie op de digitale cultuur,lecture
-Reflectie op de digitale cultuur,lecture
-Reflectie op de digitale cultuur,tutorial
-Software engineering,lecture
-Software engineering,tutorial
-Software engineering,practical
-Technology for games,lecture
-Technology for games,lecture
-Technology for games,tutorial
-Webprogrammeren en databases,lecture
-Webprogrammeren en databases,lecture
-Webprogrammeren en databases,tutorial
-Webprogrammeren en databases,practical
-"Zoeken, sturen en bewegen",practical
+Course,Type,Room
+Advanced Heuristics,lecture,['assign room ...']
+Advanced Heuristics,practical,['assign room ...']
+Algoritmen en complexiteit,lecture,['assign room ...']
+Algoritmen en complexiteit,tutorial,['assign room ...']
+Algoritmen en complexiteit,practical,['assign room ...']
+Analysemethoden en -technieken,lecture,['assign room ...']
+Architectuur en computerorganisatie,lecture,['assign room ...']
+Architectuur en computerorganisatie,lecture,['assign room ...']
+Autonomous Agents 2,lecture,['assign room ...']
+Autonomous Agents 2,lecture,['assign room ...']
+Autonomous Agents 2,tutorial,['assign room ...']
+Autonomous Agents 2,practical,['assign room ...']
+Bioinformatica,lecture,['assign room ...']
+Bioinformatica,lecture,['assign room ...']
+Bioinformatica,lecture,['assign room ...']
+Bioinformatica,tutorial,['assign room ...']
+Bioinformatica,practical,['assign room ...']
+Calculus 2,lecture,['assign room ...']
+Calculus 2,tutorial,['assign room ...']
+Collectieve Intelligentie,lecture,['assign room ...']
+Collectieve Intelligentie,lecture,['assign room ...']
+Collectieve Intelligentie,lecture,['assign room ...']
+Collectieve Intelligentie,tutorial,['assign room ...']
+Collectieve Intelligentie,practical,['assign room ...']
+Compilerbouw,lecture,['assign room ...']
+Compilerbouw,lecture,['assign room ...']
+Compilerbouw,tutorial,['assign room ...']
+Compilerbouw,practical,['assign room ...']
+Compilerbouw (practicum),practical,['assign room ...']
+Data Mining,lecture,['assign room ...']
+Data Mining,lecture,['assign room ...']
+Data Mining,tutorial,['assign room ...']
+Data Mining,practical,['assign room ...']
+Databases 2,lecture,['assign room ...']
+Databases 2,tutorial,['assign room ...']
+Heuristieken 1,lecture,['assign room ...']
+Heuristieken 1,tutorial,['assign room ...']
+Heuristieken 2,lecture,['assign room ...']
+Heuristieken 2,tutorial,['assign room ...']
+Informatie- en organisatieontwerp,lecture,['assign room ...']
+Informatie- en organisatieontwerp,lecture,['assign room ...']
+Informatie- en organisatieontwerp,tutorial,['assign room ...']
+Informatie- en organisatieontwerp,practical,['assign room ...']
+Interactie-ontwerp,lecture,['assign room ...']
+Interactie-ontwerp,lecture,['assign room ...']
+Kansrekenen 2,lecture,['assign room ...']
+Kansrekenen 2,lecture,['assign room ...']
+Lineaire Algebra,lecture,['assign room ...']
+Lineaire Algebra,lecture,['assign room ...']
+Machine Learning,lecture,['assign room ...']
+Machine Learning,lecture,['assign room ...']
+Moderne Databases,lecture,['assign room ...']
+Moderne Databases,tutorial,['assign room ...']
+Moderne Databases,practical,['assign room ...']
+Netwerken en systeembeveiliging,practical,['assign room ...']
+Programmeren in Java 2,practical,['assign room ...']
+Project Genetic Algorithms,practical,['assign room ...']
+Project Numerical Recipes,practical,['assign room ...']
+Reflectie op de digitale cultuur,lecture,['assign room ...']
+Reflectie op de digitale cultuur,lecture,['assign room ...']
+Reflectie op de digitale cultuur,tutorial,['assign room ...']
+Software engineering,lecture,['assign room ...']
+Software engineering,tutorial,['assign room ...']
+Software engineering,practical,['assign room ...']
+Technology for games,lecture,['assign room ...']
+Technology for games,lecture,['assign room ...']
+Technology for games,tutorial,['assign room ...']
+Webprogrammeren en databases,lecture,['assign room ...']
+Webprogrammeren en databases,lecture,['assign room ...']
+Webprogrammeren en databases,tutorial,['assign room ...']
+Webprogrammeren en databases,practical,['assign room ...']
+"Zoeken, sturen en bewegen",practical,['assign room ...']

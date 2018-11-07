@@ -108,14 +108,36 @@ class Plan():
         for i in range(0 , len(Plan.load_sessions())):
             name = Plan.load_sessions()[i].name
             type = Plan.load_sessions()[i].type
-            schedule = Schedule(name, type)
+            room = ['assign room ...']
+            schedule = Schedule(name, type, room)
             schedules.append(schedule)
-
-        print(schedules)
 
         # write the CSV file to disk
         with open('schedule.csv', 'w', newline='') as output_file:
             Plan.save_csv(output_file, schedules)
+
+        return schedules
+
+
+    def get_days():
+        """
+        Returns a schedule of a specific day.
+        """
+        pass
+
+        # #  bedenken op welke manier we dag willen 'aanroepen' (maandag 0 en vrijdag 4?)
+        # def schedule_day(self, day):
+        #     classes = []
+        #     for i in range(TIMESLOTS, DAYS):
+        #         classes.append(slots[])
+
+
+        # Voor maandag zijn er maximaal 28 sessions (timeslots * zalen)
+        monday = Plan.schedule()[0:(4*7)]
+        # Print alle courses op maandag
+        day = []
+        for object in monday:
+            print(object)
 
 
     def save_csv(outfile, schedules):
@@ -123,9 +145,9 @@ class Plan():
         Print into csv-file to visualize schedule.
         """
         writer = csv.writer(outfile)
-        writer.writerow(['Course', 'Type'])
+        writer.writerow(['Course', 'Type', 'Room'])
         for row in schedules:
-            writer.writerow([row.session, row.type])
+            writer.writerow([row.session, row.type, row.room])
 
 
 if __name__ == "__main__":
@@ -134,3 +156,4 @@ if __name__ == "__main__":
     Plan.load_courses()
     Plan.load_sessions()
     Plan.schedule()
+    Plan.get_days()
