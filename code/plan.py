@@ -56,11 +56,13 @@ class Plan():
         # For every course:
         #   For every session type (lectures, tutorials, practicals)
         #       Calculate number of sessions for this course
-        #print(Plan.load_courses().name)
+        #       Make a Session(), input = (self, name, class_id, type, mutual_courses, group):
+        # VOLGENS MIJ MOET MUTUAL_COURSES AL BIJ LOAD_COURSES IN DE COURSE GEZET WORDEN!
 
         for course in Plan.load_courses():
 
             for lecture in course.lecture:
+                # Calculate number of lectures for each course
                 number_of_lectures = int(lecture)
 
             for tutorial in course.tutorial:
