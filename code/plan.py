@@ -1,5 +1,6 @@
 from course import Course
 from session import Session
+from schedule import Schedule
 import csv
 
 
@@ -93,9 +94,19 @@ class Plan():
         # Succesfully created 72 sessions!
         print(len(sessions))
 
+        return sessions
+
 
     def schedule():
-        pass
+        # Determine slots, can be changed to 175 when timeslot of 17 - 19 is used.
+        slots = 140
+
+        print(Plan.load_sessions()[0].name)
+
+
+        schedule = Schedule(Plan.load_sessions()[0].name)
+
+        # schedule = Schedule(session[0])
 
 
 if __name__ == "__main__":
@@ -103,3 +114,4 @@ if __name__ == "__main__":
     # Load all the courses and sessions
     Plan.load_courses()
     Plan.load_sessions()
+    Plan.schedule()

@@ -13,11 +13,19 @@ class Schedule(object):
     # temporarily set slot to None, can be removed when class is used by other class
     slots = [None] * TIMESLOTS
 
-    def __init__(self, slots):
-        self.slot = slots
+    def __init__(self, session):
+        self.session = session
+        self.empty_schedule = [None] * TIMESLOTS
 
-    def print_schedule(self, min, max):
-        print(self.slot[min:max])
+        for item in range(0, TIMESLOTS):
+            self.empty_schedule[item] = session
+
+        print(self.empty_schedule)
+
+
+
+    #def print_schedule(self, min, max):
+    #    print(self.slots[min:max])
 
     # #  bedenken op welke manier we dag willen 'aanroepen' (maandag 0 en vrijdag 4?)
     # def schedule_day(self, day):
@@ -27,7 +35,7 @@ class Schedule(object):
 
 
 
-    def load_schedule(self):
+    def load_schedule():
         room = 'zalen.csv'
 
         with open(room) as rooms:
@@ -40,12 +48,7 @@ class Schedule(object):
             for row in rooms:
                 zaalnummers.append(row[0])
 
-        # Make schedule of 140 slots, can be changed to 175 when timeslot 17 - 19 is used
-        Schedule = Schedule(slot = [zaalnummers] * 140)
-
-        # Print schedule from the first 10 room-timeslots
-        Schedule.print_schedule(0, 2)
-
+        print(zaalnummers)
 
 
 if __name__ == "__main__":
@@ -67,7 +70,4 @@ if __name__ == "__main__":
     # Schedule = Schedule(slot = [zaalnummers] * 140)
 
     # Print schedule from the first 10 room-timeslots
-
-    # Schedule.print_schedule(0,2)
-
-    Schedule.print_schedule(0, 2)
+    Schedule.print_schedule(0, 10)
