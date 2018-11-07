@@ -1,4 +1,3 @@
-from schedule import Schedule
 from course import Course
 from session import Session
 import csv
@@ -59,20 +58,38 @@ class Plan():
         #       Make a Session(), input = (self, name, class_id, type, mutual_courses, group):
         # VOLGENS MIJ MOET MUTUAL_COURSES AL BIJ LOAD_COURSES IN DE COURSE GEZET WORDEN!
 
+        # Zet alle sessions in een lijst
+        sessions = []
+
         for course in Plan.load_courses():
+            name = course.name
+            class_id = course.course_id
+            mutual_courses = []
+            group = []
 
-            for lecture in course.lecture:
-                # Calculate number of lectures for each course
-                number_of_lectures = int(lecture)
+            for row in range(0, int(course.lecture)):
+                type = 'lecture'
+                session = Session(name, class_id, type, mutual_courses, group)
+                sessions.append(session)
 
-            for tutorial in course.tutorial:
-                number_of_tutorials = int(tutorial)
+            for row in range(0, int(course.tutorial)):
+                type = 'tutorial'
+                session = Session(name, class_id, type, mutual_courses, group)
+                sessions.append(session)
 
-            for practical in course.practical:
-                number_of_practicals = int(practical)
+            for row in range(0, int(course.practical)):
+                type = 'practical'
+                session = Session(name, class_id, type, mutual_courses, group)
+                sessions.append(session)
 
-            total_sessions = number_of_lectures + number_of_tutorials + number_of_practicals
-            print(total_sessions)
+        # Nu zijn er bijvoorbeeld voor het vak 'Architectuur en computerorganisatie'
+        # twee sessions aangemaakt met hoorcolleges; controleer met print-statement
+        print(sessions[3].name)
+        print(sessions[4].name)
+
+        # Succesfully created 72 sessions!
+        print(len(sessions))
+
 
 if __name__ == "__main__":
 

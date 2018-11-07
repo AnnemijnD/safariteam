@@ -10,7 +10,7 @@ class Session():
         self.class_id = class_id
         self.type = type
         self.mutual_courses = mutual_courses
-        self.group = groups
+        self.group = group
 
 
 if __name__ == "__main__":
