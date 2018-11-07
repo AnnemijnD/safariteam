@@ -9,12 +9,6 @@ class Plan():
     def __init__(self):
         pass
 
-    def plan(self):
-
-        schedule = Schedule([None] * 140)
-        schedule.print_schedule(0, 2)
-        schedule.load_schedule()
-
     def load_courses():
         """
         Loads all the courses. Used by Session().
@@ -57,7 +51,7 @@ class Plan():
         """
         Loads all the session type for every course. Used by Schedule().
         """
-        # Create all the sessions:
+        # Pseudocode to create all the sessions:
         #
         # For every course:
         #   For every session type (lectures, tutorials, practicals)
@@ -65,14 +59,18 @@ class Plan():
         #print(Plan.load_courses().name)
 
         for course in Plan.load_courses():
+
             for lecture in course.lecture:
-                print(lecture)
+                number_of_lectures = int(lecture)
+
             for tutorial in course.tutorial:
-                print(tutorial)
+                number_of_tutorials = int(tutorial)
+
             for practical in course.practical:
-                print(practical)
+                number_of_practicals = int(practical)
 
-
+            total_sessions = number_of_lectures + number_of_tutorials + number_of_practicals
+            print(total_sessions)
 
 if __name__ == "__main__":
 
