@@ -146,7 +146,7 @@ class Plan():
             schedules[i].timeslot = timeslots[i]
 
         # Fill the days
-        # Sorry, dit is HEEL ERG GEHARDCODE, dus even een heel tijdelijke oplossing...
+        # Sorry, dit is HEEL ERG GEHARDCODE, dus even een heel tijdelijke oplossing..
         for j in range(0,28):
             schedules[j].day = 'Monday'
         for j in range(28,56):
