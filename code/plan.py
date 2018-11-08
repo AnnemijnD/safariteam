@@ -58,7 +58,7 @@ class Plan():
         #       Make a Session(). input of Session = (self, name, class_id, type, mutual_courses, group):
         #
         # VOLGENS MIJ MOET MUTUAL_COURSES AL BIJ LOAD_COURSES IN DE COURSE GEZET WORDEN!
-        # Geen idee hoe we group moeten definiëren...
+        # Geen idee hoe we group moeten definiëren... <-- group hoeft nog niet :)))
         """
 
         sessions = []
@@ -88,8 +88,8 @@ class Plan():
         # Nu zijn er bijvoorbeeld voor het vak 'Architectuur en computerorganisatie'
         # twee sessions aangemaakt met hoorcolleges; controleer met print-statement
         # Kan weggehaald worden als jullie het snappen :)
-        # print(sessions[3].name)
-        # print(sessions[4].name)
+        print(sessions[3].name)
+        print(sessions[4].name)
 
         # Succesfully created 72 sessions!
         # print(len(sessions))
