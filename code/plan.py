@@ -146,7 +146,7 @@ class Plan():
         #  DIT IS VOOR HOE HET ERUIT GAAT ZIEN
         # Quinten vindt dit vast ook niet leuk, moeten we even inladen eigenlijk?
         timeslots = DAYS * ROOMS * ['9:00 - 11:00', '11:00 - 13:00', '13:00 - 15:00', '15:00 - 17:00']
-        days = [1,2,3,4,5]
+        days = [0,1,2,3,4]
 
         # Get lenght of the sessions-list to determine for-loop range.
         session_count = len(Plan.load_sessions())
@@ -157,12 +157,26 @@ class Plan():
 
         # Fill the days
         # Sorry, dit is HEEL ERG GEHARDCODE, dus even een heel tijdelijke oplossing..
-        for j in range(0,28):
-            schedules[j].day = 'Monday'
-        for j in range(28,56):
-            schedules[j].day = 'Tuesday'
-        for j in range(56,session_count):
-            schedules[j].day = 'Wednesday'
+        # for j in range(0,28):
+        #     schedules[j].day = 'Monday'
+        # for j in range(28,56):
+        #     schedules[j].day = 'Tuesday'
+        # for j in range(56,session_count):
+        #     schedules[j].day = 'Wednesday'
+
+        # Wat hier boven staat iets minder gehardcode, nu tot session_count omdat
+        #  ik niet weet hoe het bestand er precies uitziet maar moet uiteindelijk tot SLOTS.
+        for j in range(session_count):
+            if j < TIME_SLOTS * DAYS:
+                schedules[j].day = 'Monday'
+            elif j < TIME_SLOTS * DAYS * 2:
+                schedules[j].day = 'Tuesday'
+            elif j < TIME_SLOTS * DAYS * 3:
+                schedules[j].day = 'Wednesday'
+            elif j < TIME_SLOTS * DAYS * 4:
+                schedules[j].day = 'Thursday'
+            else:
+                schedules[j].day = 'Friday'
 
 
         # Fill the rooms, should be built as a seperate function
