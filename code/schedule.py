@@ -22,21 +22,6 @@ class Schedule(object):
         #for item in range(0, TIMESLOTS):
         #    self.empty_schedule[item] = session, type, room, timeslot, day
 
-    def load_rooms():
-        room = 'zalen.csv'
-
-        with open(room) as rooms:
-            rooms = csv.reader(rooms, delimiter=';')
-            next(rooms)
-
-            zaalnummers = []
-
-            # Optional code to visualize data
-            for row in rooms:
-                zaalnummers.append(row[0])
-
-        return zaalnummers
-
 
     def __str__(self):
         return f'course: {self.session}, type: {self.type}, in room {self.room}'

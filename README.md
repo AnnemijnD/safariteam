@@ -8,6 +8,8 @@ Beschrijving van het probleem...
 
 ## TODO:
 
-Overlappende vakken goed inladen in python. Elke Course heeft zijn eigen  
-course_id, die gebruikt kan worden om te kijken of er overlappende vakken zijn
-in hetzelfde tijdslot. 
+Overlappende vakken goed inladen in python. Elke Course heeft zijn eigen course_id,
+die gebruikt kan worden om te kijken of er overlappende vakken zijn in hetzelfde tijdslot.
+
+Evaluatie-functie maken die evalueert of een session op een specifieke plek daar
+op de juist plek zit.

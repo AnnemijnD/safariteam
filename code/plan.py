@@ -132,6 +132,10 @@ class Plan():
             timeslot = ''
             day = ''
             schedule = Schedule(name, type, room, timeslot, day)
+            # Hier moet code tussen om te bepalen op welke plek in schedule
+            # de session geplaatst moet worden.
+            # If schedule.name == schedules[i].name and schedule.timeslot = schedules[i].timeslot (in range 0,7):
+            #      skip this place, go to next timeslot.
             schedules[i] = schedule
 
         # Quinten vindt dit vast ook niet leuk, moeten we even inladen eigenlijk?
