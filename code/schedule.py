@@ -10,30 +10,17 @@ class Schedule(object):
     Representation of a schedule.
     """
 
-    def __init__(self, session, type, room):
+    def __init__(self, session, type, room, timeslot, day):
         self.session = session
         self.type = type
         self.room = room
+        self.timeslot = timeslot
+        self.day = day
         #self.empty_schedule = [None] * TIMESLOTS
 
         # Initialize schedule
         #for item in range(0, TIMESLOTS):
-        #    self.empty_schedule[item] = session, type, room
-
-    def load_rooms():
-        room = 'zalen.csv'
-
-        with open(room) as rooms:
-            rooms = csv.reader(rooms, delimiter=';')
-            next(rooms)
-
-            zaalnummers = []
-
-            # Optional code to visualize data
-            for row in rooms:
-                zaalnummers.append(row[0])
-                
-        return zaalnummers
+        #    self.empty_schedule[item] = session, type, room, timeslot, day
 
 
     def __str__(self):

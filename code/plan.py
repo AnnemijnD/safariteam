@@ -1,10 +1,19 @@
 from course import Course
 from session import Session
 from schedule import Schedule
+from pathlib import Path
+import os
 import csv
 
+SLOTS = 140
+TIME_SLOTS = 4
+DAYS = 5
+ROOMS = 7
 
 class Plan():
+    """
+    Main scripts to make a schedule.
+    """
 
     def __init__(self):
         pass
@@ -13,9 +22,7 @@ class Plan():
         """
         Loads all the courses. Used by Session().
         """
-
-        # THIS IS HARDCODING, MUST BE OPTIMIZED!
-        course = 'vakken.csv'
+        course = 'data/vakken.csv'
 
         with open(course) as courses:
             courses = csv.reader(courses, delimiter=';')
@@ -49,7 +56,7 @@ class Plan():
 
     def load_sessions():
         """
-        Loads all the session type for every course. Used by Schedule().
+        Loads all the session types for every course. Used by Schedule().
 
         # Pseudocode to create all the sessions:
         #
@@ -70,28 +77,28 @@ class Plan():
             group = []
 
             # Make session for each lecture, tutorial and practical.
-            for row in range(0, int(course.lecture)):
+            for row in range(int(course.lecture)):
                 type = 'lecture'
                 session = Session(name, class_id, type, mutual_courses, group)
                 sessions.append(session)
 
-            for row in range(0, int(course.tutorial)):
+            for row in range(int(course.tutorial)):
                 type = 'tutorial'
                 session = Session(name, class_id, type, mutual_courses, group)
                 sessions.append(session)
 
-            for row in range(0, int(course.practical)):
+            for row in range(int(course.practical)):
                 type = 'practical'
                 session = Session(name, class_id, type, mutual_courses, group)
                 sessions.append(session)
 
         # Nu zijn er bijvoorbeeld voor het vak 'Architectuur en computerorganisatie'
         # twee sessions aangemaakt met hoorcolleges; controleer met print-statement
-        # Kan weggehaald worden als jullie het snappen :)
-        print(sessions[3].name)
-        print(sessions[4].name)
-
-        # Succesfully created 72 sessions!
+        # # Kan weggehaald worden als jullie het snappen :)
+        # print(sessions[3].name)
+        # print(sessions[4].name)
+        #
+        # # Succesfully created 72 sessions!
         # print(len(sessions))
 
         return sessions
@@ -100,39 +107,73 @@ class Plan():
         """
         loads all the rooms.
         """
-        room = 'zalen.csv'
+        room = 'data/zalen.csv'
 
         with open(room) as rooms:
             rooms = csv.reader(rooms, delimiter=';')
             next(rooms)
 
-            zaalnummers = []
+            roomnumbers = []
 
             # Optional code to visualize data
             for row in rooms:
-                zaalnummers.append(row[0])
+                roomnumbers.append(row[0])
 
-        return zaalnummers
-
+        return roomnumbers
 
     def schedule():
         """
         Initialize schedule using Schedule().
         """
-        # Determine slots, can be changed to 175 when timeslot of 17 - 19 is used.
-        schedules = []
+
+        schedules = SLOTS * [None]
 
         # Put every session into schedule
-        for i in range(0 , len(Plan.load_sessions())):
+        for i in range(len(Plan.load_sessions())):
             name = Plan.load_sessions()[i].name
             type = Plan.load_sessions()[i].type
-            #print(Plan.load_rooms())
-            room = []
-            schedule = Schedule(name, type, room)
-            schedules.append(schedule)
+            room = ''
+            timeslot = ''
+            day = ''
+            schedule = Schedule(name, type, room, timeslot, day)
+            # Hier moet code tussen om te bepalen op welke plek in schedule
+            # de session geplaatst moet worden.
+            # If schedule.name == schedules[i].name and schedule.timeslot = schedules[i].timeslot (in range 0,7):
+            #      skip this place, go to next timeslot.
+            schedules[i] = schedule
+
+
+        #  DIT IS VOOR HOE HET ERUIT GAAT ZIEN
+        # Quinten vindt dit vast ook niet leuk, moeten we even inladen eigenlijk?
+        timeslots = DAYS * ROOMS * ['9:00 - 11:00', '11:00 - 13:00', '13:00 - 15:00', '15:00 - 17:00']
+        days = [1,2,3,4,5]
+
+        # Get lenght of the sessions-list to determine for-loop range.
+        session_count = len(Plan.load_sessions())
+        # in range 0 until 72 in steps of 7 (7 rooms)
+        # Helemaal incorrect maar werkt misschien even voor nu
+        for i in range(0, session_count, 7):
+            schedules[i].timeslot = timeslots[i]
+
+        # Fill the days
+        # Sorry, dit is HEEL ERG GEHARDCODE, dus even een heel tijdelijke oplossing..
+        for j in range(0,28):
+            schedules[j].day = 'Monday'
+        for j in range(28,56):
+            schedules[j].day = 'Tuesday'
+        for j in range(56,session_count):
+            schedules[j].day = 'Wednesday'
+
+
+        # Fill the rooms, should be built as a seperate function
+        # iterate over 20 * list of rooms
+        rooms = DAYS * TIME_SLOTS * Plan.load_rooms()
+        # In range of (0, len(sessions))
+        for i in range(0, session_count):
+            schedules[i].room = rooms[i]
 
         # write the CSV file to disk
-        with open('schedule.csv', 'w', newline='') as output_file:
+        with open('data/schedule.csv', 'w', newline='') as output_file:
             Plan.save_csv(output_file, schedules)
 
         return schedules
@@ -152,7 +193,7 @@ class Plan():
 
 
         # Voor maandag zijn er maximaal 28 sessions (timeslots * zalen)
-        monday = Plan.schedule()[0:(4*7)]
+        monday = Plan.schedule()[0:(SLOTS * ROOMS)]
         # Print alle courses op maandag
         day = []
         for object in monday:
@@ -164,9 +205,13 @@ class Plan():
         Print into csv-file to visualize schedule.
         """
         writer = csv.writer(outfile)
-        writer.writerow(['Course', 'Type', 'Room'])
+        writer.writerow(['Course', 'Type', 'Room', 'Timeslot', 'Day'])
+        # Check if a row in schedules is filled with a session
         for row in schedules:
-            writer.writerow([row.session, row.type, row.room])
+            if row == None:
+                writer.writerow(5 * ['TODO'])
+            else:
+                writer.writerow([row.session, row.type, row.room, row.timeslot, row.day])
 
 
 if __name__ == "__main__":
@@ -176,4 +221,3 @@ if __name__ == "__main__":
     Plan.load_sessions()
     Plan.schedule()
     Plan.load_rooms()
-    Plan.get_days()
