@@ -126,6 +126,7 @@ class Plan():
         Initialize schedule using Schedule().
         """
 
+        # dit moeten we misschein schedule noemen want maar één schedule dus dan minder verwarring
         schedules = SLOTS * [None]
 
         # Put every session into schedule
@@ -135,6 +136,7 @@ class Plan():
             room = ''
             timeslot = ''
             day = ''
+            #  deze dan ook nieuwe naam geven
             schedule = Schedule(name, type, room, timeslot, day)
             # Hier moet code tussen om te bepalen op welke plek in schedule
             # de session geplaatst moet worden.
@@ -146,13 +148,13 @@ class Plan():
         #  DIT IS VOOR HOE HET ERUIT GAAT ZIEN
         # Quinten vindt dit vast ook niet leuk, moeten we even inladen eigenlijk?
         timeslots = DAYS * ROOMS * ['9:00 - 11:00', '11:00 - 13:00', '13:00 - 15:00', '15:00 - 17:00']
-        days = [0,1,2,3,4]
+        days = [1,2,3,4,5]
 
         # Get lenght of the sessions-list to determine for-loop range.
         session_count = len(Plan.load_sessions())
         # in range 0 until 72 in steps of 7 (7 rooms)
         # Helemaal incorrect maar werkt misschien even voor nu
-        for i in range(0, session_count, 7):
+        for i in range(0, session_count, ROOMS):
             schedules[i].timeslot = timeslots[i]
 
         # Fill the days
@@ -193,11 +195,24 @@ class Plan():
         return schedules
 
 
-    def get_days():
+    def get_day(day):
         """
         Returns a schedule of a specific day.
         """
-        pass
+
+        # KIEZEN OF WE DE NAAM VAN DE DAG OF HET NUMMER VAN DE DAG WILLEN
+        # MAGIC NUMBERS WEGHALEN (ligt eraan hoe we de dagen gaan noemen hoe we die kunnen gebruiken)
+        if day == "Monday":
+            return Plan.schedule()[0:(TIME_SLOTS * ROOMS)]
+        elif day == "Tuesday":
+            return Plan.schedule()[(TIME_SLOTS * ROOMS):(TIME_SLOTS * ROOMS * 2)]
+        elif day == "Wednesday":
+            return Plan.schedule()[(TIME_SLOTS * ROOMS * 2):(TIME_SLOTS * ROOMS * 3)]
+        elif day == "Thursday":
+            return Plan.schedule()[(TIME_SLOTS * ROOMS * 3):(TIME_SLOTS * ROOMS * 4)]
+        else:
+            return Plan.schedule()[(TIME_SLOTS * ROOMS * 4):(TIME_SLOTS * ROOMS * 5)]
+
 
         # #  bedenken op welke manier we dag willen 'aanroepen' (maandag 0 en vrijdag 4?)
         # def schedule_day(self, day):
@@ -205,13 +220,13 @@ class Plan():
         #     for i in range(TIMESLOTS, DAYS):
         #         classes.append(slots[])
 
-
-        # Voor maandag zijn er maximaal 28 sessions (timeslots * zalen)
-        monday = Plan.schedule()[0:(SLOTS * ROOMS)]
-        # Print alle courses op maandag
-        day = []
-        for object in monday:
-            print(object)
+        #
+        # # Voor maandag zijn er maximaal 28 sessions (timeslots * zalen)
+        # monday = Plan.schedule()[0:(SLOTS * ROOMS)]
+        # # Print alle courses op maandag
+        # day = []
+        # for object in monday:
+        #     print(object)
 
 
     def save_csv(outfile, schedules):
@@ -235,3 +250,6 @@ if __name__ == "__main__":
     Plan.load_sessions()
     Plan.schedule()
     Plan.load_rooms()
+
+    # # test get_day
+    # Plan.get_day('Monday')
