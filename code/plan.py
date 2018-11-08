@@ -150,9 +150,6 @@ class Plan():
             #    select the day of similar[-1] and insert schedule.name one day after the
             #    day of similar[-1]
 
-
-
-
             schedule[i] = session
 
 
@@ -165,8 +162,20 @@ class Plan():
         session_count = len(Plan.load_sessions())
         # in range 0 until 72 in steps of 7 (7 rooms)
         # Helemaal incorrect maar werkt misschien even voor nu
-        for i in range(0, session_count, ROOMS):
-            schedule[i].timeslot = timeslots[i]
+
+        # Sorry dit is echt super onduidelijk en ik snap het zelf eigenlijk ook niet!!!!
+        counter = 0
+        for timeslot in timeslots:
+            # Zonder de - 2 komt de error: 'out of range',
+            # want dan begint er weer een nieuwe lijst van 7 zalen...
+            if counter == session_count - 2:
+                break
+            for i in range(7):
+                schedule[counter].timeslot = timeslot
+                counter += 1
+
+        # for i in range(0, session_count, ROOMS):
+        #     schedule[i].timeslot = timeslots[i]
 
         # Fill the days
         # Sorry, dit is HEEL ERG GEHARDCODE, dus even een heel tijdelijke oplossing..
@@ -192,7 +201,7 @@ class Plan():
                 schedule[j].day = 'Friday'
 
 
-        # Fill the rooms, should be built as a seperate function
+        # Fill the rooms, (moet eigenlijk een aparte functie worden)
         # iterate over 20 * list of rooms
         rooms = DAYS * TIME_SLOTS * Plan.load_rooms()
         # In range of (0, len(sessions))
