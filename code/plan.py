@@ -202,6 +202,7 @@ class Plan():
 
         # KIEZEN OF WE DE NAAM VAN DE DAG OF HET NUMMER VAN DE DAG WILLEN
         # MAGIC NUMBERS WEGHALEN (ligt eraan hoe we de dagen gaan noemen hoe we die kunnen gebruiken)
+        # TODO: MOOIER MAKEN: iedere dag een i geven (note to self)
         if day == "Monday":
             return Plan.schedule()[0:(TIME_SLOTS * ROOMS)]
         elif day == "Tuesday":
@@ -228,6 +229,23 @@ class Plan():
         # for object in monday:
         #     print(object)
 
+    def get_slot(slot, day):
+        """
+        Returns the schedule of a specific slot on a specific day.
+        """
+
+        # NET ALS BIJ DAYS BEDENKEN OF WE HET VIA NAAM OF NUMMER WILLEN DOEN
+        #  als we met nummer doen hoeven we de hele if niet meer te doen
+        if slot == "9:00 - 11:00":
+            i = 0
+        elif slot == "11:00 - 13:00":
+            i = 1
+        elif slot == "13:00 - 15:00":
+            i = 2
+        else:
+            i = 3
+        return Plan.get_day(day)[(ROOMS * i):(ROOMS * (i + 1))]
+
 
     def save_csv(outfile, schedules):
         """
@@ -250,6 +268,9 @@ if __name__ == "__main__":
     Plan.load_sessions()
     Plan.schedule()
     Plan.load_rooms()
+
+    # #  test get_slot
+    # Plan.get_slot('9:00 - 11:00', 'Monday')
 
     # # test get_day
     # Plan.get_day('Monday')
