@@ -1,73 +1,141 @@
 Course,Type,Room,Timeslot,Day
-Advanced Heuristics,lecture,A1.04,9:00 - 11:00,
-Advanced Heuristics,practical,A1.06,,
-Algoritmen en complexiteit,lecture,A1.08,,
-Algoritmen en complexiteit,tutorial,A1.10,,
-Algoritmen en complexiteit,practical,B0.201,,
-Analysemethoden en -technieken,lecture,C0.110,,
-Architectuur en computerorganisatie,lecture,C1.112,,
-Architectuur en computerorganisatie,lecture,A1.04,15:00 - 17:00,
-Autonomous Agents 2,lecture,A1.06,,
-Autonomous Agents 2,lecture,A1.08,,
-Autonomous Agents 2,tutorial,A1.10,,
-Autonomous Agents 2,practical,B0.201,,
-Bioinformatica,lecture,C0.110,,
-Bioinformatica,lecture,C1.112,,
-Bioinformatica,lecture,A1.04,13:00 - 15:00,
-Bioinformatica,tutorial,A1.06,,
-Bioinformatica,practical,A1.08,,
-Calculus 2,lecture,A1.10,,
-Calculus 2,tutorial,B0.201,,
-Collectieve Intelligentie,lecture,C0.110,,
-Collectieve Intelligentie,lecture,C1.112,,
-Collectieve Intelligentie,lecture,A1.04,11:00 - 13:00,
-Collectieve Intelligentie,tutorial,A1.06,,
-Collectieve Intelligentie,practical,A1.08,,
-Compilerbouw,lecture,A1.10,,
-Compilerbouw,lecture,B0.201,,
-Compilerbouw,tutorial,C0.110,,
-Compilerbouw,practical,C1.112,,
-Compilerbouw (practicum),practical,A1.04,9:00 - 11:00,
-Data Mining,lecture,A1.06,,
-Data Mining,lecture,A1.08,,
-Data Mining,tutorial,A1.10,,
-Data Mining,practical,B0.201,,
-Databases 2,lecture,C0.110,,
-Databases 2,tutorial,C1.112,,
-Heuristieken 1,lecture,A1.04,15:00 - 17:00,
-Heuristieken 1,tutorial,A1.06,,
-Heuristieken 2,lecture,A1.08,,
-Heuristieken 2,tutorial,A1.10,,
-Informatie- en organisatieontwerp,lecture,B0.201,,
-Informatie- en organisatieontwerp,lecture,C0.110,,
-Informatie- en organisatieontwerp,tutorial,C1.112,,
-Informatie- en organisatieontwerp,practical,A1.04,13:00 - 15:00,
-Interactie-ontwerp,lecture,A1.06,,
-Interactie-ontwerp,lecture,A1.08,,
-Kansrekenen 2,lecture,A1.10,,
-Kansrekenen 2,lecture,B0.201,,
-Lineaire Algebra,lecture,C0.110,,
-Lineaire Algebra,lecture,C1.112,,
-Machine Learning,lecture,A1.04,11:00 - 13:00,
-Machine Learning,lecture,A1.06,,
-Moderne Databases,lecture,A1.08,,
-Moderne Databases,tutorial,A1.10,,
-Moderne Databases,practical,B0.201,,
-Netwerken en systeembeveiliging,practical,C0.110,,
-Programmeren in Java 2,practical,C1.112,,
-Project Genetic Algorithms,practical,A1.04,9:00 - 11:00,
-Project Numerical Recipes,practical,A1.06,,
-Reflectie op de digitale cultuur,lecture,A1.08,,
-Reflectie op de digitale cultuur,lecture,A1.10,,
-Reflectie op de digitale cultuur,tutorial,B0.201,,
-Software engineering,lecture,C0.110,,
-Software engineering,tutorial,C1.112,,
-Software engineering,practical,A1.04,15:00 - 17:00,
-Technology for games,lecture,A1.06,,
-Technology for games,lecture,A1.08,,
-Technology for games,tutorial,A1.10,,
-Webprogrammeren en databases,lecture,B0.201,,
-Webprogrammeren en databases,lecture,C0.110,,
-Webprogrammeren en databases,tutorial,C1.112,,
-Webprogrammeren en databases,practical,A1.04,13:00 - 15:00,
-"Zoeken, sturen en bewegen",practical,A1.06,,
+Advanced Heuristics,lecture,A1.04,9:00 - 11:00,Monday
+Advanced Heuristics,practical,A1.06,,Monday
+Algoritmen en complexiteit,lecture,A1.08,,Monday
+Algoritmen en complexiteit,tutorial,A1.10,,Monday
+Algoritmen en complexiteit,practical,B0.201,,Monday
+Analysemethoden en -technieken,lecture,C0.110,,Monday
+Architectuur en computerorganisatie,lecture,C1.112,,Monday
+Architectuur en computerorganisatie,lecture,A1.04,15:00 - 17:00,Monday
+Autonomous Agents 2,lecture,A1.06,,Monday
+Autonomous Agents 2,lecture,A1.08,,Monday
+Autonomous Agents 2,tutorial,A1.10,,Monday
+Autonomous Agents 2,practical,B0.201,,Monday
+Bioinformatica,lecture,C0.110,,Monday
+Bioinformatica,lecture,C1.112,,Monday
+Bioinformatica,lecture,A1.04,13:00 - 15:00,Monday
+Bioinformatica,tutorial,A1.06,,Monday
+Bioinformatica,practical,A1.08,,Monday
+Calculus 2,lecture,A1.10,,Monday
+Calculus 2,tutorial,B0.201,,Monday
+Collectieve Intelligentie,lecture,C0.110,,Monday
+Collectieve Intelligentie,lecture,C1.112,,Monday
+Collectieve Intelligentie,lecture,A1.04,11:00 - 13:00,Monday
+Collectieve Intelligentie,tutorial,A1.06,,Monday
+Collectieve Intelligentie,practical,A1.08,,Monday
+Compilerbouw,lecture,A1.10,,Monday
+Compilerbouw,lecture,B0.201,,Monday
+Compilerbouw,tutorial,C0.110,,Monday
+Compilerbouw,practical,C1.112,,Monday
+Compilerbouw (practicum),practical,A1.04,9:00 - 11:00,Tuesday
+Data Mining,lecture,A1.06,,Tuesday
+Data Mining,lecture,A1.08,,Tuesday
+Data Mining,tutorial,A1.10,,Tuesday
+Data Mining,practical,B0.201,,Tuesday
+Databases 2,lecture,C0.110,,Tuesday
+Databases 2,tutorial,C1.112,,Tuesday
+Heuristieken 1,lecture,A1.04,15:00 - 17:00,Tuesday
+Heuristieken 1,tutorial,A1.06,,Tuesday
+Heuristieken 2,lecture,A1.08,,Tuesday
+Heuristieken 2,tutorial,A1.10,,Tuesday
+Informatie- en organisatieontwerp,lecture,B0.201,,Tuesday
+Informatie- en organisatieontwerp,lecture,C0.110,,Tuesday
+Informatie- en organisatieontwerp,tutorial,C1.112,,Tuesday
+Informatie- en organisatieontwerp,practical,A1.04,13:00 - 15:00,Tuesday
+Interactie-ontwerp,lecture,A1.06,,Tuesday
+Interactie-ontwerp,lecture,A1.08,,Tuesday
+Kansrekenen 2,lecture,A1.10,,Tuesday
+Kansrekenen 2,lecture,B0.201,,Tuesday
+Lineaire Algebra,lecture,C0.110,,Tuesday
+Lineaire Algebra,lecture,C1.112,,Tuesday
+Machine Learning,lecture,A1.04,11:00 - 13:00,Tuesday
+Machine Learning,lecture,A1.06,,Tuesday
+Moderne Databases,lecture,A1.08,,Tuesday
+Moderne Databases,tutorial,A1.10,,Tuesday
+Moderne Databases,practical,B0.201,,Tuesday
+Netwerken en systeembeveiliging,practical,C0.110,,Tuesday
+Programmeren in Java 2,practical,C1.112,,Tuesday
+Project Genetic Algorithms,practical,A1.04,9:00 - 11:00,Tuesday
+Project Numerical Recipes,practical,A1.06,,Tuesday
+Reflectie op de digitale cultuur,lecture,A1.08,,Tuesday
+Reflectie op de digitale cultuur,lecture,A1.10,,Tuesday
+Reflectie op de digitale cultuur,tutorial,B0.201,,Tuesday
+Software engineering,lecture,C0.110,,Tuesday
+Software engineering,tutorial,C1.112,,Tuesday
+Software engineering,practical,A1.04,15:00 - 17:00,Tuesday
+Technology for games,lecture,A1.06,,Tuesday
+Technology for games,lecture,A1.08,,Tuesday
+Technology for games,tutorial,A1.10,,Tuesday
+Webprogrammeren en databases,lecture,B0.201,,Tuesday
+Webprogrammeren en databases,lecture,C0.110,,Tuesday
+Webprogrammeren en databases,tutorial,C1.112,,Tuesday
+Webprogrammeren en databases,practical,A1.04,13:00 - 15:00,Tuesday
+"Zoeken, sturen en bewegen",practical,A1.06,,Tuesday
+TODO,TODO,TODO,TODO,TODO
+TODO,TODO,TODO,TODO,TODO
+TODO,TODO,TODO,TODO,TODO
+TODO,TODO,TODO,TODO,TODO
+TODO,TODO,TODO,TODO,TODO
+TODO,TODO,TODO,TODO,TODO
+TODO,TODO,TODO,TODO,TODO
+TODO,TODO,TODO,TODO,TODO
+TODO,TODO,TODO,TODO,TODO
+TODO,TODO,TODO,TODO,TODO
+TODO,TODO,TODO,TODO,TODO
+TODO,TODO,TODO,TODO,TODO
+TODO,TODO,TODO,TODO,TODO
+TODO,TODO,TODO,TODO,TODO
+TODO,TODO,TODO,TODO,TODO
+TODO,TODO,TODO,TODO,TODO
+TODO,TODO,TODO,TODO,TODO
+TODO,TODO,TODO,TODO,TODO
+TODO,TODO,TODO,TODO,TODO
+TODO,TODO,TODO,TODO,TODO
+TODO,TODO,TODO,TODO,TODO
+TODO,TODO,TODO,TODO,TODO
+TODO,TODO,TODO,TODO,TODO
+TODO,TODO,TODO,TODO,TODO
+TODO,TODO,TODO,TODO,TODO
+TODO,TODO,TODO,TODO,TODO
+TODO,TODO,TODO,TODO,TODO
+TODO,TODO,TODO,TODO,TODO
+TODO,TODO,TODO,TODO,TODO
+TODO,TODO,TODO,TODO,TODO
+TODO,TODO,TODO,TODO,TODO
+TODO,TODO,TODO,TODO,TODO
+TODO,TODO,TODO,TODO,TODO
+TODO,TODO,TODO,TODO,TODO
+TODO,TODO,TODO,TODO,TODO
+TODO,TODO,TODO,TODO,TODO
+TODO,TODO,TODO,TODO,TODO
+TODO,TODO,TODO,TODO,TODO
+TODO,TODO,TODO,TODO,TODO
+TODO,TODO,TODO,TODO,TODO
+TODO,TODO,TODO,TODO,TODO
+TODO,TODO,TODO,TODO,TODO
+TODO,TODO,TODO,TODO,TODO
+TODO,TODO,TODO,TODO,TODO
+TODO,TODO,TODO,TODO,TODO
+TODO,TODO,TODO,TODO,TODO
+TODO,TODO,TODO,TODO,TODO
+TODO,TODO,TODO,TODO,TODO
+TODO,TODO,TODO,TODO,TODO
+TODO,TODO,TODO,TODO,TODO
+TODO,TODO,TODO,TODO,TODO
+TODO,TODO,TODO,TODO,TODO
+TODO,TODO,TODO,TODO,TODO
+TODO,TODO,TODO,TODO,TODO
+TODO,TODO,TODO,TODO,TODO
+TODO,TODO,TODO,TODO,TODO
+TODO,TODO,TODO,TODO,TODO
+TODO,TODO,TODO,TODO,TODO
+TODO,TODO,TODO,TODO,TODO
+TODO,TODO,TODO,TODO,TODO
+TODO,TODO,TODO,TODO,TODO
+TODO,TODO,TODO,TODO,TODO
+TODO,TODO,TODO,TODO,TODO
+TODO,TODO,TODO,TODO,TODO
+TODO,TODO,TODO,TODO,TODO
+TODO,TODO,TODO,TODO,TODO
+TODO,TODO,TODO,TODO,TODO
+TODO,TODO,TODO,TODO,TODO

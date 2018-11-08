@@ -122,7 +122,7 @@ class Plan():
         Initialize schedule using Schedule().
         """
 
-        schedules = []
+        schedules = 140 * [None]
 
         # Put every session into schedule
         for i in range(0 , len(Plan.load_sessions())):
@@ -132,16 +132,32 @@ class Plan():
             timeslot = ''
             day = ''
             schedule = Schedule(name, type, room, timeslot, day)
-            schedules.append(schedule)
+            schedules[i] = schedule
 
         # Quinten vindt dit vast ook niet leuk, moeten we even inladen eigenlijk?
         timeslots = 35 * ['9:00 - 11:00', '11:00 - 13:00', '13:00 - 15:00', '15:00 - 17:00']
+        days = [1,2,3,4,5]
 
         # Get lenght of the sessions-list to determine for-loop range.
         session_count = len(Plan.load_sessions())
-        # range 0 until 72 in steps of 7 (7 rooms)
+        # in range 0 until 72 in steps of 7 (7 rooms)
+        # Helemaal incorrect maar werkt misschien even voor nu
         for i in range(0, session_count, 7):
             schedules[i].timeslot = timeslots[i]
+
+        # Fill the days
+
+        for j in range(0,28):
+            schedules[j].day = 'Monday'
+        for j in range(28,56):
+            schedules[j].day = 'Tuesday'
+        for j in range(56,session_count):
+            schedules[j].day = 'Tuesday'
+        #for j in range(56,84):
+        #    #print(i)
+        #    print(j)
+        #    schedules[j].day = 'Wednesday'
+
 
         # Fill the rooms, should be built as a seperate function
         # iterate over 11 * list of rooms
@@ -185,7 +201,10 @@ class Plan():
         writer = csv.writer(outfile)
         writer.writerow(['Course', 'Type', 'Room', 'Timeslot', 'Day'])
         for row in schedules:
-            writer.writerow([row.session, row.type, row.room, row.timeslot, row.day])
+            if row == None:
+                writer.writerow(5 * ['TODO'])
+            else:
+                writer.writerow([row.session, row.type, row.room, row.timeslot, row.day])
 
 
 if __name__ == "__main__":
