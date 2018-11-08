@@ -201,18 +201,19 @@ class Plan():
         """
 
         # KIEZEN OF WE DE NAAM VAN DE DAG OF HET NUMMER VAN DE DAG WILLEN
-        # MAGIC NUMBERS WEGHALEN (ligt eraan hoe we de dagen gaan noemen hoe we die kunnen gebruiken)
-        # TODO: MOOIER MAKEN: iedere dag een i geven (note to self)
+        #  als we nummer doen hoeft de hele if niet meer (maar dan wel een
+        # slimme implementatie bedenken voor hoe we nummer doen)
         if day == "Monday":
-            return Plan.schedule()[0:(TIME_SLOTS * ROOMS)]
+            i = 0
         elif day == "Tuesday":
-            return Plan.schedule()[(TIME_SLOTS * ROOMS):(TIME_SLOTS * ROOMS * 2)]
+            i = 1
         elif day == "Wednesday":
-            return Plan.schedule()[(TIME_SLOTS * ROOMS * 2):(TIME_SLOTS * ROOMS * 3)]
+            i = 2
         elif day == "Thursday":
-            return Plan.schedule()[(TIME_SLOTS * ROOMS * 3):(TIME_SLOTS * ROOMS * 4)]
+            i = 3
         else:
-            return Plan.schedule()[(TIME_SLOTS * ROOMS * 4):(TIME_SLOTS * ROOMS * 5)]
+            i = 4
+        return Plan.schedule()[(TIME_SLOTS * ROOMS * i):(TIME_SLOTS * ROOMS * (i + 1))]
 
 
         # #  bedenken op welke manier we dag willen 'aanroepen' (maandag 0 en vrijdag 4?)
