@@ -146,17 +146,13 @@ class Plan():
             schedules[i].timeslot = timeslots[i]
 
         # Fill the days
-
+        # Sorry, dit is HEEL ERG GEHARDCODE, dus even een heel tijdelijke oplossing...
         for j in range(0,28):
             schedules[j].day = 'Monday'
         for j in range(28,56):
             schedules[j].day = 'Tuesday'
         for j in range(56,session_count):
             schedules[j].day = 'Tuesday'
-        #for j in range(56,84):
-        #    #print(i)
-        #    print(j)
-        #    schedules[j].day = 'Wednesday'
 
 
         # Fill the rooms, should be built as a seperate function
@@ -200,6 +196,7 @@ class Plan():
         """
         writer = csv.writer(outfile)
         writer.writerow(['Course', 'Type', 'Room', 'Timeslot', 'Day'])
+        # Check if a row in schedules is filled with a session
         for row in schedules:
             if row == None:
                 writer.writerow(5 * ['TODO'])
