@@ -65,7 +65,7 @@ class Plan():
         #       Make a Session(). input of Session = (self, name, class_id, type, mutual_courses, group):
         #
         # VOLGENS MIJ MOET MUTUAL_COURSES AL BIJ LOAD_COURSES IN DE COURSE GEZET WORDEN!
-        # Geen idee hoe we group moeten definiëren... <-- group hoeft nog niet :)))
+        # Nog geen idee hoe we group moeten definiëren... <-- group hoeft nog niet :))) <<-- Oke thanks Sanne :)
         """
 
         sessions = []
@@ -130,9 +130,15 @@ class Plan():
         schedule = SLOTS * [None]
 
         # Put every session into schedule
-        for i in range(len(Plan.load_sessions())):
-            name = Plan.load_sessions()[i].name
-            type = Plan.load_sessions()[i].type
+        for i in range(SLOTS):
+            try:
+                name = Plan.load_sessions()[i].name
+            except:
+                name = 'TODO'
+            try:
+                type = Plan.load_sessions()[i].type
+            except:
+                type = 'TODO'
             room = ''
             timeslot = ''
             day = ''
@@ -168,7 +174,7 @@ class Plan():
         for timeslot in timeslots:
             # Zonder de - 2 komt de error: 'out of range',
             # want dan begint er weer een nieuwe lijst van 7 zalen...
-            if counter == session_count - 2:
+            if counter == SLOTS:
                 break
             for i in range(7):
                 schedule[counter].timeslot = timeslot
@@ -188,7 +194,7 @@ class Plan():
 
         # Wat hier boven staat iets minder gehardcode, nu tot session_count omdat
         #  ik niet weet hoe het bestand er precies uitziet maar moet uiteindelijk tot SLOTS.
-        for j in range(session_count):
+        for j in range(SLOTS):
             if j < TIME_SLOTS * DAYS:
                 schedule[j].day = 'Monday'
             elif j < TIME_SLOTS * DAYS * 2:
@@ -205,7 +211,7 @@ class Plan():
         # iterate over 20 * list of rooms
         rooms = DAYS * TIME_SLOTS * Plan.load_rooms()
         # In range of (0, len(sessions))
-        for i in range(0, session_count):
+        for i in range(0, SLOTS):
             schedule[i].room = rooms[i]
 
         # write the CSV file to disk
