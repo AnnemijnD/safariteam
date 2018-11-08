@@ -1,8 +1,9 @@
+# Heuristieken 2018 -- Lesroosters
+# Namen: Annemijn, Sanne & Rebecca
+
 from course import Course
 from session import Session
 from schedule import Schedule
-from pathlib import Path
-import os
 import csv
 
 SLOTS = 140
@@ -10,13 +11,11 @@ TIME_SLOTS = 4
 DAYS = 5
 ROOMS = 7
 
+
 class Plan():
     """
     Main scripts to make a schedule.
     """
-
-    def __init__(self):
-        pass
 
     def load_courses():
         """
@@ -64,7 +63,7 @@ class Plan():
         #   For every session type (lectures, tutorials, practicals)
         #       Make a Session(). input of Session = (self, name, class_id, type, mutual_courses, group):
         #
-        # VOLGENS MIJ MOET MUTUAL_COURSES AL BIJ LOAD_COURSES IN DE COURSE GEZET WORDEN!
+        # IK DENK DAT MUTUAL_COURSES AL BIJ LOAD_COURSES IN DE COURSE GEZET WORDEN!
         # Nog geen idee hoe we group moeten definiëren... <-- group hoeft nog niet :))) <<-- Oke thanks Sanne :)
         """
 
@@ -92,8 +91,8 @@ class Plan():
                 session = Session(name, class_id, type, mutual_courses, group)
                 sessions.append(session)
 
-        # Nu zijn er bijvoorbeeld voor het vak 'Architectuur en computerorganisatie'
-        # twee sessions aangemaakt met hoorcolleges; controleer met print-statement
+        # Nu zijn er bijvoorbeeld voor het vak 'Algoritmen en Complexiteit'
+        # twee sessions aangemaakt; controleer met print-statement
         # # Kan weggehaald worden als jullie het snappen :)
         # print(sessions[3].name)
         # print(sessions[4].name)
@@ -126,23 +125,25 @@ class Plan():
         Initialize schedule using Schedule().
         """
 
-        # dit moeten we misschein schedule noemen want maar één schedule dus dan minder verwarring
         schedule = SLOTS * [None]
 
         # Put every session into schedule
         for i in range(SLOTS):
             try:
                 name = Plan.load_sessions()[i].name
-            except:
+            except:  # Blijkbaar mag een except niet 'leeg' zijn, dus nog even aanpassen
                 name = 'TODO'
             try:
                 type = Plan.load_sessions()[i].type
             except:
                 type = 'TODO'
+
+            # Room, timeslot en day zijn nog niet bepaald, daar moeten dus
+            # Even functies voor bedenken. 
             room = ''
             timeslot = ''
             day = ''
-            #  deze dan ook nieuwe naam geven
+
             session = Schedule(name, type, room, timeslot, day)
             # Hier moet code tussen om te bepalen op welke plek in schedule
             # de session geplaatst moet worden.
@@ -156,20 +157,15 @@ class Plan():
             #    select the day of similar[-1] and insert schedule.name one day after the
             #    day of similar[-1]
 
+            # Put session into schedule
             schedule[i] = session
-
 
         #  DIT IS VOOR HOE HET ERUIT GAAT ZIEN
         # Quinten vindt dit vast ook niet leuk, moeten we even inladen eigenlijk?
         timeslots = DAYS * ROOMS * ['9:00 - 11:00', '11:00 - 13:00', '13:00 - 15:00', '15:00 - 17:00']
-        days = [0,1,2,3,4]
-
-        # Get lenght of the sessions-list to determine for-loop range.
-        session_count = len(Plan.load_sessions())
-        # in range 0 until 72 in steps of 7 (7 rooms)
-        # Helemaal incorrect maar werkt misschien even voor nu
 
         # Sorry dit is echt super onduidelijk en ik snap het zelf eigenlijk ook niet!!!!
+        # MAAR HET WERKT!
         counter = 0
         for timeslot in timeslots:
             # Zonder de - 2 komt de error: 'out of range',
@@ -206,7 +202,6 @@ class Plan():
             else:
                 schedule[j].day = 'Friday'
 
-
         # Fill the rooms, (moet eigenlijk een aparte functie worden)
         # iterate over 20 * list of rooms
         rooms = DAYS * TIME_SLOTS * Plan.load_rooms()
@@ -219,7 +214,6 @@ class Plan():
             Plan.save_csv(output_file, schedule)
 
         return schedule
-
 
     def get_day(day):
         """
@@ -266,6 +260,17 @@ class Plan():
             i = 3
         return Plan.get_day(day)[(ROOMS * i):(ROOMS * (i + 1))]
 
+    def load_individual():
+        """
+        Loads individual student courses.
+        """
+        # Use encoding='iso-8859-1' to ensure that content is accessible as bytes
+        with open('data/studentenenvakken.csv', encoding='iso-8859-1') as wishes:
+            wishes = csv.reader(wishes, delimiter=';')
+
+            # Optional code to visualize data
+            for row in wishes:
+                print(row)
 
     def save_csv(outfile, schedules):
         """
@@ -275,7 +280,7 @@ class Plan():
         writer.writerow(['Course', 'Type', 'Room', 'Timeslot', 'Day'])
         # Check if a row in schedules is filled with a session
         for row in schedules:
-            if row == None:
+            if row is None:
                 writer.writerow(5 * ['TODO'])
             else:
                 writer.writerow([row.session, row.type, row.room, row.timeslot, row.day])
