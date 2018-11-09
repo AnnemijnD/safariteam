@@ -36,10 +36,10 @@ class Plan():
             # Define every item of the course; each row is a different course
             for row in courses:
                 name = row[0]
-                lecture = row[1]
-                tutorial = row[2]
+                lecture = int(row[1])
+                tutorial = int(row[2])
                 max_students = row[3]
-                practical = row[4]
+                practical = int(row[4])
                 course_id = id_counter
 
                 # Use Course class to create objects for every course
@@ -53,7 +53,7 @@ class Plan():
 
             return courses_list
 
-    def load_sessions():
+    # def load_sessions():
         """
         Loads all the session types for every course. Used by Schedule().
 
@@ -67,29 +67,29 @@ class Plan():
         # Nog geen idee hoe we group moeten definiëren... <-- group hoeft nog niet :))) <<-- Oke thanks Sanne :)
         """
 
-        sessions = []
+        # sessions = []
 
-        for course in Plan.load_courses():
-            name = course.name
-            class_id = course.course_id
-            mutual_courses = []
-            group = []
-
-            # Make session for each lecture, tutorial and practical.
-            for row in range(int(course.lecture)):
-                type = 'lecture'
-                session = Session(name, class_id, type, mutual_courses, group)
-                sessions.append(session)
-
-            for row in range(int(course.tutorial)):
-                type = 'tutorial'
-                session = Session(name, class_id, type, mutual_courses, group)
-                sessions.append(session)
-
-            for row in range(int(course.practical)):
-                type = 'practical'
-                session = Session(name, class_id, type, mutual_courses, group)
-                sessions.append(session)
+        # for course in Plan.load_courses():
+            # name = course.name
+            # class_id = course.course_id
+            # mutual_courses = []
+            # group = []
+            #
+            # # Make session for each lecture, tutorial and practical.
+            # for row in range(int(course.lecture)):
+            #     type = 'lecture'
+            #     session = Session(name, class_id, type, mutual_courses, group)
+            #     sessions.append(session)
+            #
+            # for row in range(int(course.tutorial)):
+            #     type = 'tutorial'
+            #     session = Session(name, class_id, type, mutual_courses, group)
+            #     sessions.append(session)
+            #
+            # for row in range(int(course.practical)):
+            #     type = 'practical'
+            #     session = Session(name, class_id, type, mutual_courses, group)
+            #     sessions.append(session)
 
         # Nu zijn er bijvoorbeeld voor het vak 'Algoritmen en Complexiteit'
         # twee sessions aangemaakt; controleer met print-statement
@@ -120,7 +120,7 @@ class Plan():
 
         return roomnumbers
 
-    def schedule():
+    def schedule(courses):
         """
         Initialize schedule using Schedule().
         """
@@ -128,16 +128,48 @@ class Plan():
         schedule = SLOTS * [None]
 
         # Put every session into schedule
+        #
+        # for course in courses:
+        #     for i in range(SLOTS):
+        #         try:
+        #             name = course.sessions_total[i].name
+        #             print(name)
+        #         except:  # Blijkbaar mag een except niet 'leeg' zijn, dus nog even aanpassen
+        #             name = 'TODO'
+        #         try:
+        #             type = course.sessions_total[i].type
+        #             print(type)
+        #         except:
+        #             type = 'TODO'
+        session_list = []
+        for course in courses:
+            session_list = session_list + course.sessions_total
+
         for i in range(SLOTS):
             try:
-                name = Plan.load_sessions()[i].name
+                name = session_list[i].name
             except:  # Blijkbaar mag een except niet 'leeg' zijn, dus nog even aanpassen
                 name = 'TODO'
             try:
-                type = Plan.load_sessions()[i].type
+                type = session_list[i].type
             except:
                 type = 'TODO'
+<<<<<<< HEAD
 
+=======
+        #
+        # for i in range(SLOTS):
+        #     try:
+        #         name = Plan.load_sessions()[i].name
+        #     except:  # Blijkbaar mag een except niet 'leeg' zijn, dus nog even aanpassen
+        #         name = 'TODO'
+        #     try:
+        #         type = Plan.load_sessions()[i].type
+        #     except:
+        #         type = 'TODO'
+                # Room, timeslot en day zijn nog niet bepaald, daar moeten dus
+            # Even functies voor bedenken.
+>>>>>>> 1d14cbfdbc67b6832cd1ca603296d6124905541e
             room = ''
             timeslot = ''
             day = ''
@@ -157,6 +189,7 @@ class Plan():
 
             # Put session into schedule
             schedule[i] = session
+            print(schedule[i].type)
 
         #  DIT IS VOOR HOE HET ERUIT GAAT ZIEN
         # Quinten vindt dit vast ook niet leuk, moeten we even inladen eigenlijk?
@@ -287,13 +320,6 @@ class Plan():
 if __name__ == "__main__":
 
     # Load all the courses and sessions
-    Plan.load_courses()
-    Plan.load_sessions()
-    Plan.schedule()
+    courses = Plan.load_courses()
+    Plan.schedule(courses)
     Plan.load_rooms()
-
-    # #  test get_slot
-    # Plan.get_slot('9:00 - 11:00', 'Monday')
-
-    # # test get_day
-    # Plan.get_day('Monday')
