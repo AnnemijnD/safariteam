@@ -19,7 +19,7 @@ class Plan():
 
     def load_courses():
         """
-        Loads all the courses. Used by Session().
+        Loads all the courses from a csv file.
         """
         course = '../data/vakken.csv'
 
@@ -52,7 +52,7 @@ class Plan():
 
     def load_rooms():
         """
-        loads all the rooms.
+        loads all the rooms from a csv file.
         """
         room = '../data/zalen.csv'
 
@@ -113,25 +113,20 @@ class Plan():
 
             # Put session into schedule
             sessions.append(session)
-            #Plan.random_schedule(sessions)
 
-        # Assigns every session to a random timeslot
-        random_numbers = []
-        for i in range(SLOTS):
-            rand = random.randint(0,SLOTS - 1)
-            while rand in random_numbers:
-                rand = random.randint(0,SLOTS - 1)
-            schedule[rand] = sessions[i]
-            random_numbers.append(rand)
+        # Heb een random rooster gemaakt whoeehw :-) xxx Rebecca. Groetjes uit Zweden.
+        # Misschien dat we dit kunnen gebruiken in het genetic algorithm:
+        # Steeds random rooster genereren en dan constraints evalueren (met aparte functie?)
+        Plan.random_schedule(schedule, sessions)
 
-        #  DIT IS VOOR HOE HET ERUIT GAAT ZIEN
-        # Quinten vindt dit vast ook niet leuk, moeten we even inladen eigenlijk?
+        #  -------------- DIT IS VOOR HOE HET ERUIT GAAT ZIEN ---------------------------
+        # Quinten vindt dit vast ook niet leuk :(, moeten we even inladen eigenlijk?
         timeslots = DAYS * ROOMS * ['9:00 - 11:00', '11:00 - 13:00', '13:00 - 15:00', '15:00 - 17:00']
 
-        # Sorry dit is echt super onduidelijk en ik snap het zelf eigenlijk ook niet!!!!
-        # MAAR HET WERKT!
+        # For-loop om elke timeslot 7 keer in het rooster te printen (7 zalen)
         counter = 0
         for timeslot in timeslots:
+            # Stop counter als SLOTS is bereikt.
             if counter == SLOTS:
                 break
             for i in range(7):
@@ -162,21 +157,25 @@ class Plan():
         for i in range(0, SLOTS):
             schedule[i].room = rooms[i]
 
-
-
-
         # write the CSV file to disk
         with open('../data/schedule.csv', 'w', newline='') as output_file:
             Plan.save_csv(output_file, schedule)
 
         return schedule
 
-    def random_schedule():
+    def random_schedule(schedule, sessions):
         """
         Generates a random schedule.
         """
 
-
+        # Assigns every session to a random timeslot
+        random_numbers = []
+        for i in range(SLOTS):
+            rand = random.randint(0, SLOTS - 1)
+            while rand in random_numbers:
+                rand = random.randint(0, SLOTS - 1)
+            schedule[rand] = sessions[i]
+            random_numbers.append(rand)
 
 
     def get_day(day):
