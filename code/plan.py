@@ -2,9 +2,9 @@
 # Namen: Annemijn, Sanne & Rebecca
 
 from course import Course
-from session import Session
 from schedule import Schedule
 import csv
+import random
 
 SLOTS = 140
 TIME_SLOTS = 4
@@ -21,7 +21,7 @@ class Plan():
         """
         Loads all the courses. Used by Session().
         """
-        course = '/data/vakken.csv'
+        course = '../data/vakken.csv'
 
         with open(course) as courses:
             courses = csv.reader(courses, delimiter=';')
@@ -48,65 +48,13 @@ class Plan():
                 # Count id_course
                 id_counter += 1
 
-                # For example: if you want to know the number of lectures of a specific course:
-                # print(course.lecture)
-
             return courses_list
-
-    # def load_sessions():
-        """
-        Loads all the session types for every course. Used by Schedule().
-
-        # Pseudocode to create all the sessions:
-        #
-        # For every course:
-        #   For every session type (lectures, tutorials, practicals)
-        #       Make a Session(). input of Session = (self, name, class_id, type, mutual_courses, group):
-        #
-        # IK DENK DAT MUTUAL_COURSES AL BIJ LOAD_COURSES IN DE COURSE GEZET WORDEN!
-        # Nog geen idee hoe we group moeten definiëren... <-- group hoeft nog niet :))) <<-- Oke thanks Sanne :)
-        """
-
-        # sessions = []
-
-        # for course in Plan.load_courses():
-            # name = course.name
-            # class_id = course.course_id
-            # mutual_courses = []
-            # group = []
-            #
-            # # Make session for each lecture, tutorial and practical.
-            # for row in range(int(course.lecture)):
-            #     type = 'lecture'
-            #     session = Session(name, class_id, type, mutual_courses, group)
-            #     sessions.append(session)
-            #
-            # for row in range(int(course.tutorial)):
-            #     type = 'tutorial'
-            #     session = Session(name, class_id, type, mutual_courses, group)
-            #     sessions.append(session)
-            #
-            # for row in range(int(course.practical)):
-            #     type = 'practical'
-            #     session = Session(name, class_id, type, mutual_courses, group)
-            #     sessions.append(session)
-
-        # Nu zijn er bijvoorbeeld voor het vak 'Algoritmen en Complexiteit'
-        # twee sessions aangemaakt; controleer met print-statement
-        # # Kan weggehaald worden als jullie het snappen :)
-        # print(sessions[3].name)
-        # print(sessions[4].name)
-        #
-        # # Succesfully created 72 sessions!
-        # print(len(sessions))
-
-        return sessions
 
     def load_rooms():
         """
         loads all the rooms.
         """
-        room = 'data/zalen.csv'
+        room = '../data/zalen.csv'
 
         with open(room) as rooms:
             rooms = csv.reader(rooms, delimiter=';')
@@ -126,53 +74,29 @@ class Plan():
         """
 
         schedule = SLOTS * [None]
-
-        # Put every session into schedule
-        #
-        # for course in courses:
-        #     for i in range(SLOTS):
-        #         try:
-        #             name = course.sessions_total[i].name
-        #             print(name)
-        #         except:  # Blijkbaar mag een except niet 'leeg' zijn, dus nog even aanpassen
-        #             name = 'TODO'
-        #         try:
-        #             type = course.sessions_total[i].type
-        #             print(type)
-        #         except:
-        #             type = 'TODO'
+        sessions = []
         session_list = []
+
+
         for course in courses:
             session_list = session_list + course.sessions_total
 
+        # Put every session into schedule
         for i in range(SLOTS):
             try:
                 name = session_list[i].name
             except:  # Blijkbaar mag een except niet 'leeg' zijn, dus nog even aanpassen
-                name = 'TODO'
+                name = '-'
             try:
                 type = session_list[i].type
             except:
-                type = 'TODO'
-<<<<<<< HEAD
+                type = '-'
 
-=======
-        #
-        # for i in range(SLOTS):
-        #     try:
-        #         name = Plan.load_sessions()[i].name
-        #     except:  # Blijkbaar mag een except niet 'leeg' zijn, dus nog even aanpassen
-        #         name = 'TODO'
-        #     try:
-        #         type = Plan.load_sessions()[i].type
-        #     except:
-        #         type = 'TODO'
                 # Room, timeslot en day zijn nog niet bepaald, daar moeten dus
             # Even functies voor bedenken.
->>>>>>> 1d14cbfdbc67b6832cd1ca603296d6124905541e
-            room = ''
-            timeslot = ''
-            day = ''
+            room = 'None'
+            timeslot = 'None'
+            day = 'None'
 
             session = Schedule(name, type, room, timeslot, day)
             # Hier moet code tussen om te bepalen op welke plek in schedule
@@ -188,8 +112,17 @@ class Plan():
             #    day of similar[-1]
 
             # Put session into schedule
-            schedule[i] = session
-            print(schedule[i].type)
+            sessions.append(session)
+            #Plan.random_schedule(sessions)
+
+        # Assigns every session to a random timeslot
+        random_numbers = []
+        for i in range(SLOTS):
+            rand = random.randint(0,SLOTS - 1)
+            while rand in random_numbers:
+                rand = random.randint(0,SLOTS - 1)
+            schedule[rand] = sessions[i]
+            random_numbers.append(rand)
 
         #  DIT IS VOOR HOE HET ERUIT GAAT ZIEN
         # Quinten vindt dit vast ook niet leuk, moeten we even inladen eigenlijk?
@@ -199,25 +132,14 @@ class Plan():
         # MAAR HET WERKT!
         counter = 0
         for timeslot in timeslots:
-            # Zonder de - 2 komt de error: 'out of range',
-            # want dan begint er weer een nieuwe lijst van 7 zalen...
             if counter == SLOTS:
                 break
             for i in range(7):
-                schedule[counter].timeslot = timeslot
-                counter += 1
-
-        # for i in range(0, session_count, ROOMS):
-        #     schedule[i].timeslot = timeslots[i]
-
-        # Fill the days
-        # Sorry, dit is HEEL ERG GEHARDCODE, dus even een heel tijdelijke oplossing..
-        # for j in range(0,28):
-        #     schedules[j].day = 'Monday'
-        # for j in range(28,56):
-        #     schedules[j].day = 'Tuesday'
-        # for j in range(56,session_count):
-        #     schedules[j].day = 'Wednesday'
+                try:
+                    schedule[counter].timeslot = timeslot
+                    counter += 1
+                except:
+                    counter += 1
 
         # Wat hier boven staat iets minder gehardcode, nu tot session_count omdat
         #  ik niet weet hoe het bestand er precies uitziet maar moet uiteindelijk tot SLOTS.
@@ -240,11 +162,22 @@ class Plan():
         for i in range(0, SLOTS):
             schedule[i].room = rooms[i]
 
+
+
+
         # write the CSV file to disk
-        with open('data/schedule.csv', 'w', newline='') as output_file:
+        with open('../data/schedule.csv', 'w', newline='') as output_file:
             Plan.save_csv(output_file, schedule)
 
         return schedule
+
+    def random_schedule():
+        """
+        Generates a random schedule.
+        """
+
+
+
 
     def get_day(day):
         """

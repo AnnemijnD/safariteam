@@ -1,10 +1,9 @@
-import csv
 from session import Session
 
 
 class Course(object):
     """
-    Representation of a course in CollegeClass.
+    Representation of a course in Session.
     """
 
     def __init__(self, name, course_id, lecture, tutorial, practical, max_students):
@@ -20,12 +19,9 @@ class Course(object):
         self.sessions_total = self.session_lecture + self.session_tutorial + self.session_practical
         # dit is even mega lelijk maar dat regel ik later, ik maak hier een extra lijst
 
-
-
-
     def load_sessions(self, int_session, type):
         """
-        Loads all the session types for every course. Used by Schedule().
+        Loads all the session types for every course.
 
         # Pseudocode to create all the sessions:
         #
@@ -40,25 +36,12 @@ class Course(object):
         mutual_courses = []
         sessions = []
 
-            # Make session for each lecture, tutorial and practical.
+        # Make session for each lecture, tutorial and practical.
         for i in range(int_session):
             session = Session(self.name, self.course_id, type, mutual_courses)
             sessions.append(session)
 
-
-
         return sessions
 
-
-        # Nu zijn er bijvoorbeeld voor het vak 'Algoritmen en Complexiteit'
-        # twee sessions aangemaakt; controleer met print-statement
-        # # Kan weggehaald worden als jullie het snappen :)
-        # print(sessions[3].name)
-        # print(sessions[4].name)
-        #
-        # # Succesfully created 72 sessions!
-        # print(len(sessions))
-
-    # Zonder de __str__ methode krijg je dus alleen <object at position 0x107b5e4...>
     def __str__(self):
         return f"Course number {self.course_id} is {self.name}"
