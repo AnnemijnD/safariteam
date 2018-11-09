@@ -18,7 +18,7 @@ class Course(object):
         self.sessoin_practical = session_practical
 
 
-    if __name__ == "__main__":
+    def 
 
 
         course = 'vakken.csv'
