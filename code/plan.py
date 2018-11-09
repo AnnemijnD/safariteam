@@ -21,7 +21,7 @@ class Plan():
         """
         Loads all the courses. Used by Session().
         """
-        course = 'data/vakken.csv'
+        course = '/data/vakken.csv'
 
         with open(course) as courses:
             courses = csv.reader(courses, delimiter=';')
@@ -138,8 +138,6 @@ class Plan():
             except:
                 type = 'TODO'
 
-            # Room, timeslot en day zijn nog niet bepaald, daar moeten dus
-            # Even functies voor bedenken. 
             room = ''
             timeslot = ''
             day = ''
