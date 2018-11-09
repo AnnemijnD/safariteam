@@ -1,5 +1,5 @@
 import csv
-import os
+
 
 class Course(object):
     """
@@ -13,6 +13,7 @@ class Course(object):
         self.tutorial = tutorial
         self.practical = practical
         self.max_students = max_students
+<<<<<<< HEAD
         self.session_lecture = session_lecture
         self.session_tutorial = session_turorial
         self.sessoin_practical = session_practical
@@ -38,6 +39,9 @@ class Course(object):
 
         # vul de hoeveelheid sessions als dat er hc's zijn
             # return al deze sessions
+=======
+>>>>>>> 9abed720723ba02b19c206b214ef018e3832cfd9
 
-        # vul
-            print(course_dict)
+    # Zonder de __str__ methode krijg je dus alleen <object at position 0x107b5e4...>
+    def __str__(self):
+        return f"Course number {self.course_id} is {self.name}"
