@@ -5,11 +5,13 @@ from course import Course
 from schedule import Schedule
 import csv
 import random
+import time
 
 SLOTS = 140
 TIME_SLOTS = 4
 DAYS = 5
 ROOMS = 7
+MAX_MALUSPOINTS = 0
 
 
 class Plan():
@@ -77,7 +79,6 @@ class Plan():
         sessions = []
         session_list = []
 
-
         for course in courses:
             session_list = session_list + course.sessions_total
 
@@ -100,11 +101,7 @@ class Plan():
 
             session = Schedule(name, type, room, timeslot, day)
             # Hier moet code tussen om te bepalen op welke plek in schedule
-            # de session geplaatst moet worden.
-
-            # pseudo
-            # If schedule.name == schedules[i].name and schedule.timeslot = schedules[i].timeslot (in range 0,7):
-            #      skip this place, go to next timeslot.
+            # de session geplaatst moet worden..
 
             #  if schedule.name in schedules.name:
             #    select all the schedule uit schedules and put them in similar = []
@@ -113,11 +110,13 @@ class Plan():
 
             # Put session into schedule
             sessions.append(session)
+            schedule[i] = session
+
+        Plan.random_schedule(schedule, sessions)
 
         # Heb een random rooster gemaakt whoeehw :-) xxx Rebecca. Groetjes uit Zweden.
         # Misschien dat we dit kunnen gebruiken in het genetic algorithm:
         # Steeds random rooster genereren en dan constraints evalueren (met aparte functie?)
-        Plan.random_schedule(schedule, sessions)
 
         #  -------------- DIT IS VOOR HOE HET ERUIT GAAT ZIEN ---------------------------
         # Quinten vindt dit vast ook niet leuk :(, moeten we even inladen eigenlijk?
@@ -157,7 +156,9 @@ class Plan():
         for i in range(0, SLOTS):
             schedule[i].room = rooms[i]
 
-        # write the CSV file to disk
+        Plan.calc_malus(schedule, sessions)
+
+        # Write the CSV file to data-folder
         with open('../data/schedule.csv', 'w', newline='') as output_file:
             Plan.save_csv(output_file, schedule)
 
@@ -165,10 +166,13 @@ class Plan():
 
     def random_schedule(schedule, sessions):
         """
-        Generates a random schedule.
+        Generates a random schedule. Assigns every session to a random timeslot.
+
+        # Hou bij welke random nummers al geweest zijn. De while loop
+        # Zorgt ervoor dat er een random nummer wordt gemaakt die nog
+        # niet is geweest.
         """
 
-        # Assigns every session to a random timeslot
         random_numbers = []
         for i in range(SLOTS):
             rand = random.randint(0, SLOTS - 1)
@@ -176,6 +180,39 @@ class Plan():
                 rand = random.randint(0, SLOTS - 1)
             schedule[rand] = sessions[i]
             random_numbers.append(rand)
+
+        Plan.schedule_counter += 1
+
+
+    def calc_malus(schedule, sessions):
+        """
+        Calcalates malus point (only for mutual courses).
+        If number of maluspoints is higher that a given maximum, make a new schedule.
+        """
+
+        # Sla de lege sessions over
+        counter = 0
+        keep_track_of_courses = []
+        for row in schedule:
+            if row.session is not '-':
+                keep_track_of_courses.append([row.session, row.timeslot, row.day])
+        for row in schedule:
+            if row.session is not '-':
+                current = [row.session, row.timeslot, row.day]
+                for i in keep_track_of_courses:
+                    if len(set(i) & set(current)) == 3:
+                        # Counter is in dit geval het aantal rijen die
+                        # elkaar overlappen, dus vakken die in hetzelfde
+                        # tijdslot en dag voorkomen.
+                        counter += 1
+
+        # Het aantal sessions (dus len(keep_track_of_courses)) moet er af gehaald
+        # worden, aangezien er sowieso 72 dingen zijn die met elkaar overlappen.
+        malus_points = counter - len(keep_track_of_courses)
+
+        if malus_points > MAX_MALUSPOINTS:
+            courses = Plan.load_courses()
+            Plan.schedule(courses)
 
 
     def get_day(day):
@@ -251,7 +288,15 @@ class Plan():
 
 if __name__ == "__main__":
 
+    Plan.schedule_counter = 0
+    then = time.time()
+
     # Load all the courses and sessions
     courses = Plan.load_courses()
     Plan.schedule(courses)
     Plan.load_rooms()
+
+    now = time.time() # Time after it finished
+
+    print("It took: ", now - then, " seconds")
+    print("Script made", Plan.schedule_counter, "schedules.")
