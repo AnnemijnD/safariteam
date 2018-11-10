@@ -1,141 +1,141 @@
-Course;Type;Room;Timeslot;Day
-Advanced Heuristics;lecture;A1.04;9:00 - 11:00;Monday
-Advanced Heuristics;practical;A1.06;9:00 - 11:00;Monday
-Algoritmen en complexiteit;lecture;A1.08;9:00 - 11:00;Monday
-Algoritmen en complexiteit;tutorial;A1.10;9:00 - 11:00;Monday
-Algoritmen en complexiteit;practical;B0.201;9:00 - 11:00;Monday
-Analysemethoden en -technieken;lecture;C0.110;9:00 - 11:00;Monday
-Architectuur en computerorganisatie;lecture;C1.112;9:00 - 11:00;Monday
-Architectuur en computerorganisatie;lecture;A1.04;11:00 - 13:00;Monday
-Autonomous Agents 2;lecture;A1.06;11:00 - 13:00;Monday
-Autonomous Agents 2;lecture;A1.08;11:00 - 13:00;Monday
-Autonomous Agents 2;tutorial;A1.10;11:00 - 13:00;Monday
-Autonomous Agents 2;practical;B0.201;11:00 - 13:00;Monday
-Bioinformatica;lecture;C0.110;11:00 - 13:00;Monday
-Bioinformatica;lecture;C1.112;11:00 - 13:00;Monday
-Bioinformatica;lecture;A1.04;13:00 - 15:00;Monday
-Bioinformatica;tutorial;A1.06;13:00 - 15:00;Monday
-Bioinformatica;practical;A1.08;13:00 - 15:00;Monday
-Calculus 2;lecture;A1.10;13:00 - 15:00;Monday
-Calculus 2;tutorial;B0.201;13:00 - 15:00;Monday
-Collectieve Intelligentie;lecture;C0.110;13:00 - 15:00;Monday
-Collectieve Intelligentie;lecture;C1.112;13:00 - 15:00;Tuesday
-Collectieve Intelligentie;lecture;A1.04;15:00 - 17:00;Tuesday
-Collectieve Intelligentie;tutorial;A1.06;15:00 - 17:00;Tuesday
-Collectieve Intelligentie;practical;A1.08;15:00 - 17:00;Tuesday
-Compilerbouw;lecture;A1.10;15:00 - 17:00;Tuesday
-Compilerbouw;lecture;B0.201;15:00 - 17:00;Tuesday
-Compilerbouw;tutorial;C0.110;15:00 - 17:00;Tuesday
-Compilerbouw;practical;C1.112;15:00 - 17:00;Tuesday
-Compilerbouw (practicum);practical;A1.04;9:00 - 11:00;Tuesday
-Data Mining;lecture;A1.06;9:00 - 11:00;Tuesday
-Data Mining;lecture;A1.08;9:00 - 11:00;Tuesday
-Data Mining;tutorial;A1.10;9:00 - 11:00;Tuesday
-Data Mining;practical;B0.201;9:00 - 11:00;Tuesday
-Databases 2;lecture;C0.110;9:00 - 11:00;Tuesday
-Databases 2;tutorial;C1.112;9:00 - 11:00;Tuesday
-Heuristieken 1;lecture;A1.04;11:00 - 13:00;Tuesday
-Heuristieken 1;tutorial;A1.06;11:00 - 13:00;Tuesday
-Heuristieken 2;lecture;A1.08;11:00 - 13:00;Tuesday
-Heuristieken 2;tutorial;A1.10;11:00 - 13:00;Tuesday
-Informatie- en organisatieontwerp;lecture;B0.201;11:00 - 13:00;Tuesday
-Informatie- en organisatieontwerp;lecture;C0.110;11:00 - 13:00;Wednesday
-Informatie- en organisatieontwerp;tutorial;C1.112;11:00 - 13:00;Wednesday
-Informatie- en organisatieontwerp;practical;A1.04;13:00 - 15:00;Wednesday
-Interactie-ontwerp;lecture;A1.06;13:00 - 15:00;Wednesday
-Interactie-ontwerp;lecture;A1.08;13:00 - 15:00;Wednesday
-Kansrekenen 2;lecture;A1.10;13:00 - 15:00;Wednesday
-Kansrekenen 2;lecture;B0.201;13:00 - 15:00;Wednesday
-Lineaire Algebra;lecture;C0.110;13:00 - 15:00;Wednesday
-Lineaire Algebra;lecture;C1.112;13:00 - 15:00;Wednesday
-Machine Learning;lecture;A1.04;15:00 - 17:00;Wednesday
-Machine Learning;lecture;A1.06;15:00 - 17:00;Wednesday
-Moderne Databases;lecture;A1.08;15:00 - 17:00;Wednesday
-Moderne Databases;tutorial;A1.10;15:00 - 17:00;Wednesday
-Moderne Databases;practical;B0.201;15:00 - 17:00;Wednesday
-Netwerken en systeembeveiliging;practical;C0.110;15:00 - 17:00;Wednesday
-Programmeren in Java 2;practical;C1.112;15:00 - 17:00;Wednesday
-Project Genetic Algorithms;practical;A1.04;9:00 - 11:00;Wednesday
-Project Numerical Recipes;practical;A1.06;9:00 - 11:00;Wednesday
-Reflectie op de digitale cultuur;lecture;A1.08;9:00 - 11:00;Wednesday
-Reflectie op de digitale cultuur;lecture;A1.10;9:00 - 11:00;Wednesday
-Reflectie op de digitale cultuur;tutorial;B0.201;9:00 - 11:00;Thursday
-Software engineering;lecture;C0.110;9:00 - 11:00;Thursday
-Software engineering;tutorial;C1.112;9:00 - 11:00;Thursday
-Software engineering;practical;A1.04;11:00 - 13:00;Thursday
-Technology for games;lecture;A1.06;11:00 - 13:00;Thursday
-Technology for games;lecture;A1.08;11:00 - 13:00;Thursday
-Technology for games;tutorial;A1.10;11:00 - 13:00;Thursday
-Webprogrammeren en databases;lecture;B0.201;11:00 - 13:00;Thursday
-Webprogrammeren en databases;lecture;C0.110;11:00 - 13:00;Thursday
-Webprogrammeren en databases;tutorial;C1.112;11:00 - 13:00;Thursday
-Webprogrammeren en databases;practical;A1.04;13:00 - 15:00;Thursday
-Zoeken;practical;A1.06;13:00 - 15:00;Thursday
-TODO;TODO;A1.08;13:00 - 15:00;Thursday
-TODO;TODO;A1.10;13:00 - 15:00;Thursday
-TODO;TODO;B0.201;13:00 - 15:00;Thursday
-TODO;TODO;C0.110;13:00 - 15:00;Thursday
-TODO;TODO;C1.112;13:00 - 15:00;Thursday
-TODO;TODO;A1.04;15:00 - 17:00;Thursday
-TODO;TODO;A1.06;15:00 - 17:00;Thursday
-TODO;TODO;A1.08;15:00 - 17:00;Thursday
-TODO;TODO;A1.10;15:00 - 17:00;Friday
-TODO;TODO;B0.201;15:00 - 17:00;Friday
-TODO;TODO;C0.110;15:00 - 17:00;Friday
-TODO;TODO;C1.112;15:00 - 17:00;Friday
-TODO;TODO;A1.04;9:00 - 11:00;Friday
-TODO;TODO;A1.06;9:00 - 11:00;Friday
-TODO;TODO;A1.08;9:00 - 11:00;Friday
-TODO;TODO;A1.10;9:00 - 11:00;Friday
-TODO;TODO;B0.201;9:00 - 11:00;Friday
-TODO;TODO;C0.110;9:00 - 11:00;Friday
-TODO;TODO;C1.112;9:00 - 11:00;Friday
-TODO;TODO;A1.04;11:00 - 13:00;Friday
-TODO;TODO;A1.06;11:00 - 13:00;Friday
-TODO;TODO;A1.08;11:00 - 13:00;Friday
-TODO;TODO;A1.10;11:00 - 13:00;Friday
-TODO;TODO;B0.201;11:00 - 13:00;Friday
-TODO;TODO;C0.110;11:00 - 13:00;Friday
-TODO;TODO;C1.112;11:00 - 13:00;Friday
-TODO;TODO;A1.04;13:00 - 15:00;Friday
-TODO;TODO;A1.06;13:00 - 15:00;Friday
-TODO;TODO;A1.08;13:00 - 15:00;Friday
-TODO;TODO;A1.10;13:00 - 15:00;Friday
-TODO;TODO;B0.201;13:00 - 15:00;Friday
-TODO;TODO;C0.110;13:00 - 15:00;Friday
-TODO;TODO;C1.112;13:00 - 15:00;Friday
-TODO;TODO;A1.04;15:00 - 17:00;Friday
-TODO;TODO;A1.06;15:00 - 17:00;Friday
-TODO;TODO;A1.08;15:00 - 17:00;Friday
-TODO;TODO;A1.10;15:00 - 17:00;Friday
-TODO;TODO;B0.201;15:00 - 17:00;Friday
-TODO;TODO;C0.110;15:00 - 17:00;Friday
-TODO;TODO;C1.112;15:00 - 17:00;Friday
-TODO;TODO;A1.04;9:00 - 11:00;Friday
-TODO;TODO;A1.06;9:00 - 11:00;Friday
-TODO;TODO;A1.08;9:00 - 11:00;Friday
-TODO;TODO;A1.10;9:00 - 11:00;Friday
-TODO;TODO;B0.201;9:00 - 11:00;Friday
-TODO;TODO;C0.110;9:00 - 11:00;Friday
-TODO;TODO;C1.112;9:00 - 11:00;Friday
-TODO;TODO;A1.04;11:00 - 13:00;Friday
-TODO;TODO;A1.06;11:00 - 13:00;Friday
-TODO;TODO;A1.08;11:00 - 13:00;Friday
-TODO;TODO;A1.10;11:00 - 13:00;Friday
-TODO;TODO;B0.201;11:00 - 13:00;Friday
-TODO;TODO;C0.110;11:00 - 13:00;Friday
-TODO;TODO;C1.112;11:00 - 13:00;Friday
-TODO;TODO;A1.04;13:00 - 15:00;Friday
-TODO;TODO;A1.06;13:00 - 15:00;Friday
-TODO;TODO;A1.08;13:00 - 15:00;Friday
-TODO;TODO;A1.10;13:00 - 15:00;Friday
-TODO;TODO;B0.201;13:00 - 15:00;Friday
-TODO;TODO;C0.110;13:00 - 15:00;Friday
-TODO;TODO;C1.112;13:00 - 15:00;Friday
-TODO;TODO;A1.04;15:00 - 17:00;Friday
-TODO;TODO;A1.06;15:00 - 17:00;Friday
-TODO;TODO;A1.08;15:00 - 17:00;Friday
-TODO;TODO;A1.10;15:00 - 17:00;Friday
-TODO;TODO;B0.201;15:00 - 17:00;Friday
-TODO;TODO;C0.110;15:00 - 17:00;Friday
-TODO;TODO;C1.112;15:00 - 17:00;Friday
+Course,Type,Room,Timeslot,Day
+Calculus 2,tutorial,A1.04,9:00 - 11:00,Monday
+Bioinformatica,practical,A1.06,9:00 - 11:00,Monday
+-,-,A1.08,9:00 - 11:00,Monday
+-,-,A1.10,9:00 - 11:00,Monday
+-,-,B0.201,9:00 - 11:00,Monday
+Informatie- en organisatieontwerp,practical,C0.110,9:00 - 11:00,Monday
+Moderne Databases,practical,C1.112,9:00 - 11:00,Monday
+Autonomous Agents 2,lecture,A1.04,11:00 - 13:00,Monday
+Compilerbouw,lecture,A1.06,11:00 - 13:00,Monday
+Interactie-ontwerp,lecture,A1.08,11:00 - 13:00,Monday
+-,-,A1.10,11:00 - 13:00,Monday
+-,-,B0.201,11:00 - 13:00,Monday
+-,-,C0.110,11:00 - 13:00,Monday
+-,-,C1.112,11:00 - 13:00,Monday
+-,-,A1.04,13:00 - 15:00,Monday
+-,-,A1.06,13:00 - 15:00,Monday
+Informatie- en organisatieontwerp,tutorial,A1.08,13:00 - 15:00,Monday
+-,-,A1.10,13:00 - 15:00,Monday
+Machine Learning,lecture,B0.201,13:00 - 15:00,Monday
+Programmeren in Java 2,practical,C0.110,13:00 - 15:00,Monday
+-,-,C1.112,13:00 - 15:00,Tuesday
+-,-,A1.04,15:00 - 17:00,Tuesday
+-,-,A1.06,15:00 - 17:00,Tuesday
+Collectieve Intelligentie,tutorial,A1.08,15:00 - 17:00,Tuesday
+-,-,A1.10,15:00 - 17:00,Tuesday
+Webprogrammeren en databases,tutorial,B0.201,15:00 - 17:00,Tuesday
+Technology for games,lecture,C0.110,15:00 - 17:00,Tuesday
+Lineaire Algebra,lecture,C1.112,15:00 - 17:00,Tuesday
+-,-,A1.04,9:00 - 11:00,Tuesday
+Compilerbouw,practical,A1.06,9:00 - 11:00,Tuesday
+Collectieve Intelligentie,lecture,A1.08,9:00 - 11:00,Tuesday
+Advanced Heuristics,practical,A1.10,9:00 - 11:00,Tuesday
+Data Mining,lecture,B0.201,9:00 - 11:00,Tuesday
+-,-,C0.110,9:00 - 11:00,Tuesday
+-,-,C1.112,9:00 - 11:00,Tuesday
+Autonomous Agents 2,tutorial,A1.04,11:00 - 13:00,Tuesday
+-,-,A1.06,11:00 - 13:00,Tuesday
+Heuristieken 1,lecture,A1.08,11:00 - 13:00,Tuesday
+Databases 2,tutorial,A1.10,11:00 - 13:00,Tuesday
+Bioinformatica,lecture,B0.201,11:00 - 13:00,Tuesday
+-,-,C0.110,11:00 - 13:00,Wednesday
+-,-,C1.112,11:00 - 13:00,Wednesday
+-,-,A1.04,13:00 - 15:00,Wednesday
+-,-,A1.06,13:00 - 15:00,Wednesday
+-,-,A1.08,13:00 - 15:00,Wednesday
+Architectuur en computerorganisatie,lecture,A1.10,13:00 - 15:00,Wednesday
+-,-,B0.201,13:00 - 15:00,Wednesday
+-,-,C0.110,13:00 - 15:00,Wednesday
+Software engineering,lecture,C1.112,13:00 - 15:00,Wednesday
+Kansrekenen 2,lecture,A1.04,15:00 - 17:00,Wednesday
+Bioinformatica,tutorial,A1.06,15:00 - 17:00,Wednesday
+-,-,A1.08,15:00 - 17:00,Wednesday
+Heuristieken 2,tutorial,A1.10,15:00 - 17:00,Wednesday
+-,-,B0.201,15:00 - 17:00,Wednesday
+-,-,C0.110,15:00 - 17:00,Wednesday
+-,-,C1.112,15:00 - 17:00,Wednesday
+-,-,A1.04,9:00 - 11:00,Wednesday
+Webprogrammeren en databases,lecture,A1.06,9:00 - 11:00,Wednesday
+Algoritmen en complexiteit,tutorial,A1.08,9:00 - 11:00,Wednesday
+Netwerken en systeembeveiliging,practical,A1.10,9:00 - 11:00,Wednesday
+-,-,B0.201,9:00 - 11:00,Thursday
+-,-,C0.110,9:00 - 11:00,Thursday
+-,-,C1.112,9:00 - 11:00,Thursday
+Advanced Heuristics,lecture,A1.04,11:00 - 13:00,Thursday
+-,-,A1.06,11:00 - 13:00,Thursday
+Moderne Databases,lecture,A1.08,11:00 - 13:00,Thursday
+Kansrekenen 2,lecture,A1.10,11:00 - 13:00,Thursday
+Reflectie op de digitale cultuur,lecture,B0.201,11:00 - 13:00,Thursday
+-,-,C0.110,11:00 - 13:00,Thursday
+Technology for games,lecture,C1.112,11:00 - 13:00,Thursday
+-,-,A1.04,13:00 - 15:00,Thursday
+Technology for games,tutorial,A1.06,13:00 - 15:00,Thursday
+-,-,A1.08,13:00 - 15:00,Thursday
+-,-,A1.10,13:00 - 15:00,Thursday
+Reflectie op de digitale cultuur,tutorial,B0.201,13:00 - 15:00,Thursday
+Bioinformatica,lecture,C0.110,13:00 - 15:00,Thursday
+-,-,C1.112,13:00 - 15:00,Thursday
+Data Mining,practical,A1.04,15:00 - 17:00,Thursday
+-,-,A1.06,15:00 - 17:00,Thursday
+Compilerbouw (practicum),practical,A1.08,15:00 - 17:00,Thursday
+Informatie- en organisatieontwerp,lecture,A1.10,15:00 - 17:00,Friday
+-,-,B0.201,15:00 - 17:00,Friday
+Informatie- en organisatieontwerp,lecture,C0.110,15:00 - 17:00,Friday
+Collectieve Intelligentie,practical,C1.112,15:00 - 17:00,Friday
+-,-,A1.04,9:00 - 11:00,Friday
+Collectieve Intelligentie,lecture,A1.06,9:00 - 11:00,Friday
+Data Mining,tutorial,A1.08,9:00 - 11:00,Friday
+-,-,A1.10,9:00 - 11:00,Friday
+-,-,B0.201,9:00 - 11:00,Friday
+-,-,C0.110,9:00 - 11:00,Friday
+-,-,C1.112,9:00 - 11:00,Friday
+Webprogrammeren en databases,lecture,A1.04,11:00 - 13:00,Friday
+Moderne Databases,tutorial,A1.06,11:00 - 13:00,Friday
+Project Genetic Algorithms,practical,A1.08,11:00 - 13:00,Friday
+-,-,A1.10,11:00 - 13:00,Friday
+-,-,B0.201,11:00 - 13:00,Friday
+-,-,C0.110,11:00 - 13:00,Friday
+Algoritmen en complexiteit,practical,C1.112,11:00 - 13:00,Friday
+Data Mining,lecture,A1.04,13:00 - 15:00,Friday
+Analysemethoden en -technieken,lecture,A1.06,13:00 - 15:00,Friday
+-,-,A1.08,13:00 - 15:00,Friday
+-,-,A1.10,13:00 - 15:00,Friday
+-,-,B0.201,13:00 - 15:00,Friday
+-,-,C0.110,13:00 - 15:00,Friday
+Software engineering,practical,C1.112,13:00 - 15:00,Friday
+-,-,A1.04,15:00 - 17:00,Friday
+-,-,A1.06,15:00 - 17:00,Friday
+-,-,A1.08,15:00 - 17:00,Friday
+Heuristieken 2,lecture,A1.10,15:00 - 17:00,Friday
+Bioinformatica,lecture,B0.201,15:00 - 17:00,Friday
+-,-,C0.110,15:00 - 17:00,Friday
+Lineaire Algebra,lecture,C1.112,15:00 - 17:00,Friday
+-,-,A1.04,9:00 - 11:00,Friday
+-,-,A1.06,9:00 - 11:00,Friday
+-,-,A1.08,9:00 - 11:00,Friday
+Databases 2,lecture,A1.10,9:00 - 11:00,Friday
+Algoritmen en complexiteit,lecture,B0.201,9:00 - 11:00,Friday
+-,-,C0.110,9:00 - 11:00,Friday
+Compilerbouw,tutorial,C1.112,9:00 - 11:00,Friday
+Interactie-ontwerp,lecture,A1.04,11:00 - 13:00,Friday
+Machine Learning,lecture,A1.06,11:00 - 13:00,Friday
+-,-,A1.08,11:00 - 13:00,Friday
+-,-,A1.10,11:00 - 13:00,Friday
+"Zoeken, sturen en bewegen",practical,B0.201,11:00 - 13:00,Friday
+-,-,C0.110,11:00 - 13:00,Friday
+Collectieve Intelligentie,lecture,C1.112,11:00 - 13:00,Friday
+Project Numerical Recipes,practical,A1.04,13:00 - 15:00,Friday
+Architectuur en computerorganisatie,lecture,A1.06,13:00 - 15:00,Friday
+Autonomous Agents 2,lecture,A1.08,13:00 - 15:00,Friday
+-,-,A1.10,13:00 - 15:00,Friday
+Compilerbouw,lecture,B0.201,13:00 - 15:00,Friday
+-,-,C0.110,13:00 - 15:00,Friday
+Reflectie op de digitale cultuur,lecture,C1.112,13:00 - 15:00,Friday
+Heuristieken 1,tutorial,A1.04,15:00 - 17:00,Friday
+Webprogrammeren en databases,practical,A1.06,15:00 - 17:00,Friday
+Calculus 2,lecture,A1.08,15:00 - 17:00,Friday
+-,-,A1.10,15:00 - 17:00,Friday
+-,-,B0.201,15:00 - 17:00,Friday
+Software engineering,tutorial,C0.110,15:00 - 17:00,Friday
+Autonomous Agents 2,practical,C1.112,15:00 - 17:00,Friday
