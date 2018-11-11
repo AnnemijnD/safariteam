@@ -112,7 +112,7 @@ class Plan():
         # Steeds random rooster genereren en dan constraints evalueren (met aparte functie?)
         plan.random_schedule(schedule, sessions)
         schedule = plan.fill_rooms_and_days(schedule)
-        plan.calc_malus(schedule, sessions)
+        schedule = plan.calc_malus(schedule)
 
         # Write the CSV file to data-folder
         with open('../data/schedule.csv', 'w', newline='') as output_file:
@@ -140,7 +140,7 @@ class Plan():
         # Keep track of how many schedules were made
         plan.schedule_counter += 1
 
-    def calc_malus(self, schedule, sessions):
+    def calc_malus(self, schedule):
         """
         Calcalates malus point (only for mutual courses).
         If number of maluspoints is higher that a given maximum, make a new schedule.
@@ -162,6 +162,7 @@ class Plan():
                 current_row = [row.session, row.timeslot, row.day]
                 for course in keep_track_of_courses:
                     # Intersection gebruiken?
+                    # Als len == 3 dan overlapt de hele rij
                     if len(set(course) & set(current_row)) == 3:
                         # Counter is in dit geval het aantal rijen die
                         # elkaar overlappen, dus vakken die in hetzelfde
@@ -173,9 +174,11 @@ class Plan():
         malus_points = counter - len(keep_track_of_courses)
 
         if malus_points > MAX_MALUSPOINTS:
-            # DIT MOET ECHT!! ANDERS. Nu laden we de hele tijd opnieuw
-            # ALLE courses en rooms in. HeeeeEEUeel onnodig. Iemand ideeën? xxx R
+            # DIT MOET ANDERS. Nu laden we de hele tijd opnieuw
+            # ALLE rooms in. HeeeeEEUeel onnodig. Iemand ideeën? xxx R
             plan.schedule(plan.courses)
+
+        return schedule
 
     def fill_rooms_and_days(self, schedule):
 
