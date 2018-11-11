@@ -140,15 +140,25 @@ class Plan():
             session = Schedule(name, type, room, timeslot, day)
             # Hier moet code tussen om te bepalen op welke plek in schedule
             # de session geplaatst moet worden.
-
-            # pseudo
             # If schedule.name == schedules[i].name and schedule.timeslot = schedules[i].timeslot (in range 0,7):
             #      skip this place, go to next timeslot.
 
-            #  if schedule.name in schedules.name:
-            #    select all the schedule uit schedules and put them in similar = []
+            #  pseudo
+            #  if session.name in schedule.name:
+            #    select all the sessions from schedule and put them in similar = []
             #    select the day of similar[-1] and insert schedule.name one day after the
             #    day of similar[-1]
+
+            # psuedo als code maar nog even weg gecomment omdat we eerst de dagen
+            # in ints moeten zetten
+            # if session.name in schedule.name:
+            #     similar = []
+            #     for j in range(SLOTS):
+            #         if session.name == schedule[j].name:
+            #             similar.append(schedule[j])
+
+                # # dit kan nu nog niet want we hebben de days als dagen en niet als getallen!!!
+                # day = similar[-1].day + 1
 
 
 
