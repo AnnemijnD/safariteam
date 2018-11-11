@@ -19,7 +19,10 @@ class Plan():
     Main scripts to make a schedule.
     """
 
-    def load_courses():
+    def __init__(self):
+        self.courses = []
+
+    def load_courses(self):
         """
         Loads all the courses from a csv file.
         """
@@ -52,7 +55,7 @@ class Plan():
 
             return courses_list
 
-    def load_rooms():
+    def load_rooms(self):
         """
         loads all the rooms from a csv file.
         """
@@ -69,7 +72,7 @@ class Plan():
 
         return roomnumbers
 
-    def schedule(courses):
+    def schedule(self, courses):
         """
         Initialize schedule using Schedule().
         """
@@ -107,17 +110,17 @@ class Plan():
         # Heb een random rooster gemaakt, geen idee of we dit gaan gebruiken...
         # Aangezien er bij random roosters echt 10^130 ofzo roosters zijn...
         # Steeds random rooster genereren en dan constraints evalueren (met aparte functie?)
-        Plan.random_schedule(schedule, sessions)
-        schedule = Plan.fill_rooms_and_days(schedule)
-        Plan.calc_malus(schedule, sessions)
+        plan.random_schedule(schedule, sessions)
+        schedule = plan.fill_rooms_and_days(schedule)
+        plan.calc_malus(schedule, sessions)
 
         # Write the CSV file to data-folder
         with open('../data/schedule.csv', 'w', newline='') as output_file:
-            Plan.save_csv(output_file, schedule)
+            plan.save_csv(output_file, schedule)
 
         return schedule
 
-    def random_schedule(schedule, sessions):
+    def random_schedule(self, schedule, sessions):
         """
         Generates a random schedule. Assigns every session to a random timeslot.
 
@@ -135,9 +138,9 @@ class Plan():
             random_numbers.append(rand)
 
         # Keep track of how many schedules were made
-        Plan.schedule_counter += 1
+        plan.schedule_counter += 1
 
-    def calc_malus(schedule, sessions):
+    def calc_malus(self, schedule, sessions):
         """
         Calcalates malus point (only for mutual courses).
         If number of maluspoints is higher that a given maximum, make a new schedule.
@@ -172,10 +175,9 @@ class Plan():
         if malus_points > MAX_MALUSPOINTS:
             # DIT MOET ECHT!! ANDERS. Nu laden we de hele tijd opnieuw
             # ALLE courses en rooms in. HeeeeEEUeel onnodig. Iemand ideeën? xxx R
-            courses = Plan.load_courses()
-            Plan.schedule(courses)
+            plan.schedule(plan.courses)
 
-    def fill_rooms_and_days(schedule):
+    def fill_rooms_and_days(self, schedule):
 
         #  -------------- DIT IS VOOR HOE HET ERUIT GAAT ZIEN ---------------------------
         # Quinten vindt dit vast ook niet leuk :(, moeten we even inladen eigenlijk?
@@ -211,14 +213,14 @@ class Plan():
         # Fill the rooms, (moet eigenlijk een aparte functie worden)
         # iterate over 20 * list of rooms
         # DIT MOET ANDERS, nu worden steeds alle rooms opnieuw ingeladen
-        rooms = DAYS * TIME_SLOTS * Plan.load_rooms()
+        rooms = DAYS * TIME_SLOTS * plan.load_rooms()
         # In range of (0, len(sessions))
         for i in range(0, SLOTS):
             schedule[i].room = rooms[i]
 
         return schedule
 
-    def get_day(day):
+    def get_day(self, day):
         """
         Returns a schedule of a specific day.
         """
@@ -236,7 +238,7 @@ class Plan():
             i = 3
         else:
             i = 4
-        return Plan.schedule()[(TIME_SLOTS * ROOMS * i):(TIME_SLOTS * ROOMS * (i + 1))]
+        return plan.schedule()[(TIME_SLOTS * ROOMS * i):(TIME_SLOTS * ROOMS * (i + 1))]
 
         # # Voor maandag zijn er maximaal 28 sessions (timeslots * zalen)
         # monday = Plan.schedule()[0:(SLOTS * ROOMS)]
@@ -245,7 +247,7 @@ class Plan():
         # for object in monday:
         #     print(object)
 
-    def get_slot(slot, day):
+    def get_slot(self, slot, day):
         """
         Returns the schedule of a specific slot on a specific day.
         """
@@ -260,9 +262,9 @@ class Plan():
             i = 2
         else:
             i = 3
-        return Plan.get_day(day)[(ROOMS * i):(ROOMS * (i + 1))]
+        return plan.get_day(day)[(ROOMS * i):(ROOMS * (i + 1))]
 
-    def load_individual():
+    def load_individual(self):
         """
         Loads individual student courses.
         """
@@ -274,7 +276,7 @@ class Plan():
             for row in wishes:
                 print(row)
 
-    def save_csv(outfile, schedules):
+    def save_csv(self, outfile, schedules):
         """
         Print into csv-file to visualize schedule.
         """
@@ -290,15 +292,16 @@ class Plan():
 
 if __name__ == "__main__":
 
-    Plan.schedule_counter = 0
     then = time.time()
 
     # Load all the courses and sessions
-    courses = Plan.load_courses()
-    Plan.schedule(courses)
-    Plan.load_rooms()
+    plan = Plan()
+    plan.schedule_counter = 0
+    plan.courses = plan.load_courses()
+    plan.schedule(plan.courses)
+    plan.load_rooms()
 
     now = time.time()
 
     print("It took:", now - then, "seconds")
-    print("Script made", Plan.schedule_counter, "schedules until the right was found.")
+    print("Script made", plan.schedule_counter, "schedules until the right was found.")
