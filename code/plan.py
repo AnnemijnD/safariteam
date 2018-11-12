@@ -164,12 +164,10 @@ class Plan():
 
         counter = 0
         keep_track_of_courses = []
-        keep_track_of_sessions = []
         for row in schedule:
             # Controleer niet op lege sessions, dus sla deze over
             if row.session is not '-':
                 keep_track_of_courses.append([row.session, row.timeslot, row.day])
-                keep_track_of_sessions.append([row.session, row.type])
         for row in schedule:
             if row.session is not '-':
                 current_row = [row.session, row.timeslot, row.day]
@@ -184,22 +182,28 @@ class Plan():
 
         # _________ NOG NIET AF ___________
         # Test voor hoorcolleges voor werkcolleges en practica
+        counter= 0
         lectures = []
-        for row in schedule:
-            if row.session is not '-' or row.type is not '-':
-                if row.type == 'lecture':
-                    current_row = [row.session, row.type]
-                    lectures.append(current_row)
+        # for row in schedule:
+        #     if row.session is not '-' or row.type is not '-':
+        #         # Ga elke tij af en append de lijst met lectures
+        #         if row.type == 'lecture':
+        #             current_row = [row.session, row.type]
+        #             lectures.append(current_row)
         # Dus als type een werkcollege of practicum is,
         # check of er van dit vak al een hoorcollege is.
         for row in schedule:
             if row.session is not '-' or row.type is not '-':
                 current_row = [row.session, row.type]
-                for item in lectures:
-                    if current_row in item:
-                        print("yes")
-                        counter += 1
-
+                if row.type == 'lecture':
+                    lectures.append(current_row)
+                # print(lectures)
+                # for item in lectures:
+                #     # print(item)
+                #     # print(current_row)
+                #     # print(len(set(item) & set(current_row)) != 2)
+                #     if len(set(item) & set(current_row)) != 2:
+                #         counter += 1
 
         # Het aantal sessions (dus len(keep_track_of_courses)) moet er af gehaald
         # worden, aangezien er sowieso 72 dingen zijn die met elkaar overlappen.
@@ -326,7 +330,8 @@ class Plan():
 
         with open('../data/schedule.csv', 'r', newline='') as output_file:
             df = pd.read_csv(output_file)
-            print(df)
+            # Als je het rooster wilt zien:
+            # print(df)
 
 
 if __name__ == "__main__":
