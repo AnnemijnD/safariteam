@@ -186,6 +186,7 @@ class Plan():
                 current_row = [row.session, row.type]
                 for item in lectures:
                     if current_row in item:
+                        print("yes")
                         counter += 1
 
 
