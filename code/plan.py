@@ -81,10 +81,13 @@ class Plan():
         sessions = []
         session_list = []
 
+        #  VRAAG: waarom doen we dit met sessions_total en niet gewoon per sessie?
+        #  Is dat omdat we met sessions_total makkelijker een overlap lijst kunnen maken?
         for course in courses:
             session_list = session_list + course.sessions_total
 
         # Put every session into schedule
+        # VRAAG: Waarom gebruiken we try? Omdat er meer slots zijn dan sessions?
         for i in range(SLOTS):
             try:
                 name = session_list[i].name
@@ -102,6 +105,35 @@ class Plan():
             day = 'None'
 
             session = Schedule(name, type, room, timeslot, day)
+            # Hier moet code tussen om te bepalen op welke plek in schedule
+            # de session geplaatst moet worden.
+            # If schedule.name == schedules[i].name and schedule.timeslot = schedules[i].timeslot (in range 0,7):
+            #      skip this place, go to next timeslot.
+
+            #  pseudo
+            #  if session.name in schedule.name:
+            #    select all the sessions from schedule and put them in similar = []
+            #    select the day of similar[-1] and insert schedule.name one day after the
+            #    day of similar[-1]
+            #  elif check voor overlap met vakken waar geen overlap mag zijn (eigen vak is al gecheckt)
+            #   .......
+            #  else
+            #   deel in op de eerst volgende plek
+
+# PROBLEEM: als we een sessie in het rooster zetten, weet de sessie niet op welke
+# dag die is. Dus dat moeten we er ook aan mee gaan geven. MAar ik ben moe dus ga lekker stoppenself.
+# we hebben het er morgen over KUSJES
+            # for k in range(len(schedule)):
+            #     if schedule[k] is None:
+            #         break
+            #     elif session.session in schedule[k].session:
+            #         similar = []
+            #         for j in range(k + 1):
+            #             print("test")
+            #             if session.session == schedule[j].session:
+            #                 similar.append(schedule[j])
+            #         print(similar[-1].day)
+            #         day = similar[-1].day + 1
 
             # Put session into schedule
             sessions.append(session)
@@ -195,6 +227,7 @@ class Plan():
         if malus_points > MAX_MALUSPOINTS:
             # DIT MOET ANDERS. Nu laden we de hele tijd opnieuw
             # ALLE rooms in. HeeeeEEUeel onnodig. Iemand ideeën? xxx R
+            # VRAAG: welk rooster wordt er dan gereturned?
             plan.schedule(plan.courses)
 
         return schedule
@@ -202,8 +235,11 @@ class Plan():
     def fill_rooms_and_days(self, schedule):
 
         #  -------------- DIT IS VOOR HOE HET ERUIT GAAT ZIEN ---------------------------
+        #  We gebruiken dit ook om dag en tijdslot op te roepen dus voor uiterlijk moeten we even
+        #  iets anders doen (of minder leesbaar laten) want zo kunnen we er veel makkelijker dingen
+        #  mee doen.
         # Quinten vindt dit vast ook niet leuk :(, moeten we even inladen eigenlijk?
-        timeslots = DAYS * ROOMS * ['9:00 - 11:00', '11:00 - 13:00', '13:00 - 15:00', '15:00 - 17:00']
+        timeslots = DAYS * ROOMS * [0, 1, 2, 3]
 
         # For-loop om elke timeslot 7 keer in het rooster te printen (7 zalen)
         counter = 0
@@ -222,15 +258,15 @@ class Plan():
         #  ik niet weet hoe het bestand er precies uitziet maar moet uiteindelijk tot SLOTS.
         for j in range(SLOTS):
             if j < TIME_SLOTS * DAYS:
-                schedule[j].day = 'Monday'
+                schedule[j].day = 0
             elif j < TIME_SLOTS * DAYS * 2:
-                schedule[j].day = 'Tuesday'
+                schedule[j].day = 1
             elif j < TIME_SLOTS * DAYS * 3:
-                schedule[j].day = 'Wednesday'
+                schedule[j].day = 2
             elif j < TIME_SLOTS * DAYS * 4:
-                schedule[j].day = 'Thursday'
+                schedule[j].day = 3
             else:
-                schedule[j].day = 'Friday'
+                schedule[j].day = 4
 
         # Fill the rooms, (moet eigenlijk een aparte functie worden)
         # iterate over 20 * list of rooms

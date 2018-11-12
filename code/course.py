@@ -43,5 +43,6 @@ class Course(object):
 
         return sessions
 
-    def __str__(self):
-        return f"Course number {self.course_id} is {self.name}"
+        #  DIT IS EEN TEST OM TE KIJKEN OF JE ZO DINGEN VAN EEN COURSE KAN AANROEPEN
+    # def __str__(self):
+    #     return f"Course number {self.course_id} is {self.name}"
