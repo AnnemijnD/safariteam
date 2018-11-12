@@ -179,10 +179,12 @@ class Plan():
                         # elkaar overlappen, dus vakken die in hetzelfde
                         # tijdslot en dag voorkomen.
                         counter += 1
+        # Het aantal sessions (dus len(keep_track_of_courses)) moet er af gehaald
+        # worden, aangezien er sowieso 72 dingen zijn die met elkaar overlappen.
+        malus_points = counter - len(keep_track_of_courses)
 
         # _________ NOG NIET AF ___________
         # Test voor hoorcolleges voor werkcolleges en practica
-        counter= 0
         lectures = []
         # for row in schedule:
         #     if row.session is not '-' or row.type is not '-':
@@ -192,24 +194,20 @@ class Plan():
         #             lectures.append(current_row)
         # Dus als type een werkcollege of practicum is,
         # check of er van dit vak al een hoorcollege is.
+        counter = 0
         for row in schedule:
             if row.session is not '-' or row.type is not '-':
                 current_row = [row.session, row.type]
                 if row.type == 'lecture':
-                    lectures.append(current_row)
-                # print(lectures)
-                # for item in lectures:
-                #     # print(item)
-                #     # print(current_row)
-                #     # print(len(set(item) & set(current_row)) != 2)
-                #     if len(set(item) & set(current_row)) != 2:
-                #         counter += 1
+                    lectures.append(row.session)
+                # Geef maluspunt als er van dit vak nog geen hoorcollege is gegeven
+                if row.session not in lectures:
+                    counter += 1
+        # Haal er voor nu een aantal maluspunten vanaf want anders kost
+        # vet veel tijd om een rooser te maken
+        lecture_points = counter - 13
 
-        # Het aantal sessions (dus len(keep_track_of_courses)) moet er af gehaald
-        # worden, aangezien er sowieso 72 dingen zijn die met elkaar overlappen.
-        malus_points = counter - len(keep_track_of_courses)
-
-        if malus_points > MAX_MALUSPOINTS:
+        if malus_points > MAX_MALUSPOINTS or lecture_points > MAX_MALUSPOINTS:
             # DIT MOET ANDERS. Nu laden we de hele tijd opnieuw
             # ALLE rooms in. HeeeeEEUeel onnodig. Iemand ideeën? xxx R
             plan.schedule(plan.courses)
