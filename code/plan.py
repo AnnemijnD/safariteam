@@ -102,7 +102,20 @@ class Plan():
             day = 'None'
 
             session = Schedule(name, type, room, timeslot, day)
-
+    # PROBLEEM: als we een sessie in het rooster zetten, weet de sessie niet op welke
+# dag die is. Dus dat moeten we er ook aan mee gaan geven. MAar ik ben moe dus ga lekker stoppenself.
+# we hebben het er morgen over KUSJES
+            # for k in range(len(schedule)):
+            #     if schedule[k] is None:
+            #         break
+            #     elif session.session in schedule[k].session:
+            #         similar = []
+            #         for j in range(k + 1):
+            #             print("test")
+            #             if session.session == schedule[j].session:
+            #                 similar.append(schedule[j])
+            #         print(similar[-1].day)
+            #         day = similar[-1].day + 1
             # Put session into schedule
             sessions.append(session)
             schedule[i] = session
