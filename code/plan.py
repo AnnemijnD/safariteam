@@ -6,6 +6,7 @@ from schedule import Schedule
 import csv
 import random
 import time
+import pandas as pd
 
 SLOTS = 140
 TIME_SLOTS = 4
@@ -127,9 +128,6 @@ class Plan():
         schedule = plan.fill_rooms_and_days(schedule)
         schedule = plan.calc_malus(schedule)
 
-        # Write the CSV file to data-folder
-        with open('../data/schedule.csv', 'w', newline='') as output_file:
-            plan.save_csv(output_file, schedule)
 
         return schedule
 
@@ -317,14 +315,18 @@ class Plan():
         """
         Print into csv-file to visualize schedule.
         """
-        writer = csv.writer(outfile)
-        writer.writerow(['Course', 'Type', 'Room', 'Timeslot', 'Day'])
-        # Check if a row in schedules is filled with a session
-        for row in schedules:
-            if row is None:
-                writer.writerow(5 * ['TODO'])
-            else:
+
+        # Write the CSV file to data-folder
+        with open('../data/schedule.csv', 'w', newline='') as output_file:
+            writer = csv.writer(output_file)
+            writer.writerow(['Course', 'Type', 'Room', 'Timeslot', 'Day'])
+            # Check if a row in schedules is filled with a session
+            for row in schedules:
                 writer.writerow([row.session, row.type, row.room, row.timeslot, row.day])
+
+        with open('../data/schedule.csv', 'r', newline='') as output_file:
+            df = pd.read_csv(output_file)
+            print(df)
 
 
 if __name__ == "__main__":
@@ -335,8 +337,10 @@ if __name__ == "__main__":
     plan = Plan()
     plan.schedule_counter = 0
     plan.courses = plan.load_courses()
-    plan.schedule(plan.courses)
+    schedule = plan.schedule(plan.courses)
     plan.load_rooms()
+
+    plan.save_csv('schedule.csv', schedule)
 
     now = time.time()
 
