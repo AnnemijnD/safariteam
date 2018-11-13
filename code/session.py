@@ -14,4 +14,4 @@ class Session(object):
         self.day = day
 
     def __str__(self):
-        return f'course: {self.name}, type: {self.type}, in room {self.room}'
+        return f'course: {self.session}, type: {self.type}, in room {self.room}'

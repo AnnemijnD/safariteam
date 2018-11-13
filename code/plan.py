@@ -83,6 +83,8 @@ class Plan():
         schedule = SLOTS * [None]
         sessions = []
         session_list = []
+        lecture_sessions = []
+        other_sessions = []
 
         for course in courses:
             session_list = session_list + course.sessions_total
@@ -121,7 +123,18 @@ class Plan():
             #         day = similar[-1].day + 1
             # Put session into schedule
             sessions.append(session)
+            # Keep track of lectures in a list of session objects
+            if session.type == 'lecture':
+                lecture_sessions.append(session)
+            else:
+                other_sessions.append(session)
             schedule[i] = session
+
+        for i in range(len(lecture_sessions)):
+            schedule[i] = lecture_sessions[i]
+        for i in range(len(lecture_sessions), len(other_sessions)):
+            schedule[i] = other_sessions[i]
+
 
         # Steeds random rooster genereren en dan constraints evalueren
         plan.random_schedule(schedule, sessions)
@@ -144,6 +157,7 @@ class Plan():
             rand = random.randint(0, SLOTS - 1)
             while rand in random_numbers:
                 rand = random.randint(0, SLOTS - 1)
+            # Hier wordt de session in dat timeslot gezet met een random nummer
             schedule[rand] = sessions[i]
             random_numbers.append(rand)
 
@@ -317,6 +331,7 @@ class Plan():
             # Check if a row in schedules is filled with a session
             # Sanne ik heb je nodig om dit te fixen want ik ben heel slecht
             # met magic numbers DANKJEWEL <33333333
+            # Als ik overal 'ROOMS * TIME_SLOTS' neerzet dan worden de regels zo lang weetjewel
             for i in range(0,ROOMS * TIME_SLOTS):
                 writer.writerow([schedule[i].session, schedule[i].type, schedule[i].room, schedule[i].timeslot, schedule[i].day, '-',
                                  schedule[i+28].session, schedule[i+28].type, schedule[i+28].room, schedule[i+28].timeslot, schedule[i+28].day, '-',
@@ -328,6 +343,8 @@ class Plan():
             df = pd.read_csv(output_file)
             # Als je het rooster wilt zien:
             #print(df)
+
+        # df_html = df.style.set_properties(**{'font-size': '10pt', 'font-family': 'Calibri','border-collapse': 'collapse','border': '1px blue'}).render()
 
         df_html = df.to_html('../data/schedule.html')
         HTML(df_html)
