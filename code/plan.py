@@ -2,18 +2,20 @@
 # Namen: Annemijn, Sanne & Rebecca
 
 from course import Course
+from session import Session
 from schedule import Schedule
 import csv
 import random
 import time
 import pandas as pd
+from IPython.display import HTML
+import re
 
 SLOTS = 140
 TIME_SLOTS = 4
 DAYS = 5
 ROOMS = 7
 MAX_MALUSPOINTS = 0
-
 
 class Plan():
     """
@@ -89,11 +91,11 @@ class Plan():
         for i in range(SLOTS):
             try:
                 name = session_list[i].name
-            except:  # Blijkbaar mag een except niet 'leeg' zijn, dus nog even aanpassen
+            except IndexError:
                 name = '-'
             try:
                 type = session_list[i].type
-            except:
+            except IndexError:
                 type = '-'
 
             # Room, timeslot en day zijn nog niet bepaald, daar moeten dus
@@ -102,10 +104,10 @@ class Plan():
             timeslot = 'None'
             day = 'None'
 
-            session = Schedule(name, type, room, timeslot, day)
+            session = Session(name, type, room, timeslot, day)
     # PROBLEEM: als we een sessie in het rooster zetten, weet de sessie niet op welke
-# dag die is. Dus dat moeten we er ook aan mee gaan geven. MAar ik ben moe dus ga lekker stoppenself.
-# we hebben het er morgen over KUSJES
+    # dag die is. Dus dat moeten we er ook aan mee gaan geven. MAar ik ben moe dus ga lekker stoppenself.
+    # we hebben het er morgen over KUSJES
             # for k in range(len(schedule)):
             #     if schedule[k] is None:
             #         break
@@ -121,13 +123,10 @@ class Plan():
             sessions.append(session)
             schedule[i] = session
 
-        # Heb een random rooster gemaakt, geen idee of we dit gaan gebruiken...
-        # Aangezien er bij random roosters echt 10^130 ofzo roosters zijn...
-        # Steeds random rooster genereren en dan constraints evalueren (met aparte functie?)
+        # Steeds random rooster genereren en dan constraints evalueren
         plan.random_schedule(schedule, sessions)
         schedule = plan.fill_rooms_and_days(schedule)
         schedule = plan.calc_malus(schedule)
-
 
         return schedule
 
@@ -185,27 +184,20 @@ class Plan():
 
         # _________ NOG NIET AF ___________
         # Test voor hoorcolleges voor werkcolleges en practica
-        lectures = []
+        # lectures = []
+        # counter = 0
         # for row in schedule:
         #     if row.session is not '-' or row.type is not '-':
-        #         # Ga elke tij af en append de lijst met lectures
+        #         current_row = [row.session, row.type]
         #         if row.type == 'lecture':
-        #             current_row = [row.session, row.type]
-        #             lectures.append(current_row)
-        # Dus als type een werkcollege of practicum is,
-        # check of er van dit vak al een hoorcollege is.
-        counter = 0
-        for row in schedule:
-            if row.session is not '-' or row.type is not '-':
-                current_row = [row.session, row.type]
-                if row.type == 'lecture':
-                    lectures.append(row.session)
-                # Geef maluspunt als er van dit vak nog geen hoorcollege is gegeven
-                if row.session not in lectures:
-                    counter += 1
-        # Haal er voor nu een aantal maluspunten vanaf want anders kost
-        # vet veel tijd om een rooser te maken
-        lecture_points = counter - 13
+        #             lectures.append(row.session)
+        #         # Geef maluspunt als er van dit vak nog geen hoorcollege is gegeven
+        #         if row.session not in lectures:
+        #             counter += 1
+        # # Haal er voor nu een aantal maluspunten vanaf want anders kost
+        # # vet veel tijd om een rooser te maken
+        # lecture_points = counter - 10
+        lecture_points = 0
 
         if malus_points > MAX_MALUSPOINTS or lecture_points > MAX_MALUSPOINTS:
             # DIT MOET ANDERS. Nu laden we de hele tijd opnieuw
@@ -236,13 +228,13 @@ class Plan():
         # Wat hier boven staat iets minder gehardcode, nu tot session_count omdat
         #  ik niet weet hoe het bestand er precies uitziet maar moet uiteindelijk tot SLOTS.
         for j in range(SLOTS):
-            if j < TIME_SLOTS * DAYS:
+            if j < ROOMS * TIME_SLOTS:
                 schedule[j].day = 'Monday'
-            elif j < TIME_SLOTS * DAYS * 2:
+            elif j < ROOMS * TIME_SLOTS * 2:
                 schedule[j].day = 'Tuesday'
-            elif j < TIME_SLOTS * DAYS * 3:
+            elif j < ROOMS * TIME_SLOTS * 3:
                 schedule[j].day = 'Wednesday'
-            elif j < TIME_SLOTS * DAYS * 4:
+            elif j < ROOMS * TIME_SLOTS * 4:
                 schedule[j].day = 'Thursday'
             else:
                 schedule[j].day = 'Friday'
@@ -321,15 +313,24 @@ class Plan():
         # Write the CSV file to data-folder
         with open('../data/schedule.csv', 'w', newline='') as output_file:
             writer = csv.writer(output_file)
-            writer.writerow(['Course', 'Type', 'Room', 'Timeslot', 'Day'])
+            writer.writerow(5 * ['Course', 'Type', 'Room', 'Timeslot', 'Day', '-'])
             # Check if a row in schedules is filled with a session
-            for row in schedules:
-                writer.writerow([row.session, row.type, row.room, row.timeslot, row.day])
+            # Sanne ik heb je nodig om dit te fixen want ik ben heel slecht
+            # met magic numbers DANKJEWEL <33333333
+            for i in range(0,ROOMS * TIME_SLOTS):
+                writer.writerow([schedule[i].session, schedule[i].type, schedule[i].room, schedule[i].timeslot, schedule[i].day, '-',
+                                 schedule[i+28].session, schedule[i+28].type, schedule[i+28].room, schedule[i+28].timeslot, schedule[i+28].day, '-',
+                                 schedule[i+56].session, schedule[i+56].type, schedule[i+56].room, schedule[i+56].timeslot, schedule[i+56].day, '-',
+                                 schedule[i+84].session, schedule[i+84].type, schedule[i+84].room, schedule[i+84].timeslot, schedule[i+84].day, '-',
+                                 schedule[i+112].session, schedule[i+112].type, schedule[i+112].room, schedule[i+112].timeslot, schedule[i+112].day, '-'])
 
         with open('../data/schedule.csv', 'r', newline='') as output_file:
             df = pd.read_csv(output_file)
             # Als je het rooster wilt zien:
-            # print(df)
+            #print(df)
+
+        df_html = df.to_html('../data/schedule.html')
+        HTML(df_html)
 
 
 if __name__ == "__main__":

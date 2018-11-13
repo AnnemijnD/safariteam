@@ -1,11 +1,17 @@
-class Session():
+
+SLOTS = 140
+
+class Session(object):
     """
-    Representation of a class (lecture, tutorial or practicum).
+    Representation of a schedule.
     """
 
-    def __init__(self, name, class_id, type, mutual_courses):
-        self.name = name
-        self.class_id = class_id
+    def __init__(self, session, type, room, timeslot, day):
+        self.session = session
         self.type = type
-        self.mutual_courses = mutual_courses
-        self.group = []
+        self.room = room
+        self.timeslot = timeslot
+        self.day = day
+
+    def __str__(self):
+        return f'course: {self.name}, type: {self.type}, in room {self.room}'

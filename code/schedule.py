@@ -1,14 +1,11 @@
-class Schedule(object):
+class Schedule():
     """
-    Representation of a schedule.
+    Representation of a class (lecture, tutorial or practicum).
     """
 
-    def __init__(self, session, type, room, timeslot, day):
-        self.session = session
+    def __init__(self, name, class_id, type, mutual_courses):
+        self.name = name
+        self.class_id = class_id
         self.type = type
-        self.room = room
-        self.timeslot = timeslot
-        self.day = day
-
-    def __str__(self):
-        return f'course: {self.session}, type: {self.type}, in room {self.room}'
+        self.mutual_courses = mutual_courses
+        self.group = []

@@ -1,4 +1,5 @@
 from session import Session
+from schedule import Schedule
 
 
 class Course(object):
@@ -38,7 +39,7 @@ class Course(object):
 
         # Make session for each lecture, tutorial and practical.
         for i in range(int_session):
-            session = Session(self.name, self.course_id, type, mutual_courses)
+            session = Schedule(self.name, self.course_id, type, mutual_courses)
             sessions.append(session)
 
         return sessions
