@@ -130,11 +130,42 @@ class Plan():
                 other_sessions.append(session)
             schedule[i] = session
 
-        for i in range(len(lecture_sessions)):
-            schedule[i] = lecture_sessions[i]
-        for i in range(len(lecture_sessions), len(other_sessions)):
-            schedule[i] = other_sessions[i]
 
+
+        # Lijst in een lijst in een lijst
+        schedule2 = DAYS * [ROOMS * [TIME_SLOTS * ["None"]]]
+        sessions2 = []
+        counter = 0
+        # Maak even een super super suuuuper leeg rooster
+        for i in range(SLOTS):
+            name = '-'
+            type = '-'
+            room = 'None'
+            timeslot = 'None'
+            day = 'None'
+            session = Session(name, type, room, timeslot, day)
+            sessions2.append(session)
+
+        # Lijst in een lijst in een lijst
+        for b in range(DAYS):
+            for c in range(ROOMS):
+                for d in range(TIME_SLOTS):
+                    schedule2[b][c][d] = sessions2[counter]
+                    # print(schedule2[b][c][d])
+                    counter += 1
+
+        # counter = 0
+        # for b in range(DAYS):
+        #     for c in range(ROOMS):
+        #         for d in range(TIME_SLOTS):
+        #             print(lecture_sessions[counter])
+        #             schedule2[b][c][d] = lecture_sessions[counter]
+        #             counter += 1
+
+
+        # Voor alles op dag donderdag op tijslot 4:
+        # for row in schedule2[0][3][3]:
+        #     print(row)
 
         # Steeds random rooster genereren en dan constraints evalueren
         plan.random_schedule(schedule, sessions)
@@ -324,6 +355,17 @@ class Plan():
         Print into csv-file to visualize schedule.
         """
 
+        # # Write the CSV file to data-folder
+        # with open('../data/schedule.csv', 'w', newline='') as output_file:
+        #     writer = csv.writer(output_file)
+        #     writer.writerow(['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'])
+        #     # Check if a row in schedules is filled with a session
+        #     # Sanne ik heb je nodig om dit te fixen want ik ben heel slecht
+        #     # met magic numbers DANKJEWEL <33333333
+        #     # Als ik overal 'ROOMS * TIME_SLOTS' neerzet dan worden de regels zo lang weetjewel
+        #     for i in range(0, ROOMS * TIME_SLOTS):
+        #         writer.writerow(schedule2[0][0])
+        #
         # Write the CSV file to data-folder
         with open('../data/schedule.csv', 'w', newline='') as output_file:
             writer = csv.writer(output_file)
@@ -332,17 +374,18 @@ class Plan():
             # Sanne ik heb je nodig om dit te fixen want ik ben heel slecht
             # met magic numbers DANKJEWEL <33333333
             # Als ik overal 'ROOMS * TIME_SLOTS' neerzet dan worden de regels zo lang weetjewel
-            for i in range(0,ROOMS * TIME_SLOTS):
+            for i in range(0, ROOMS * TIME_SLOTS):
                 writer.writerow([schedule[i].session, schedule[i].type, schedule[i].room, schedule[i].timeslot, schedule[i].day, '-',
                                  schedule[i+28].session, schedule[i+28].type, schedule[i+28].room, schedule[i+28].timeslot, schedule[i+28].day, '-',
                                  schedule[i+56].session, schedule[i+56].type, schedule[i+56].room, schedule[i+56].timeslot, schedule[i+56].day, '-',
                                  schedule[i+84].session, schedule[i+84].type, schedule[i+84].room, schedule[i+84].timeslot, schedule[i+84].day, '-',
                                  schedule[i+112].session, schedule[i+112].type, schedule[i+112].room, schedule[i+112].timeslot, schedule[i+112].day, '-'])
 
+
         with open('../data/schedule.csv', 'r', newline='') as output_file:
             df = pd.read_csv(output_file)
             # Als je het rooster wilt zien:
-            #print(df)
+            # print(df)
 
         # df_html = df.style.set_properties(**{'font-size': '10pt', 'font-family': 'Calibri','border-collapse': 'collapse','border': '1px blue'}).render()
 
