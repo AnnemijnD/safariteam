@@ -23,7 +23,7 @@ class Plan():
     """
 
     def __init__(self):
-        self.courses = []
+        pass
 
     def load_courses(self):
         """
@@ -123,44 +123,31 @@ class Plan():
             #         day = similar[-1].day + 1
             # Put session into schedule
             sessions.append(session)
-            # Keep track of lectures in a list of session objects
-            if session.type == 'lecture':
-                lecture_sessions.append(session)
-            else:
-                other_sessions.append(session)
-            schedule[i] = session
-
-
 
         # Lijst in een lijst in een lijst
-        schedule2 = DAYS * [ROOMS * [TIME_SLOTS * ["None"]]]
-        sessions2 = []
-        counter = 0
-        # Maak even een super super suuuuper leeg rooster
-        for i in range(SLOTS):
-            name = '-'
-            type = '-'
-            room = 'None'
-            timeslot = 'None'
-            day = 'None'
-            session = Session(name, type, room, timeslot, day)
-            sessions2.append(session)
+        schedule2 = DAYS * [ROOMS * [TIME_SLOTS * ['None']]]
+        df = pd.DataFrame.from_dict(schedule2)
 
-        # Lijst in een lijst in een lijst
+        # for a in schedule2:
+        #     for b in a:
+        #         for c in b:
+        #             c = plan.get_session(sessions)
+
         for b in range(DAYS):
             for c in range(ROOMS):
                 for d in range(TIME_SLOTS):
-                    schedule2[b][c][d] = sessions2[counter]
-                    # print(schedule2[b][c][d])
-                    counter += 1
+                    print(df[b][c][d])
+                    df[b][c][d] = plan.get_session(sessions)
 
-        # counter = 0
-        # for b in range(DAYS):
-        #     for c in range(ROOMS):
-        #         for d in range(TIME_SLOTS):
-        #             print(lecture_sessions[counter])
-        #             schedule2[b][c][d] = lecture_sessions[counter]
-        #             counter += 1
+        for index, row in df.iterrows():
+            # Bijvoorbeeld: Print dag 3
+            print(row)
+
+
+        # for a in schedule2:
+        #     for b in a:
+        #         for c in b:
+        #             print(c)
 
 
         # Voor alles op dag donderdag op tijslot 4:
@@ -168,11 +155,11 @@ class Plan():
         #     print(row)
 
         # Steeds random rooster genereren en dan constraints evalueren
-        plan.random_schedule(schedule, sessions)
-        schedule = plan.fill_rooms_and_days(schedule)
-        schedule = plan.calc_malus(schedule)
+        # plan.random_schedule(schedule, sessions)
+        # schedule = plan.fill_rooms_and_days(schedule)
+        # schedule = plan.calc_malus(schedule)
 
-        return schedule
+        return schedule2
 
     def random_schedule(self, schedule, sessions):
         """
@@ -194,6 +181,26 @@ class Plan():
 
         # Keep track of how many schedules were made
         plan.schedule_counter += 1
+
+    def get_session(self, sessions):
+        """
+        Generates a random schedule. Assigns every session to a random timeslot.
+
+        # Hou bij welke random nummers al geweest zijn. De while loop
+        # Zorgt ervoor dat er een random nummer wordt gemaakt die nog
+        # niet is geweest.
+        """
+
+        random_numbers = []
+        for i in range(SLOTS):
+            rand = random.randint(0, SLOTS - 1)
+            while rand in random_numbers:
+                rand = random.randint(0, SLOTS - 1)
+
+        # Keep track of how many schedules were made
+        plan.schedule_counter += 1
+
+        return sessions[rand]
 
     def calc_malus(self, schedule):
         """
@@ -355,17 +362,7 @@ class Plan():
         Print into csv-file to visualize schedule.
         """
 
-        # # Write the CSV file to data-folder
-        # with open('../data/schedule.csv', 'w', newline='') as output_file:
-        #     writer = csv.writer(output_file)
-        #     writer.writerow(['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'])
-        #     # Check if a row in schedules is filled with a session
-        #     # Sanne ik heb je nodig om dit te fixen want ik ben heel slecht
-        #     # met magic numbers DANKJEWEL <33333333
-        #     # Als ik overal 'ROOMS * TIME_SLOTS' neerzet dan worden de regels zo lang weetjewel
-        #     for i in range(0, ROOMS * TIME_SLOTS):
-        #         writer.writerow(schedule2[0][0])
-        #
+
         # Write the CSV file to data-folder
         with open('../data/schedule.csv', 'w', newline='') as output_file:
             writer = csv.writer(output_file)
@@ -374,12 +371,10 @@ class Plan():
             # Sanne ik heb je nodig om dit te fixen want ik ben heel slecht
             # met magic numbers DANKJEWEL <33333333
             # Als ik overal 'ROOMS * TIME_SLOTS' neerzet dan worden de regels zo lang weetjewel
-            for i in range(0, ROOMS * TIME_SLOTS):
-                writer.writerow([schedule[i].session, schedule[i].type, schedule[i].room, schedule[i].timeslot, schedule[i].day, '-',
-                                 schedule[i+28].session, schedule[i+28].type, schedule[i+28].room, schedule[i+28].timeslot, schedule[i+28].day, '-',
-                                 schedule[i+56].session, schedule[i+56].type, schedule[i+56].room, schedule[i+56].timeslot, schedule[i+56].day, '-',
-                                 schedule[i+84].session, schedule[i+84].type, schedule[i+84].room, schedule[i+84].timeslot, schedule[i+84].day, '-',
-                                 schedule[i+112].session, schedule[i+112].type, schedule[i+112].room, schedule[i+112].timeslot, schedule[i+112].day, '-'])
+            for a in schedule:
+                for b in a:
+                    for c in b:
+                        writer.writerow(c)
 
 
         with open('../data/schedule.csv', 'r', newline='') as output_file:
