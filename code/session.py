@@ -17,10 +17,16 @@ class Session(object):
         """
         Enables a list of objects to be iterated one element at a time.
         """
-        return iter([self.session, self.type, self.room, self.timeslot])
+        return iter([self.session, self.type, self.room, self.timeslot, self.day])
 
     def __repr__(self):
-        return str(self.session)
+        """
+        Represents an object when it is printed.
+        """
+        return str([self.session, self.day])
+
+    def __getitem__(self, day):
+        return self.day
 
     def __str__(self):
-        return f'course: {self.session}, type: {self.type}, in room {self.room}'
+        return f'{self.session}, type: {self.type}'
