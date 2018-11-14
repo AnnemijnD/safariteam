@@ -30,4 +30,4 @@ class Session(object):
         return self.day
 
     def __str__(self):
-        return f'{self.session}, type: {self.type}'
+        return f'{self.session}, {self.type}'
