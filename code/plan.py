@@ -335,7 +335,14 @@ class Plan():
         """
         Print into csv-file to visualize schedule.
         """
+
+        for b in range(DAYS):
+            for c in range(TIME_SLOTS):
+                for d in range(ROOMS):
+                    print(schedule[b][c][d])
+
         df = pd.DataFrame(schedule)
+        pd.set_option('display.max_colwidth',300)
         df.columns = ['9:00 - 11:00', '11:00 - 13:00', '13:00 - 15:00', '15:00 - 17:00']
         df.index = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"]
         # Transpose rows and columns
