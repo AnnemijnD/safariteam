@@ -9,7 +9,6 @@ import random
 import time
 import pandas as pd
 from IPython.display import HTML
-import re
 
 SLOTS = 140
 TIME_SLOTS = 4
@@ -145,11 +144,11 @@ class Plan():
 
 
         # Lijst in een lijst in een lijst
-        schedule = DAYS * [ROOMS * [TIME_SLOTS * ['None']]]
+        schedule = DAYS * [TIME_SLOTS * [ROOMS * ['None']]]
         # Probleem: omdat je in schedule2 een keer-teken gebruikt, wordt alles vermenigvuldigt..
         # We moeten een kopie maken van schedule2 en daarin dingen veranderen??
         # Tijdelijke oplossing:
-        schedule = [[['None', 'None', 'None', 'None'], ['None', 'None', 'None', 'None'], ['None', 'None', 'None', 'None'], ['None', 'None', 'None', 'None'], ['None', 'None', 'None', 'None'], ['None', 'None', 'None', 'None'], ['None', 'None', 'None', 'None']], [['None', 'None', 'None', 'None'], ['None', 'None', 'None', 'None'], ['None', 'None', 'None', 'None'], ['None', 'None', 'None', 'None'], ['None', 'None', 'None', 'None'], ['None', 'None', 'None', 'None'], ['None', 'None', 'None', 'None']], [['None', 'None', 'None', 'None'], ['None', 'None', 'None', 'None'], ['None', 'None', 'None', 'None'], ['None', 'None', 'None', 'None'], ['None', 'None', 'None', 'None'], ['None', 'None', 'None', 'None'], ['None', 'None', 'None', 'None']], [['None', 'None', 'None', 'None'], ['None', 'None', 'None', 'None'], ['None', 'None', 'None', 'None'], ['None', 'None', 'None', 'None'], ['None', 'None', 'None', 'None'], ['None', 'None', 'None', 'None'], ['None', 'None', 'None', 'None']], [['None', 'None', 'None', 'None'], ['None', 'None', 'None', 'None'], ['None', 'None', 'None', 'None'], ['None', 'None', 'None', 'None'], ['None', 'None', 'None', 'None'], ['None', 'None', 'None', 'None'], ['None', 'None', 'None', 'None']]]
+        schedule = [[['None', 'None', 'None', 'None', 'None', 'None', 'None'], ['None', 'None', 'None', 'None', 'None', 'None', 'None'], ['None', 'None', 'None', 'None', 'None', 'None', 'None'], ['None', 'None', 'None', 'None', 'None', 'None', 'None']], [['None', 'None', 'None', 'None', 'None', 'None', 'None'], ['None', 'None', 'None', 'None', 'None', 'None', 'None'], ['None', 'None', 'None', 'None', 'None', 'None', 'None'], ['None', 'None', 'None', 'None', 'None', 'None', 'None']], [['None', 'None', 'None', 'None', 'None', 'None', 'None'], ['None', 'None', 'None', 'None', 'None', 'None', 'None'], ['None', 'None', 'None', 'None', 'None', 'None', 'None'], ['None', 'None', 'None', 'None', 'None', 'None', 'None']], [['None', 'None', 'None', 'None', 'None', 'None', 'None'], ['None', 'None', 'None', 'None', 'None', 'None', 'None'], ['None', 'None', 'None', 'None', 'None', 'None', 'None'], ['None', 'None', 'None', 'None', 'None', 'None', 'None']], [['None', 'None', 'None', 'None', 'None', 'None', 'None'], ['None', 'None', 'None', 'None', 'None', 'None', 'None'], ['None', 'None', 'None', 'None', 'None', 'None', 'None'], ['None', 'None', 'None', 'None', 'None', 'None', 'None']]]
 
         return schedule, lectures, other_sessions, empty_sessions
 
@@ -165,8 +164,8 @@ class Plan():
         # De lijst met sessies is al gemaakt in schedule() (misschien deze functie een andere naam geven trouwens)
         counter = 0
         for b in range(DAYS):
-            for c in range(ROOMS):
-                for d in range(TIME_SLOTS):
+            for c in range(TIME_SLOTS):
+                for d in range(ROOMS):
                     try:
                         # van lecture_sesssions zijn er maar 39, de overige plekken
                         # schedule moeten ook nog gevuld worden, dus zet er dan een empty
@@ -180,24 +179,28 @@ class Plan():
                     counter += 1
 
         # PSEUDOCODE om elke lecture in te roosteren en te letten op overlap met vakken.
+        # _______________________________________________________________________________
+        # WHILE niet ingeroosterd, itereer over elke cel, check of hij leeg is, zo niet, rooster in. Zo wel, ga naar volgende cel.
+        #
         # Voor elk hoorcollege (dus voor elk item in lecture_sessions):
         # Itereer over elke cel (dus schedule2[b][c][d])
         # for b in range(DAYS):
-        #     for c in range(ROOMS):
-        #         for d in range(TIME_SLOTS):
+        #     for c in range(TIME_SLOTS):
+        #         for d in range(ROOMS):
         #             schedule2[b][c][d]
         #             # check of de cel leeg is:
         #              if schedule2[b][c][d] == 'None':
-        #                   # check of er al een hoorcollege van dat vak is ingeroosterd
+        #                   # check of er al een hoorcollege van dat vak is ingeroosterd in deze timeslot
         #                   if item in schedule2[b][c]:
-        #                   # zo ja, check of je naar de volgende cel kan gaan
+        #                   # zo ja, check of je naar de volgende cel kan gaan (dus volgende timeslot)
         #                       # if c += 1 is mogelijk (try):
         #                       doe dan c += 1
-        #                       if c+= 1 niet mogelijk:
-        #                       ga dan naar de volgende dag en doe de check opnieuw
+        #                       if c += 1 niet mogelijk:
+        #                       ga dan naar de volgende dag en doe de check opnieuw,
+        #                           d += 1
+        #                           dus misschien een while loop maken:
         #
-
-        # schedule2 = plan.fill_rooms_and_days(schedule2)
+        #
 
         # Steeds random rooster genereren en dan constraints evalueren
         # plan.random_schedule(schedule, sessions)
@@ -333,7 +336,7 @@ class Plan():
         Print into csv-file to visualize schedule.
         """
         df = pd.DataFrame(schedule)
-        df.columns = plan.load_rooms()
+        df.columns = ['9:00 - 11:00', '11:00 - 13:00', '13:00 - 15:00', '15:00 - 17:00']
         df.index = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"]
         # Transpose rows and columns
         df = df.T
