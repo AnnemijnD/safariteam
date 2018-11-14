@@ -19,5 +19,8 @@ class Session(object):
         """
         return iter([self.session, self.type, self.room, self.timeslot])
 
+    def __repr__(self):
+        return str(self.session)
+
     def __str__(self):
         return f'course: {self.session}, type: {self.type}, in room {self.room}'
