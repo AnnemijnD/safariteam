@@ -121,14 +121,13 @@ class Plan():
             # Get all the lectures
             if session.type == "lecture":
                 lecture_sessions.append(session)
-            if session.type == 'practical' or session.type == 'tutorial':
+            else:
                 other_sessions.append(session)
             sessions.append(session)
 
         # shuffle de lectures zodat ze random zijn
         lectures = lecture_sessions[:]
         random.shuffle(lectures)
-        random.shuffle(other_sessions)
 
 
         # Maak lege sessies aan om lege cellen mee op te vullen
@@ -201,10 +200,18 @@ class Plan():
         #                           d += 1
         #                           dus misschien een while loop maken:
 
+        # Vul eerst met lege sessions
+        counter = 0
+        for b in range(DAYS):
+            for c in range(TIME_SLOTS):
+                for d in range(ROOMS):
+                    schedule[b][c][d] = empty_sessions[counter]
 
         # PROBLEEM: als er nu een tijdslot wordt gevonden waar dat vak
         # al in zit, itereert hij naar volgende tijdslot, maar er wordt niet
         # terug geïtereerd om een ander vak in dat lege tijdslot te zetten...
+        # NOG EEN PROBLEEM: Niet alle lectures worden op deze manier ingeroosterd,
+        # Sommige worden nu overgeslagen.
         counter = 0
         for b in range(DAYS):
             for c in range(TIME_SLOTS):
@@ -212,6 +219,8 @@ class Plan():
                     # check of de cel leeg is
                     if schedule[b][c][d].session == '-':
                         # Check dit vak al in dit tijdslot is ingeroosterd
+                        # Check of counter niet verder gaat dan lectures want dan kan
+                        # je niet meer over lectures itereren.
                         if counter < len(lectures):
                             for cel in schedule[b][c]:
                                 if lectures[counter].session in cel.session:
@@ -225,11 +234,10 @@ class Plan():
                         schedule[b][c][d] = lectures[counter]
                     except IndexError:
                         schedule[b][c][d] = empty_sessions[counter]
-
                     counter += 1
 
-        return schedule
 
+        return schedule
 
     def random_schedule(self, schedule, sessions):
         """
@@ -359,6 +367,11 @@ class Plan():
         Print into csv-file to visualize schedule.
         """
 
+        for b in range(DAYS):
+            for c in range(TIME_SLOTS):
+                for d in range(ROOMS):
+                    print(schedule[b][c][d])
+
         df = pd.DataFrame(schedule)
         pd.set_option('display.max_colwidth',300)
         df.columns = ['9:00 - 11:00', '11:00 - 13:00', '13:00 - 15:00', '15:00 - 17:00']
@@ -431,4 +444,4 @@ if __name__ == "__main__":
     now = time.time()
 
     print("It took:", now - then, "seconds")
-    # print("Script made", plan.schedule_counter, "schedules until the right was found.")
+    print("Script made", plan.schedule_counter, "schedules until the right was found.")
