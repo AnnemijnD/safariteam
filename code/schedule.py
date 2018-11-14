@@ -3,6 +3,7 @@ TIME_SLOTS = 4
 DAYS = 5
 ROOMS = 7
 
+
 class Schedule():
     """
     Representation of a class (lecture, tutorial or practicum).

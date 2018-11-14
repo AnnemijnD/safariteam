@@ -1,6 +1,7 @@
 
 SLOTS = 140
 
+
 class Session(object):
     """
     Representation of a schedule.
@@ -23,7 +24,7 @@ class Session(object):
         """
         Represents an object when it is printed.
         """
-        return str([self.session, self.day])
+        return str([self.session, self.type])
 
     def __getitem__(self, day):
         return self.day

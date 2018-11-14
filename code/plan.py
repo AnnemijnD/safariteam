@@ -75,16 +75,16 @@ class Plan():
 
         return roomnumbers
 
-    def schedule(self, courses):
+    def initialize_schedule(self, courses):
         """
         Initialize schedule using Schedule().
         """
 
-        schedule = SLOTS * [None]
         sessions = []
         session_list = []
         lecture_sessions = []
         other_sessions = []
+        empty_sessions = []
 
         for course in courses:
             session_list = session_list + course.sessions_total
@@ -99,17 +99,14 @@ class Plan():
                 type = session_list[i].type
             except IndexError:
                 type = '-'
-
-            # Room, timeslot en day zijn nog niet bepaald, daar moeten dus
-            # Even functies voor bedenken?
-            room = 'None'
-            timeslot = 'None'
+            room = 'Empty room'
+            timeslot = 'Empty timeslot'
             day = 'Empty day'
 
             session = Session(name, type, room, timeslot, day)
-    # PROBLEEM: als we een sessie in het rooster zetten, weet de sessie niet op welke
-    # dag die is. Dus dat moeten we er ook aan mee gaan geven. MAar ik ben moe dus ga lekker stoppenself.
-    # we hebben het er morgen over KUSJES
+            # PROBLEEM: als we een sessie in het rooster zetten, weet de sessie niet op welke
+            # dag die is. Dus dat moeten we er ook aan mee gaan geven. MAar ik ben moe dus ga lekker stoppenself.
+            # we hebben het er morgen over KUSJES
             # for k in range(len(schedule)):
             #     if schedule[k] is None:
             #         break
@@ -121,12 +118,22 @@ class Plan():
             #                 similar.append(schedule[j])
             #         print(similar[-1].day)
             #         day = similar[-1].day + 1
-            # Put session into schedule
-            sessions.append(session)
-            schedule[i] = session
 
-        empty_sessions = []
-        # Maak even een super super suuuuper leeg rooster
+            # Get all the lectures
+            if session.type == "lecture":
+                lecture_sessions.append(session)
+            else:
+                other_sessions.append(session)
+            sessions.append(session)
+
+        # shuffle de lectures zodat ze random zijn
+        lectures = lecture_sessions[:]
+        random.shuffle(lectures)
+
+
+        # Maak lege sessies aan om lege cellen mee op te vullen
+        # Dit stukje wordt gebruikt in de nested for loop waarbij aan elke cel
+        # een sessie wordt meegegeven.
         for i in range(SLOTS):
             name = '-'
             type = '-'
@@ -138,49 +145,63 @@ class Plan():
 
 
         # Lijst in een lijst in een lijst
-        schedule2 = DAYS * [ROOMS * [TIME_SLOTS * ['None']]]
+        schedule = DAYS * [ROOMS * [TIME_SLOTS * ['None']]]
         # Probleem: omdat je in schedule2 een keer-teken gebruikt, wordt alles vermenigvuldigt..
+        # We moeten een kopie maken van schedule2 en daarin dingen veranderen??
         # Tijdelijke oplossing:
-        schedule2 = [[['None', 'None', 'None', 'None'], ['None', 'None', 'None', 'None'], ['None', 'None', 'None', 'None'], ['None', 'None', 'None', 'None'], ['None', 'None', 'None', 'None'], ['None', 'None', 'None', 'None'], ['None', 'None', 'None', 'None']], [['None', 'None', 'None', 'None'], ['None', 'None', 'None', 'None'], ['None', 'None', 'None', 'None'], ['None', 'None', 'None', 'None'], ['None', 'None', 'None', 'None'], ['None', 'None', 'None', 'None'], ['None', 'None', 'None', 'None']], [['None', 'None', 'None', 'None'], ['None', 'None', 'None', 'None'], ['None', 'None', 'None', 'None'], ['None', 'None', 'None', 'None'], ['None', 'None', 'None', 'None'], ['None', 'None', 'None', 'None'], ['None', 'None', 'None', 'None']], [['None', 'None', 'None', 'None'], ['None', 'None', 'None', 'None'], ['None', 'None', 'None', 'None'], ['None', 'None', 'None', 'None'], ['None', 'None', 'None', 'None'], ['None', 'None', 'None', 'None'], ['None', 'None', 'None', 'None']], [['None', 'None', 'None', 'None'], ['None', 'None', 'None', 'None'], ['None', 'None', 'None', 'None'], ['None', 'None', 'None', 'None'], ['None', 'None', 'None', 'None'], ['None', 'None', 'None', 'None'], ['None', 'None', 'None', 'None']]]
+        schedule = [[['None', 'None', 'None', 'None'], ['None', 'None', 'None', 'None'], ['None', 'None', 'None', 'None'], ['None', 'None', 'None', 'None'], ['None', 'None', 'None', 'None'], ['None', 'None', 'None', 'None'], ['None', 'None', 'None', 'None']], [['None', 'None', 'None', 'None'], ['None', 'None', 'None', 'None'], ['None', 'None', 'None', 'None'], ['None', 'None', 'None', 'None'], ['None', 'None', 'None', 'None'], ['None', 'None', 'None', 'None'], ['None', 'None', 'None', 'None']], [['None', 'None', 'None', 'None'], ['None', 'None', 'None', 'None'], ['None', 'None', 'None', 'None'], ['None', 'None', 'None', 'None'], ['None', 'None', 'None', 'None'], ['None', 'None', 'None', 'None'], ['None', 'None', 'None', 'None']], [['None', 'None', 'None', 'None'], ['None', 'None', 'None', 'None'], ['None', 'None', 'None', 'None'], ['None', 'None', 'None', 'None'], ['None', 'None', 'None', 'None'], ['None', 'None', 'None', 'None'], ['None', 'None', 'None', 'None']], [['None', 'None', 'None', 'None'], ['None', 'None', 'None', 'None'], ['None', 'None', 'None', 'None'], ['None', 'None', 'None', 'None'], ['None', 'None', 'None', 'None'], ['None', 'None', 'None', 'None'], ['None', 'None', 'None', 'None']]]
+
+        return schedule, lectures, other_sessions, empty_sessions
+
+
+    def fill_schedule(self, schedule, lectures, other_sessions, empty_sessions):
+        """
+        Fill empty schedule with sessions. Function will begin to fill all the lectures
+        and will go on to fill other sessions.
+        """
 
         # Gebruik nested for loop om elke cel een session te gegen.
         # Je geeft hierbij een lijst met sessies mee aan de functie get_session
         # De lijst met sessies is al gemaakt in schedule() (misschien deze functie een andere naam geven trouwens)
-        #
-        #
-        # for b in range(DAYS):
-        #     for c in range(ROOMS):
-        #         for d in range(TIME_SLOTS):
-        #             schedule2[b][c][d] = plan.get_session(empty_sessions)
-        #             print(schedule2[b][c][d])
-        #
-        # schedule = plan.fill_rooms_and_days(schedule2)
-
         counter = 0
         for b in range(DAYS):
             for c in range(ROOMS):
                 for d in range(TIME_SLOTS):
-                    schedule2[b][c][d] = sessions[counter]
+                    try:
+                        # van lecture_sesssions zijn er maar 39, de overige plekken
+                        # schedule moeten ook nog gevuld worden, dus zet er dan een empty
+                        # session neer.
+                        # print(lectures[counter].session)
+                        schedule[b][c][d] = lectures[counter]
+                    # Overige lege plekken moeten ook gevuld worden met lege sessions
+                    except IndexError:
+                        # print(empty_sessions[counter])
+                        schedule[b][c][d] = empty_sessions[counter]
                     counter += 1
-                    # print(schedule2[b][c][d])
 
+        # PSEUDOCODE om elke lecture in te roosteren en te letten op overlap met vakken.
+        # Voor elk hoorcollege (dus voor elk item in lecture_sessions):
+        # Itereer over elke cel (dus schedule2[b][c][d])
+        # for b in range(DAYS):
+        #     for c in range(ROOMS):
+        #         for d in range(TIME_SLOTS):
+        #             schedule2[b][c][d]
+        #             # check of de cel leeg is:
+        #              if schedule2[b][c][d] == 'None':
+        #                   # check of er al een hoorcollege van dat vak is ingeroosterd
+        #                   if item in schedule2[b][c]:
+        #                   # zo ja, check of je naar de volgende cel kan gaan
+        #                       # if c += 1 is mogelijk (try):
+        #                       doe dan c += 1
+        #                       if c+= 1 niet mogelijk:
+        #                       ga dan naar de volgende dag en doe de check opnieuw
+        #
 
-
-        schedule = plan.fill_rooms_and_days(schedule2)
-
-        # Dus bijvoorbeeld alles op dag 1:
-        # print(schedule2[0])
+        # schedule2 = plan.fill_rooms_and_days(schedule2)
 
         # Steeds random rooster genereren en dan constraints evalueren
         # plan.random_schedule(schedule, sessions)
         # schedule = plan.fill_rooms_and_days(schedule2)
-        df = pd.DataFrame(schedule2)
-        # print(df)
-
-
-
-
-        # schedule = plan.calc_malus(schedule)
 
         return schedule
 
@@ -193,14 +214,13 @@ class Plan():
         # niet is geweest.
         """
 
-        random_numbers = []
         for i in range(SLOTS):
             rand = random.randint(0, SLOTS - 1)
             while rand in random_numbers:
                 rand = random.randint(0, SLOTS - 1)
             # Hier wordt de session in dat timeslot gezet met een random nummer
             schedule[rand] = sessions[i]
-            random_numbers.append(rand)
+            plan.random_numbers.append(rand)
 
         # Keep track of how many schedules were made
         plan.schedule_counter += 1
@@ -214,14 +234,11 @@ class Plan():
         # niet is geweest.
         """
 
-        random_numbers = []
-        for i in range(SLOTS):
-            rand = random.randint(0, SLOTS - 1)
-            while rand in random_numbers:
-                rand = random.randint(0, SLOTS - 1)
-
-        # Keep track of how many schedules were made
-        plan.schedule_counter += 1
+        for i in range(len(sessions)):
+            rand = random.randint(0, (len(sessions)) - 1)
+            while rand in plan.random_numbers:
+                rand = random.randint(0, len(sessions) - 1)
+                plan.random_numbers.append(rand)
 
         return sessions[rand]
 
@@ -281,69 +298,6 @@ class Plan():
 
         return schedule
 
-    def fill_rooms_and_days(self, schedule):
-
-        #  -------------- DIT IS VOOR HOE HET ERUIT GAAT ZIEN ---------------------------
-        # Quinten vindt dit vast ook niet leuk :(, moeten we even inladen eigenlijk?
-        timeslots = ROOMS * DAYS * ['9:00 - 11:00', '11:00 - 13:00', '13:00 - 15:00', '15:00 - 17:00']
-        # Dit moet anders want nu worden rooms steeds opnieuw ingeladen
-        rooms = DAYS * TIME_SLOTS * plan.load_rooms()
-        days = ROOMS * TIME_SLOTS * ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"]
-
-        # Fill all the days
-        for c in range(ROOMS):
-            for d in range(TIME_SLOTS):
-                schedule[0][c][d].day = 'Monday'
-                schedule[1][c][d].day = 'Tuesday'
-                schedule[2][c][d].day = 'Wednesday'
-                schedule[3][c][d].day = 'Thursday'
-                schedule[4][c][d].day = 'Friday'
-
-        # Fill all the rooms
-        counter = 0
-        for a in range(DAYS):
-            for b in range(ROOMS):
-                for c in range(TIME_SLOTS):
-                    schedule[a][b][c].room = rooms[counter % 7]
-                counter += 1
-
-        # Fill all the timeslots
-        counter = 0
-        for a in range(DAYS):
-            for b in range(ROOMS):
-                for c in range(TIME_SLOTS):
-                    schedule[a][b][c].timeslot = timeslots[counter]
-                    counter += 1
-
-        return schedule
-
-    def get_day(self, day):
-        """
-        Returns a schedule of a specific day.
-        """
-        pass
-
-        # KIEZEN OF WE DE NAAM VAN DE DAG OF HET NUMMER VAN DE DAG WILLEN
-        #  als we nummer doen hoeft de hele if niet meer (maar dan wel een
-        # # slimme implementatie bedenken voor hoe we nummer doen)
-        # if day == "Monday":
-        #     i = 0
-        # elif day == "Tuesday":
-        #     i = 1
-        # elif day == "Wednesday":
-        #     i = 2
-        # elif day == "Thursday":
-        #     i = 3
-        # else:
-        #     i = 4
-        # return plan.schedule()[(TIME_SLOTS * ROOMS * i):(TIME_SLOTS * ROOMS * (i + 1))]
-
-        # # Voor maandag zijn er maximaal 28 sessions (timeslots * zalen)
-        # monday = Plan.schedule()[0:(SLOTS * ROOMS)]
-        # # Print alle courses op maandag
-        # day = []
-        # for object in monday:
-        #     print(object)
 
     def get_slot(self, slot, day):
         """
@@ -374,47 +328,60 @@ class Plan():
             for row in wishes:
                 print(row)
 
-    def save_csv(self, outfile, schedules):
+    def save_html(self, schedule):
         """
         Print into csv-file to visualize schedule.
         """
-
-        with open('../data/schedule.csv', 'w', newline='') as output_file:
-            writer = csv.writer(output_file)
-            writer.writerow(5 * ['Course', 'Type', 'Room', 'Timeslot', 'Day', '-'])
-            # Check if a row in schedules is filled with a session
-            # Sanne ik heb je nodig om dit te fixen want ik ben heel slecht
-            # met magic numbers DANKJEWEL <33333333
-            # Als ik overal 'ROOMS * TIME_SLOTS' neerzet dan worden de regels zo lang weetjewel
-            for b in range(DAYS):
-                for c in range(ROOMS):
-                    for d in range(TIME_SLOTS):
-                        writer.writerow(schedule[b][c][d])
-
-        # with open('../data/schedule.csv', 'w', newline='') as output_file:
-        #     writer = csv.writer(output_file)
-        #     writer.writerow(5 * ['Course', 'Type', 'Room', 'Timeslot', 'Day', '-'])
-        #     # Check if a row in schedules is filled with a session
-        #     # Sanne ik heb je nodig om dit te fixen want ik ben heel slecht
-        #     # met magic numbers DANKJEWEL <33333333
-        #     # Als ik overal 'ROOMS * TIME_SLOTS' neerzet dan worden de regels zo lang weetjewel
-        #     for i in range(0, ROOMS * TIME_SLOTS):
-        #         writer.writerow([schedule[i].session, schedule[i].type, schedule[i].room, schedule[i].timeslot, schedule[i].day, '-',
-        #                          schedule[i+28].session, schedule[i+28].type, schedule[i+28].room, schedule[i+28].timeslot, schedule[i+28].day, '-',
-        #                          schedule[i+56].session, schedule[i+56].type, schedule[i+56].room, schedule[i+56].timeslot, schedule[i+56].day, '-',
-        #                          schedule[i+84].session, schedule[i+84].type, schedule[i+84].room, schedule[i+84].timeslot, schedule[i+84].day, '-',
-        #                          schedule[i+112].session, schedule[i+112].type, schedule[i+112].room, schedule[i+112].timeslot, schedule[i+112].day, '-'])
-
-
-        with open('../data/schedule.csv', 'r', newline='') as output_file:
-            df = pd.read_csv(output_file)
-            # Als je het rooster wilt zien:
-            # print(df)
-
-        # df_html = df.style.set_properties(**{'font-size': '10pt', 'font-family': 'Calibri','border-collapse': 'collapse','border': '1px blue'}).render()
+        df = pd.DataFrame(schedule)
+        df.columns = plan.load_rooms()
+        df.index = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"]
+        # Transpose rows and columns
+        df = df.T
 
         df_html = df.to_html('../data/schedule.html')
         HTML(df_html)
+
+
+    # def fill_rooms_and_days(self, schedule):
+    #
+    #     #  -------------- DIT IS VOOR HOE HET ERUIT GAAT ZIEN ---------------------------
+    #     # Quinten vindt dit vast ook niet leuk :(, moeten we even inladen eigenlijk?
+    #     timeslots = ROOMS * DAYS * ['9:00 - 11:00', '11:00 - 13:00', '13:00 - 15:00', '15:00 - 17:00']
+    #     # Dit moet anders want nu worden rooms steeds opnieuw ingeladen
+    #     rooms = DAYS * TIME_SLOTS * plan.load_rooms()
+    #     days = ROOMS * TIME_SLOTS * ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"]
+    #
+    #     # Fill all the days
+    #     for c in range(ROOMS):
+    #         for d in range(TIME_SLOTS):
+    #             schedule[0][c][d].day = 'Monday'
+    #             schedule[1][c][d].day = 'Tuesday'
+    #             schedule[2][c][d].day = 'Wednesday'
+    #             schedule[3][c][d].day = 'Thursday'
+    #             schedule[4][c][d].day = 'Friday'
+    #
+    #     # Fill all the rooms
+    #     counter = 0
+    #     for a in range(DAYS):
+    #         for b in range(ROOMS):
+    #             for c in range(TIME_SLOTS):
+    #                 schedule[a][b][c].room = rooms[counter % 7]
+    #             counter += 1
+    #
+    #     # Fill all the timeslots
+    #     counter = 0
+    #     for a in range(DAYS):
+    #         for b in range(ROOMS):
+    #             for c in range(TIME_SLOTS):
+    #                 schedule[a][b][c].timeslot = timeslots[counter]
+    #                 counter += 1
+    #     #
+    #     # for b in range(DAYS):
+    #     #     for c in range(ROOMS):
+    #     #         for d in range(TIME_SLOTS):
+    #     #             print(schedule[b][c][d])
+    #
+    #     return schedule
 
 
 if __name__ == "__main__":
@@ -423,12 +390,15 @@ if __name__ == "__main__":
 
     # Load all the courses and sessions
     plan = Plan()
+    plan.random_numbers = []
     plan.schedule_counter = 0
     plan.courses = plan.load_courses()
-    schedule = plan.schedule(plan.courses)
+    schedule, lectures, other_sessions, empty_sessions = plan.initialize_schedule(plan.courses)
+    schedule = plan.fill_schedule(schedule, lectures, other_sessions, empty_sessions)
     plan.load_rooms()
 
-    plan.save_csv('schedule.csv', schedule)
+    # Make a html file for the schedule
+    plan.save_html(schedule)
 
     now = time.time()
 
