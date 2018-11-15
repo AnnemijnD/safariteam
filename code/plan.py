@@ -150,6 +150,11 @@ class Plan():
         # Tijdelijke oplossing:
         schedule = [[['None', 'None', 'None', 'None', 'None', 'None', 'None'], ['None', 'None', 'None', 'None', 'None', 'None', 'None'], ['None', 'None', 'None', 'None', 'None', 'None', 'None'], ['None', 'None', 'None', 'None', 'None', 'None', 'None']], [['None', 'None', 'None', 'None', 'None', 'None', 'None'], ['None', 'None', 'None', 'None', 'None', 'None', 'None'], ['None', 'None', 'None', 'None', 'None', 'None', 'None'], ['None', 'None', 'None', 'None', 'None', 'None', 'None']], [['None', 'None', 'None', 'None', 'None', 'None', 'None'], ['None', 'None', 'None', 'None', 'None', 'None', 'None'], ['None', 'None', 'None', 'None', 'None', 'None', 'None'], ['None', 'None', 'None', 'None', 'None', 'None', 'None']], [['None', 'None', 'None', 'None', 'None', 'None', 'None'], ['None', 'None', 'None', 'None', 'None', 'None', 'None'], ['None', 'None', 'None', 'None', 'None', 'None', 'None'], ['None', 'None', 'None', 'None', 'None', 'None', 'None']], [['None', 'None', 'None', 'None', 'None', 'None', 'None'], ['None', 'None', 'None', 'None', 'None', 'None', 'None'], ['None', 'None', 'None', 'None', 'None', 'None', 'None'], ['None', 'None', 'None', 'None', 'None', 'None', 'None']]]
 
+        # Je geeft dus aan deze functie een leeg schedule mee en de sessions waarmee
+        # schedule gevuld moet worden. Doordat lectures en other_sessions nu gescheieden
+        # zijn kunnen eerst de lectures gevuld worden en daarna pas de rest
+        plan.fill_schedule(schedule, lectures, other_sessions, empty_sessions)
+
         return schedule, lectures, other_sessions, empty_sessions
 
 
@@ -161,22 +166,8 @@ class Plan():
 
         # Gebruik nested for loop om elke cel een session te gegen.
         # Je geeft hierbij een lijst met sessies mee aan de functie get_session
-        # De lijst met sessies is al gemaakt in schedule() (misschien deze functie een andere naam geven trouwens)
-        counter = 0
-        for b in range(DAYS):
-            for c in range(TIME_SLOTS):
-                for d in range(ROOMS):
-                    try:
-                        # van lecture_sesssions zijn er maar 39, de overige plekken
-                        # schedule moeten ook nog gevuld worden, dus zet er dan een empty
-                        # session neer.
-                        # print(lectures[counter].session)
-                        schedule[b][c][d] = lectures[counter]
-                    # Overige lege plekken moeten ook gevuld worden met lege sessions
-                    except IndexError:
-                        # print(empty_sessions[counter])
-                        schedule[b][c][d] = empty_sessions[counter]
-                    counter += 1
+        # De lijst met sessies is al gemaakt in initialize_schedule()
+
 
         # PSEUDOCODE om elke lecture in te roosteren en te letten op overlap met vakken.
         # _______________________________________________________________________________
@@ -212,30 +203,41 @@ class Plan():
         # terug geïtereerd om een ander vak in dat lege tijdslot te zetten...
         # NOG EEN PROBLEEM: Niet alle lectures worden op deze manier ingeroosterd,
         # Sommige worden nu overgeslagen.
+        lecture_counter = 0
         counter = 0
         for b in range(DAYS):
             for c in range(TIME_SLOTS):
                 for d in range(ROOMS):
-                    # check of de cel leeg is
-                    if schedule[b][c][d].session == '-':
-                        # Check dit vak al in dit tijdslot is ingeroosterd
-                        # Check of counter niet verder gaat dan lectures want dan kan
-                        # je niet meer over lectures itereren.
-                        if counter < len(lectures):
+                    # Check of counter niet verder gaat dan lectures want dan kan
+                    # je niet meer over lectures itereren.
+                    if lecture_counter < len(lectures) and counter < len(empty_sessions):
+                        # check of de cel leeg is
+                        # print(b, c, d)
+                        if schedule[b][c][d].session == '-':
+                            # Check dit vak al in dit tijdslot is ingeroosterd
                             for cel in schedule[b][c]:
-                                if lectures[counter].session in cel.session:
+                                if lectures[lecture_counter].session in cel.session:
+
                                     # Soms moet de volgende kolom ook naar de volgende dag
+                                    # PROBLEEM: Omdat het in een for loop zti wordt er voor elke
+                                    # cel c += 1 gedaan....
                                     try:
                                         c += 1
-                                    except IndexError:
+                                        break
+                                    except IndexError:  # DUs naar de volgende dag gaan
                                         b += 1
-                    # Lege tijdslots moeten ook gevuld worden (nu tijdelijk met lege sessies)
-                    try:
-                        schedule[b][c][d] = lectures[counter]
-                    except IndexError:
-                        schedule[b][c][d] = empty_sessions[counter]
-                    counter += 1
-
+                                        break
+                        # Lege tijdslots moeten ook gevuld worden (nu tijdelijk met lege sessies)
+                        try:
+                            schedule[b][c][d] = lectures[lecture_counter]
+                            lecture_counter += 1
+                        except IndexError:
+                            try:
+                                schedule[b][c][d] = empty_sessions[counter]
+                                counter += 1
+                            except IndexError:
+                                plan.initialize_schedule(plan.courses)
+                                plan.schedule_counter += 1
 
         return schedule
 
@@ -367,10 +369,6 @@ class Plan():
         Print into csv-file to visualize schedule.
         """
 
-        for b in range(DAYS):
-            for c in range(TIME_SLOTS):
-                for d in range(ROOMS):
-                    print(schedule[b][c][d])
 
         df = pd.DataFrame(schedule)
         pd.set_option('display.max_colwidth',300)
@@ -435,7 +433,7 @@ if __name__ == "__main__":
     plan.schedule_counter = 0
     plan.courses = plan.load_courses()
     schedule, lectures, other_sessions, empty_sessions = plan.initialize_schedule(plan.courses)
-    schedule = plan.fill_schedule(schedule, lectures, other_sessions, empty_sessions)
+
     plan.load_rooms()
 
     # Make a html file for the schedule
