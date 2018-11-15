@@ -123,19 +123,18 @@ class Plan():
             # Get all the lectures
             if session.type == "lecture":
                 lecture_sessions.append(session)
-            else:
+            elif session.type == "tutorial" or session.type == "practical":
                 other_sessions.append(session)
             sessions.append(session)
 
-
-        total = []
-        total = lecture_sessions + other_sessions
-        print(total)
 
         # shuffle de lectures zodat ze random zijn
         lectures = lecture_sessions[:]
         random.shuffle(lectures)
         # TODO: lijst maken met eerst grote vakken!!
+
+        total = []
+        total = lectures + other_sessions
 
 
         # Maak lege sessies aan om lege cellen mee op te vullen
@@ -161,9 +160,10 @@ class Plan():
         # Je geeft dus aan deze functie een leeg schedule mee en de sessions waarmee
         # schedule gevuld moet worden. Doordat lectures en other_sessions nu gescheieden
         # zijn kunnen eerst de lectures gevuld worden en daarna pas de rest
-        plan.fill_schedule(schedule, lectures, other_sessions, empty_sessions)
+        plan.fill_schedule(schedule, total, other_sessions, empty_sessions)
+        plan.schedule_counter += 1
 
-        return schedule, lectures, other_sessions, empty_sessions
+        return schedule, total, other_sessions, empty_sessions
 
 
     def fill_schedule(self, schedule, lectures, other_sessions, empty_sessions):
@@ -277,6 +277,7 @@ class Plan():
 
                             # check if the same course is already in that slot
                             if lectures[lecture_counter].name in e.name:
+                                print(lectures[lecture_counter].name in e.name)
                                 c += 1
                                 timeslot_counter += 1
                                 if c > 3:
@@ -304,7 +305,7 @@ class Plan():
                             day_counter = 0
 
                         # if all the sessions are scheduled return schedule
-                        if lecture_counter > len(lectures) - 1:
+                        if lecture_counter is len(lectures):
                             return schedule
 
     def random_schedule(self, schedule, sessions):
