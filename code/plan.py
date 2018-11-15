@@ -206,151 +206,101 @@ class Plan():
         # terug geïtereerd om een ander vak in dat lege tijdslot te zetten...
         # NOG EEN PROBLEEM: Niet alle lectures worden op deze manier ingeroosterd,
         # Sommige worden nu overgeslagen.
+        # lecture_counter = 0
+        # counter = 0
+        # day_counter = 0
+        # timeslot_counter = 0
+        # break_counter = 0
+        #
+        # for i in range(DAYS):
+        #     locations = []
+        #     day_counter = 0
+        #     for j in range(TIME_SLOTS):
+        #         for k in range(ROOMS):
+        #             for l in schedule[i][j]:
+        #                 if lectures[lecture_counter].name in l.name:
+        #                     day_counter += 1
+        #                     if i == 4:
+        #                         # loopende functie, help?!??1
+        #                         plan.initialize_schedule(plan.courses)
+        #                     break
+        #                 else:
+        #                     if schedule[i][j][k].name == '-':
+        #                         locations.append([j,k])
+        #                         # print(locations)
+        #             if day_counter > 0:
+        #                 break
+        #         if day_counter > 0:
+        #             break
+        #
+        #     timeslot = locations[0][0]
+        #     room = locations[0][1]
+        #     schedule[i][timeslot][room] = lectures[lecture_counter]
+        #     lecture_counter += 1
+        #
+        #     # for j in range(TIME_SLOTS):
+        #     #     for k in range(ROOMS):
+        #     #         if schedule[i][j][k].name == '-':
+        #     #             schedule[i][j][k] = lectures[lecture_counter]
+        #     #             lecture_counter += 1
+        #     #             i -= day_counter
+        #     #             break
+        #     #     if break_counter > 0:
+        #     #         break
+        #
+        #     # time_slot = locations[0][0]
+        #     # room = locations[0][1]
+        #     # schedule[i][time_slot][room] = lectures[lecture_counter]
+        #     # lecture_counter += 1
+        #     # i -= day_counter
+        #
+        # return schedule
+
         lecture_counter = 0
         counter = 0
         day_counter = 0
         timeslot_counter = 0
+        for b in range(DAYS):
+            for c in range(TIME_SLOTS):
+                for d in range(ROOMS):
 
-        for i in range(DAYS):
-            locations = []
-            day_counter = 0
-            for j in range(TIME_SLOTS):
-                for k in range(ROOMS):
-                    for l in schedule[i][j]:
-                        if lectures[lecture_counter].name in l.name:
-                            day_counter += 1
-                            if i == 4:
-                                plan.initialize_schedule(plan.courses)
+                    # if the slot in the schedule is empty
+                    if schedule[b][c][d].name == '-':
 
-                            # loopende functie, help?!??1
-                            
-                            break
-                        else:
-                            if schedule[i][j][k].name == '-':
-                                locations.append([j,k])
-
-
-                    if day_counter > 0:
-                        break
-                if day_counter > 0:
-                    break
-
-            schedule[i][j][k] = lectures[lecture_counter]
-            lecture_counter += 1
-            i -= day_counter
-
-
-
-
+                        #  loop through the rooms
                         for e in schedule[b][c]:
 
+                            # check if the same course is already in that slot
                             if lectures[lecture_counter].name in e.name:
-                                print(" hallo")
-                                day_counter += 1
-                                break
-                                # c += 1
-                                # timeslot_counter += 1
-                                # if c > 3:
-                                #     b += 1
-                                #     day_counter += 1
-                                #     c = 0
-                                # if b > 4:
-                                #     plan.initialize_schedule(plan.courses)
+                                c += 1
+                                timeslot_counter += 1
+                                if c > 3:
+                                    b += 1
+                                    day_counter += 1
+                                    c = 0
 
+                                # makes a new schedule if it failed
+                                if b > 4:
+                                    plan.initialize_schedule(plan.courses)
+
+                        # set the session in the schedule
                         schedule[b][c][d] = lectures[lecture_counter]
                         lecture_counter += 1
                         # QUINTEN!: is dit sneller in een if statement?
                         d += 1
                         d %= 7
-                        print("DAY COUNTER: ")
-                        print(day_counter)
-                        if lecture_counter > len(lectures) - 1:
-                            return schedule
 
+                        #  returns to the previous timeslot/day in the loop if it skipped one
                         if timeslot_counter > 0:
                             c -= timeslot_counter
                             timeslot_counter = 0
                         if day_counter > 0:
-                            print('erreor')
-                            print(b)
                             b -= day_counter
-                            print(b)
                             day_counter = 0
-                    if day_counter > 0:
-                        break
-                if day_counter > 0:
-                    break
-            if day_counter > 0:
-                break
 
-
-
-        # for b in range(DAYS):
-        #     for c in range(TIME_SLOTS):
-        #         # als vak al op deze dag: ga naar volgende dag
-        #         # anders => kijk ook het al op het tijdslot wordt gegeven in volgende
-        #         # forloop
-        #         for d in range(ROOMS):
-        #             # Check of counter niet verder gaat dan lectures want dan kan
-        #             # je niet meer over lectures itereren.
-        #
-        #             # check of de cel leeg is
-        #             # print(b, c, d)
-        #             if schedule[b][c][d].name == '-':
-        #                 # Check dit vak al in dit tijdslot is ingeroosterd
-        #                 # for cel in schedule[b][c]:
-        #                 #     # print(lectures[lecture_counter].name)
-        #                 #     print(f'ding 1 {cel.name}')
-        #
-        #                 for e in schedule[b][c]:
-        #                     # print(f'ding 2 {e.name}')
-        #                     if lectures[lecture_counter].name in e.name:
-        #                         print(" hallo")
-        #                         day_counter += 1
-        #                         break
-        #                         # c += 1
-        #                         # timeslot_counter += 1
-        #                         # if c > 3:
-        #                         #     b += 1
-        #                         #     day_counter += 1
-        #                         #     c = 0
-        #                         # if b > 4:
-        #                         #     plan.initialize_schedule(plan.courses)
-        #
-        #                 schedule[b][c][d] = lectures[lecture_counter]
-        #                 lecture_counter += 1
-        #                 # QUINTEN!: is dit sneller in een if statement?
-        #                 d += 1
-        #                 d %= 7
-        #                 print("DAY COUNTER: ")
-        #                 print(day_counter)
-        #                 if lecture_counter > len(lectures) - 1:
-        #                     return schedule
-        #
-        #                 if timeslot_counter > 0:
-        #                     c -= timeslot_counter
-        #                     timeslot_counter = 0
-        #                 if day_counter > 0:
-        #                     print('erreor')
-        #                     print(b)
-        #                     b -= day_counter
-        #                     print(b)
-        #                     day_counter = 0
-        #             if day_counter > 0:
-        #                 break
-        #         if day_counter > 0:
-        #             break
-        #     if day_counter > 0:
-        #         break
-
-
-
-
-
-
-
-
-        # return schedule
+                        # if all the sessions are scheduled return schedule
+                        if lecture_counter > len(lectures) - 1:
+                            return schedule
 
     def random_schedule(self, schedule, sessions):
         """
