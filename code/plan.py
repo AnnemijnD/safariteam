@@ -130,6 +130,7 @@ class Plan():
         # shuffle de lectures zodat ze random zijn
         lectures = lecture_sessions[:]
         random.shuffle(lectures)
+        # TODO: lijst maken met eerst grote vakken!!
 
 
         # Maak lege sessies aan om lege cellen mee op te vullen
@@ -177,9 +178,9 @@ class Plan():
         # WHILE niet ingeroosterd, itereer over elke cel, check of hij leeg is, zo niet, rooster in. Zo wel, ga naar volgende cel.
         #
         # Itereer over elke cel (dus schedule2[b][c][d])
-        # for b in range(DAYS):
-        #     for c in range(TIME_SLOTS):
-        #         for d in range(ROOMS):
+        # for days in range(DAYS):
+        #     for timeslots in range(TIME_SLOTS):
+        #         for rooms in range(ROOMS):
         #             schedule2[b][c][d]
         #             # check of de cel leeg is:
         #              if schedule2[b][c][d] == 'None':
@@ -207,41 +208,71 @@ class Plan():
         # Sommige worden nu overgeslagen.
         lecture_counter = 0
         counter = 0
+        day_counter = 0
+        timeslot_counter = 0
         for b in range(DAYS):
             for c in range(TIME_SLOTS):
                 for d in range(ROOMS):
                     # Check of counter niet verder gaat dan lectures want dan kan
                     # je niet meer over lectures itereren.
-                    if lecture_counter < len(lectures) and counter < len(empty_sessions):
-                        # check of de cel leeg is
-                        # print(b, c, d)
-                        if schedule[b][c][d].name == '-':
-                            # Check dit vak al in dit tijdslot is ingeroosterd
-                            for cel in schedule[b][c]:
-                                if lectures[lecture_counter].name in cel.name:
 
-                                    # Soms moet de volgende kolom ook naar de volgende dag
-                                    # PROBLEEM: Omdat het in een for loop zti wordt er voor elke
-                                    # cel c += 1 gedaan....
-                                    try:
-                                        c += 1
-                                        break
-                                    except IndexError:  # DUs naar de volgende dag gaan
-                                        b += 1
-                                        break
-                        # Lege tijdslots moeten ook gevuld worden (nu tijdelijk met lege sessies)
-                        try:
-                            schedule[b][c][d] = lectures[lecture_counter]
-                            lecture_counter += 1
-                        except IndexError:
-                            try:
-                                schedule[b][c][d] = empty_sessions[counter]
-                                counter += 1
-                            except IndexError:
-                                plan.initialize_schedule(plan.courses)
-                                plan.schedule_counter += 1
+                    # check of de cel leeg is
+                    # print(b, c, d)
+                    if schedule[b][c][d].name == '-':
+                        # Check dit vak al in dit tijdslot is ingeroosterd
+                        # for cel in schedule[b][c]:
+                        #     # print(lectures[lecture_counter].name)
+                        #     print(f'ding 1 {cel.name}')
 
-        return schedule
+                        for e in schedule[b][c]:
+                            # print(f'ding 2 {e.name}')
+                            if lectures[lecture_counter].name in e.name:
+                                print(" hallo")
+                                day_counter += 1
+                                break
+                                # c += 1
+                                # timeslot_counter += 1
+                                # if c > 3:
+                                #     b += 1
+                                #     day_counter += 1
+                                #     c = 0
+                                # if b > 4:
+                                #     plan.initialize_schedule(plan.courses)
+
+                        schedule[b][c][d] = lectures[lecture_counter]
+                        lecture_counter += 1
+                        # QUINTEN!: is dit sneller in een if statement?
+                        d += 1
+                        d %= 7
+                        print("DAY COUNTER: ")
+                        print(day_counter)
+                        if lecture_counter > len(lectures) - 1:
+                            return schedule
+
+                        if timeslot_counter > 0:
+                            c -= timeslot_counter
+                            timeslot_counter = 0
+                        if day_counter > 0:
+                            print('erreor')
+                            print(b)
+                            b -= day_counter
+                            print(b)
+                            day_counter = 0
+                    if day_counter > 0:
+                        break
+                if day_counter > 0:
+                    break
+            if day_counter > 0:
+                break
+
+
+
+
+
+
+
+
+        # return schedule
 
     def random_schedule(self, schedule, sessions):
         """
