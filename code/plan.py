@@ -16,6 +16,7 @@ DAYS = 5
 ROOMS = 7
 MAX_MALUSPOINTS = 0
 
+
 class Plan():
     """
     Main scripts to make a schedule.
@@ -76,7 +77,8 @@ class Plan():
 
     def initialize_schedule(self, courses):
         """
-        Initialize schedule using Schedule().
+        Initialize schedule using Session().
+        Willen we eigenlijk in Schedule class zelf hebben
         """
 
         sessions = []

@@ -1,4 +1,3 @@
-from session import Session
 from schedule import Schedule
 
 
