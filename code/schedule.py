@@ -49,6 +49,9 @@ class Schedule():
             timeslot = 'Empty timeslot'
             day = 'Empty day'
 
+            # VRAAG: is het mogelijk om in session een soort default value
+            # in te stellen? Als in als het niet wordt meegegeven dat het none is
+
             session = Session(name, type, room, timeslot, day)
             # PROBLEEM: als we een sessie in het rooster zetten, weet de sessie niet op welke
             # dag die is. Dus dat moeten we er ook aan mee gaan geven. MAar ik ben moe dus ga lekker stoppen.
