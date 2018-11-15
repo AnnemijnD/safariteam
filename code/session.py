@@ -8,7 +8,7 @@ class Session(object):
     """
 
     def __init__(self, session, type, room, timeslot, day):
-        self.session = session
+        self.name = name
         self.type = type
         self.room = room
         self.timeslot = timeslot

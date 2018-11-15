@@ -215,10 +215,10 @@ class Plan():
                     if lecture_counter < len(lectures) and counter < len(empty_sessions):
                         # check of de cel leeg is
                         # print(b, c, d)
-                        if schedule[b][c][d].session == '-':
+                        if schedule[b][c][d].name == '-':
                             # Check dit vak al in dit tijdslot is ingeroosterd
                             for cel in schedule[b][c]:
-                                if lectures[lecture_counter].session in cel.session:
+                                if lectures[lecture_counter].name in cel.name:
 
                                     # Soms moet de volgende kolom ook naar de volgende dag
                                     # PROBLEEM: Omdat het in een for loop zti wordt er voor elke
@@ -295,11 +295,11 @@ class Plan():
         keep_track_of_courses = []
         for row in schedule:
             # Controleer niet op lege sessions, dus sla deze over
-            if row.session is not '-':
-                keep_track_of_courses.append([row.session, row.timeslot, row.day])
+            if row.name is not '-':
+                keep_track_of_courses.append([row.name, row.timeslot, row.day])
         for row in schedule:
-            if row.session is not '-':
-                current_row = [row.session, row.timeslot, row.day]
+            if row.name is not '-':
+                current_row = [row.name, row.timeslot, row.day]
                 for course in keep_track_of_courses:
                     # Intersection gebruiken?
                     # Als len == 3 dan overlapt de hele rij
