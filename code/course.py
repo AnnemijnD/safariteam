@@ -13,6 +13,7 @@ class Course(object):
         self.tutorial = tutorial
         self.practical = practical
         self.max_students = max_students
+        self.sessions = self.lecture + self.tutorial + self.practical
         self.session_lecture = self.load_sessions(self.lecture, 'lecture')
         self.session_tutorial = self.load_sessions(self.tutorial, 'tutorial')
         self.session_practical = self.load_sessions(self.practical, 'practical')
