@@ -264,6 +264,85 @@ class Plan():
         #
         # return schedule
 
+        # lecture_counter = 0
+        # counter = 0
+        # break_counter = 0
+        # day_counter = 0
+        # timeslot_counter = 0
+        #
+        # for e in range(len(lectures)):
+        #     found = False
+        #     for b in range(DAYS):
+        #         for c in range(TIME_SLOTS):
+        #             rooms_allowed = True
+        #             # availibility = True
+        #             location = []
+        #             for d in range(ROOMS):
+        #                 print(f'elke keer d:{b} {c} {d}')
+        #                 # if the slot in the schedule is empty
+        #                 if schedule[b][c][d].name == '-':
+        #                     # print("in if1")
+        #                     if not bool(location):
+        #                         # print("in if1.1")
+        #                         location.append(c)
+        #                         location.append(d)
+        #
+        #
+        #                 elif lectures[e].name in schedule[b][c][d].name:
+        #                     print(f"schedulename: {schedule[b][c][d].name}")
+        #                     print(f"schedulename: {lectures[e].name}")
+        #                     print("in elif1")
+        #                     rooms_allowed = False
+        #                     # break_counter += 1
+        #                     break
+        #
+        #
+        #             if rooms_allowed and bool(location):
+        #
+        #                 print(f'gevonden:{b} {c} {d}')
+        #                 # print("in if2")
+        #                 schedule[b][location[0]][location[1]] = lectures[e]
+        #                 # lecture_counter += 1
+        #
+        #                 # b -= day_counter
+        #                 # d -= break_counter
+        #                 # c -= timeslot_counter
+        #                 # day_counter = 0
+        #                 # break_counter = 0
+        #                 # timeslot_counter = 0
+        #                 found = True
+        #
+        #                 break
+        #
+        #             #
+        #             # elif c == 3:
+        #             #     # print("in elif2")
+        #             #     # day_counter += 1
+        #             #     break
+        #
+        #             # else:
+        #             #     # print("in else2")
+        #             #     # timeslot_counter += 1
+        #
+        #         if found:
+        #             break
+        #             # print("in if3")
+        #             # if lecture_counter == len(lectures):
+        #             #     # print("in if 4")
+        #             #     return schedule
+        #             # else:
+        #             #     # print("in else4")
+        #             #     plan.initialize_schedule(plan.courses)
+        #
+        #
+        # if found:
+        #     return schedule
+        #
+        # else:
+        #     plan.initialize_schedule(plan.courses)
+
+
+
         lecture_counter = 0
         counter = 0
         break_counter = 0
@@ -271,13 +350,17 @@ class Plan():
         timeslot_counter = 0
 
         for e in range(len(lectures)):
+
             found = False
             for b in range(DAYS):
+                location = []
+                slots_allowed = True
                 for c in range(TIME_SLOTS):
-                    allowed = True
+                    rooms_allowed = True
                     # availibility = True
-                    location = []
+
                     for d in range(ROOMS):
+
                         # if the slot in the schedule is empty
                         if schedule[b][c][d].name == '-':
                             # print("in if1")
@@ -288,6 +371,7 @@ class Plan():
 
 
                         elif lectures[e].name in schedule[b][c][d].name:
+
                             allowed = False
                             # break_counter += 1
                             break
@@ -298,43 +382,49 @@ class Plan():
                         schedule[b][location[0]][location[1]] = lectures[e]
                         # lecture_counter += 1
 
-                        # b -= day_counter
-                        # d -= break_counter
-                        # c -= timeslot_counter
-                        # day_counter = 0
-                        # break_counter = 0
-                        # timeslot_counter = 0
-                        found = True
+                            rooms_allowed = False
+                            break
 
+                    if not rooms_allowed:
+                        slots_allowed = False
                         break
 
-                    #
-                    # elif c == 3:
-                    #     # print("in elif2")
-                    #     # day_counter += 1
-                    #     break
+                if slots_allowed and bool(location):
 
-                    # else:
-                    #     # print("in else2")
-                    #     # timeslot_counter += 1
-
-                if found:
+                        # print("in if2")
+                    schedule[b][location[0]][location[1]] = lectures[e]
+                    found = True
                     break
-                    # print("in if3")
-                    # if lecture_counter == len(lectures):
-                    #     # print("in if 4")
-                    #     return schedule
-                    # else:
-                    #     # print("in else4")
-                    #     plan.initialize_schedule(plan.courses)
 
+
+            if not found:
+                print(e)
+                print("not found")
+
+                plan.initialize_schedule(plan.courses)
 
         if found:
+            print("laatste found")
             return schedule
 
         else:
             plan.initialize_schedule(plan.courses)
 
+<<<<<<< HEAD
+=======
+
+
+
+
+
+
+
+
+
+
+
+
+>>>>>>> bc8c13109b2375163ab59da144408f4158bf8d04
                             # makes a new schedule if it failed
 
 
