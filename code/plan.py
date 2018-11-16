@@ -163,6 +163,7 @@ class Plan():
         # schedule gevuld moet worden. Doordat lectures en other_sessions nu gescheieden
         # zijn kunnen eerst de lectures gevuld worden en daarna pas de rest
         plan.fill_schedule(schedule, total, other_sessions, empty_sessions)
+
         plan.schedule_counter += 1
 
         return schedule, total, other_sessions, empty_sessions
@@ -263,12 +264,8 @@ class Plan():
         #
         # return schedule
 
-        # lecture_counter = 0
-        # counter = 0
-        # break_counter = 0
-        # day_counter = 0
-        # timeslot_counter = 0
-        #
+
+        # Verdelen over slots als hard constraint
         # for e in range(len(lectures)):
         #     found = False
         #     for b in range(DAYS):
@@ -342,12 +339,9 @@ class Plan():
 
 
 
-        lecture_counter = 0
-        counter = 0
-        break_counter = 0
-        day_counter = 0
-        timeslot_counter = 0
 
+
+        # verdelen over dagen als hard constraint
         for e in range(len(lectures)):
 
             found = False
@@ -369,8 +363,8 @@ class Plan():
                                 location.append(d)
 
 
-                        elif lectures[e].name in schedule[b][c][d].name:
-
+                        elif lectures[e].name == schedule[b][c][d].name or
+                        schedule[b][c][d].name in lectures[e].mutual_courses:
                             rooms_allowed = False
                             break
 
@@ -386,10 +380,12 @@ class Plan():
                     break
 
 
+
+
             if not found:
                 print(e)
                 print("not found")
-        
+
                 plan.initialize_schedule(plan.courses)
 
         if found:
