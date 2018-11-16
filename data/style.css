@@ -18,5 +18,8 @@
 
 .style tr:hover {
     background: silver;
-    cursor: pointer;
+}
+
+.style th{
+  background: silver
 }
