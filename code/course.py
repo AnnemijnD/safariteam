@@ -7,7 +7,7 @@ class Course(object):
     Representation of a course in Session.
     """
 
-    def __init__(self, name, course_id, lecture, tutorial, practical, max_students, mutual_courses):
+    def __init__(self, name, course_id, lecture, tutorial, practical, max_students):
         self.name = name
         self.course_id = course_id
         self.lecture = lecture
@@ -64,8 +64,9 @@ class Course(object):
             if row == 'x':
                 # print(df.index[row_counter])
                 mutual_courses.append(df.index[row_counter - 1])
-        # 
+
         # for row in df.values:
         #     print(row)
+
 
         return mutual_courses

@@ -49,10 +49,9 @@ class Plan():
                 max_students = row[3]
                 practical = int(row[4])
                 course_id = id_counter
-                mutual_courses = []
 
                 # Use Course class to create objects for every course
-                course = Course(name, course_id, lecture, tutorial, practical, max_students, mutual_courses)
+                course = Course(name, course_id, lecture, tutorial, practical, max_students)
                 courses_list.append(course)
                 # Count id_course
                 id_counter += 1
