@@ -49,9 +49,10 @@ class Plan():
                 max_students = row[3]
                 practical = int(row[4])
                 course_id = id_counter
+                mutual_courses = []
 
                 # Use Course class to create objects for every course
-                course = Course(name, course_id, lecture, tutorial, practical, max_students)
+                course = Course(name, course_id, lecture, tutorial, practical, max_students, mutual_courses)
                 courses_list.append(course)
                 # Count id_course
                 id_counter += 1
@@ -131,7 +132,7 @@ class Plan():
 
         # shuffle de lectures zodat ze random zijn
         lectures = lecture_sessions[:]
-        # random.shuffle(lectures)
+        random.shuffle(lectures)
         # TODO: lijst maken met eerst grote vakken!!
 
         total = []
@@ -162,10 +163,10 @@ class Plan():
         # Je geeft dus aan deze functie een leeg schedule mee en de sessions waarmee
         # schedule gevuld moet worden. Doordat lectures en other_sessions nu gescheieden
         # zijn kunnen eerst de lectures gevuld worden en daarna pas de rest
-        plan.fill_schedule(schedule, lecture_sessions, other_sessions, empty_sessions)
+        plan.fill_schedule(schedule, total, other_sessions, empty_sessions)
         plan.schedule_counter += 1
 
-        return schedule, lecture_sessions, other_sessions, empty_sessions
+        return schedule, total, other_sessions, empty_sessions
 
 
     def fill_schedule(self, schedule, lectures, other_sessions, empty_sessions):
@@ -268,62 +269,6 @@ class Plan():
         break_counter = 0
         day_counter = 0
         timeslot_counter = 0
-<<<<<<< HEAD
-        d_counter = 0
-        temp = 0
-        for b in range(DAYS):
-            for c in range(TIME_SLOTS):
-                for d in range(ROOMS):
-
-                    # if all the sessions are scheduled return schedule
-                    if lecture_counter is len(lectures):
-                        return schedule
-
-                    # if the slot in the schedule is empty
-                    if schedule[b][c][d].name == '-':
-
-                        #  loop through the rooms
-                        for e in schedule[b][c]:
-
-                            # check if the same course is already in that slot
-                            if lectures[lecture_counter].name in e.name:
-                                print(lectures[lecture_counter].name in e.name)
-
-                                d_counter += 1
-                                c += 1
-                                timeslot_counter += 1
-                                if c > 3:
-                                    b += 1
-                                    day_counter += 1
-                                    c = 0
-                                # makes a new schedule if it failed
-                                if b > 4:
-                                    plan.initialize_schedule(plan.courses)
-
-
-                        # set the session in the schedule
-                        schedule[b][c][d] = lectures[lecture_counter]
-                        lecture_counter += 1
-
-                    print(b,c,d)
-
-
-
-                # QUINTEN!: is dit sneller in een if statement?
-                d %= 7
-
-                #  returns to the previous timeslot/day in the loop if it skipped one
-                if timeslot_counter > 0:
-                    c -= timeslot_counter
-                    timeslot_counter = 0
-            if day_counter > 0:
-                b -= 1
-                day_counter = 0
-
-            # if all the sessions are scheduled return schedule
-            if lecture_counter is len(lectures):
-                return schedule
-=======
 
         for e in range(len(lectures)):
             found = False
@@ -333,7 +278,6 @@ class Plan():
                     # availibility = True
                     location = []
                     for d in range(ROOMS):
-                        print(f'elke keer d:{b} {c} {d}')
                         # if the slot in the schedule is empty
                         if schedule[b][c][d].name == '-':
                             # print("in if1")
@@ -344,16 +288,12 @@ class Plan():
 
 
                         elif lectures[e].name in schedule[b][c][d].name:
-                            print(f"schedulename: {schedule[b][c][d].name}")
-                            print(f"schedulename: {lectures[e].name}")
-                            print("in elif1")
                             allowed = False
                             # break_counter += 1
                             break
 
 
                     if allowed and bool(location):
-                        print(f'gevonden:{b} {c} {d}')
                         # print("in if2")
                         schedule[b][location[0]][location[1]] = lectures[e]
                         # lecture_counter += 1
@@ -394,21 +334,6 @@ class Plan():
 
         else:
             plan.initialize_schedule(plan.courses)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
                             # makes a new schedule if it failed
 
@@ -477,12 +402,10 @@ class Plan():
         #                 # if all the sessions are scheduled return schedule
         #                 if lecture_counter is len(lectures):
         #                     return schedule
->>>>>>> 58745f2834a67ed9dacccaf35e29ba4dab7cfbcb
 
     def random_schedule(self, schedule, sessions):
         """
         Generates a random schedule. Assigns every session to a random timeslot.
-
         # Hou bij welke random nummers al geweest zijn. De while loop
         # Zorgt ervoor dat er een random nummer wordt gemaakt die nog
         # niet is geweest.
@@ -502,7 +425,6 @@ class Plan():
     def get_session(self, sessions):
         """
         Generates a random schedule. Assigns every session to a random timeslot.
-
         # Hou bij welke random nummers al geweest zijn. De while loop
         # Zorgt ervoor dat er een random nummer wordt gemaakt die nog
         # niet is geweest.
@@ -617,13 +539,6 @@ class Plan():
         HTML(df_html)
 
 
-        # with open('test.csv', 'w', newline='') as csvfile:
-        #     writer = csv.writer(csvfile, delimiter=',')
-        #     for days in schedule:
-        #         for rooms in days:
-        #             for timeslots in rooms:
-        #                 writer.writerow(timeslots)
-
     # def fill_rooms_and_days(self, schedule):
     #
     #     #  -------------- DIT IS VOOR HOE HET ERUIT GAAT ZIEN ---------------------------
@@ -686,7 +601,3 @@ if __name__ == "__main__":
 
     print("It took:", now - then, "seconds")
     print("Script made", plan.schedule_counter, "schedules until the right was found.")
-
-    # Test get_day en get_slot
-    # print(plan.get_day(0))
-    # print(plan.get_slot(0, 0))
