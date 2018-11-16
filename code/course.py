@@ -64,13 +64,5 @@ class Course(object):
             if row == 'x':
                 # print(df.index[row_counter])
                 mutual_courses.append(df.index[row_counter - 1])
-<<<<<<< HEAD
-
-=======
-        #
->>>>>>> 9f795ed7a1c00998d9c15780a46b76ea31d94de9
-        # for row in df.values:
-        #     print(row)
-
 
         return mutual_courses

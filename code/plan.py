@@ -130,8 +130,11 @@ class Plan():
 
 
         # shuffle de lectures zodat ze random zijn
+        # Make copy of sessions and shuffle
         lectures = lecture_sessions[:]
-        # random.shuffle(lectures)
+        others = other_sessions[:]
+        random.shuffle(lectures)
+        random.shuffle(other_sessions)
 
         # TODO: lijst maken met eerst grote vakken!!
 
@@ -164,8 +167,9 @@ class Plan():
         # schedule gevuld moet worden. Doordat lectures en other_sessions nu gescheieden
         # zijn kunnen eerst de lectures gevuld worden en daarna pas de rest
         plan.fill_schedule(schedule, total, other_sessions, empty_sessions, courses)
-
         plan.schedule_counter += 1
+
+
 
         return schedule, total, other_sessions, empty_sessions
 
@@ -367,13 +371,11 @@ class Plan():
                                 location.append(c)
                                 location.append(d)
 
-
                         elif lectures[e].name == schedule[b][c][d].name:
                             slots_allowed = False
                             break
 
                         elif schedule[b][c][d].name in mutual_courses_session:
-                            print("hoi")
                             rooms_allowed = False
                             break
 
@@ -382,7 +384,6 @@ class Plan():
                         schedule[b][location[0]][location[1]] = lectures[e]
                         found = True
                         break
-
 
                     if not slots_allowed:
                         break
@@ -400,25 +401,15 @@ class Plan():
                 print("not found")
                 print(lectures[e])
                 return schedule
-
+                plan.schedule_counter += 1
                 plan.initialize_schedule(plan.courses)
 
         if found:
-            print("laatste found")
             return schedule
 
         else:
+            plan.schedule_counter += 1
             plan.initialize_schedule(plan.courses)
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -687,4 +678,4 @@ if __name__ == "__main__":
     now = time.time()
 
     print("It took:", now - then, "seconds")
-    print("Script made", plan.schedule_counter, "schedules until the right was found.")
+    print("Script made", plan.schedule_counter, "schedule(s) until the right was found.")
