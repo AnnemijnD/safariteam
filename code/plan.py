@@ -401,23 +401,21 @@ class Plan():
 
         return schedule
 
-
-    def get_slot(self, slot, day):
-        """
-        Returns the schedule of a specific slot on a specific day.
-        """
-
-        # NET ALS BIJ DAYS BEDENKEN OF WE HET VIA NAAM OF NUMMER WILLEN DOEN
-        #  als we met nummer doen hoeven we de hele if niet meer te doen
-        if slot == "9:00 - 11:00":
-            i = 0
-        elif slot == "11:00 - 13:00":
-            i = 1
-        elif slot == "13:00 - 15:00":
-            i = 2
-        else:
-            i = 3
-        return plan.get_day(day)[(ROOMS * i):(ROOMS * (i + 1))]
+    # WERKT NIET EN IS EIGENLIJK OOK NIET NODIG WANT RETURNED ALLEEN IETS, JOE
+    # def get_day(schedule, day):
+    #     """
+    #     Returns the schedule of a specific day. Where the day is an integer
+    #     between 0 and 4.
+    #     """
+    #     return schedule[day]
+    #
+    # def get_slot(slot, day):
+    #     """
+    #     Returns the schedule of a specific slot on a specific day.
+    #     The slot will be an integer between 0 and 3 and the day an integer
+    #     between 0 and 4.
+    #     """
+    #     return plan.get_day(day)[slot]
 
     def load_individual(self):
         """
@@ -510,3 +508,7 @@ if __name__ == "__main__":
 
     print("It took:", now - then, "seconds")
     print("Script made", plan.schedule_counter, "schedules until the right was found.")
+
+    # Test get_day en get_slot
+    print(plan.get_day(0))
+    print(plan.get_slot(0, 0))
