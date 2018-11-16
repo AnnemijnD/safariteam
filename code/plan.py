@@ -265,9 +265,15 @@ class Plan():
         counter = 0
         day_counter = 0
         timeslot_counter = 0
+        d_counter = 0
+        temp = 0
         for b in range(DAYS):
             for c in range(TIME_SLOTS):
                 for d in range(ROOMS):
+
+                    # if all the sessions are scheduled return schedule
+                    if lecture_counter is len(lectures):
+                        return schedule
 
                     # if the slot in the schedule is empty
                     if schedule[b][c][d].name == '-':
@@ -277,36 +283,42 @@ class Plan():
 
                             # check if the same course is already in that slot
                             if lectures[lecture_counter].name in e.name:
+                                print(lectures[lecture_counter].name in e.name)
+
+                                d_counter += 1
                                 c += 1
                                 timeslot_counter += 1
                                 if c > 3:
                                     b += 1
                                     day_counter += 1
                                     c = 0
-
-
                                 # makes a new schedule if it failed
                                 if b > 4:
                                     plan.initialize_schedule(plan.courses)
 
+
                         # set the session in the schedule
                         schedule[b][c][d] = lectures[lecture_counter]
                         lecture_counter += 1
-                        # QUINTEN!: is dit sneller in een if statement?
-                        d += 1
-                        d %= 7
 
-                        #  returns to the previous timeslot/day in the loop if it skipped one
-                        if timeslot_counter > 0:
-                            c -= timeslot_counter
-                            timeslot_counter = 0
-                        if day_counter > 0:
-                            b -= day_counter
-                            day_counter = 0
+                    print(b,c,d)
 
-                        # if all the sessions are scheduled return schedule
-                        if lecture_counter is len(lectures):
-                            return schedule
+
+
+                # QUINTEN!: is dit sneller in een if statement?
+                d %= 7
+
+                #  returns to the previous timeslot/day in the loop if it skipped one
+                if timeslot_counter > 0:
+                    c -= timeslot_counter
+                    timeslot_counter = 0
+            if day_counter > 0:
+                b -= 1
+                day_counter = 0
+
+            # if all the sessions are scheduled return schedule
+            if lecture_counter is len(lectures):
+                return schedule
 
     def random_schedule(self, schedule, sessions):
         """
