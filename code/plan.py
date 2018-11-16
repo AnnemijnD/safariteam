@@ -372,16 +372,6 @@ class Plan():
 
                         elif lectures[e].name in schedule[b][c][d].name:
 
-                            allowed = False
-                            # break_counter += 1
-                            break
-
-
-                    if allowed and bool(location):
-                        # print("in if2")
-                        schedule[b][location[0]][location[1]] = lectures[e]
-                        # lecture_counter += 1
-
                             rooms_allowed = False
                             break
 
@@ -410,8 +400,6 @@ class Plan():
         else:
             plan.initialize_schedule(plan.courses)
 
-<<<<<<< HEAD
-=======
 
 
 
@@ -424,7 +412,6 @@ class Plan():
 
 
 
->>>>>>> bc8c13109b2375163ab59da144408f4158bf8d04
                             # makes a new schedule if it failed
 
 
