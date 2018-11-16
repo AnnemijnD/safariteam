@@ -29,5 +29,5 @@ class Session(object):
     def __getitem__(self, day):
         return self.day
 
-    def __str__(self):        
-        return f'{self.name}, {self.type}'
+    def __str__(self):
+        return f'{self.name}:{self.type}'

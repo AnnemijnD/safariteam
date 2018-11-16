@@ -130,7 +130,7 @@ class Plan():
 
         # shuffle de lectures zodat ze random zijn
         lectures = lecture_sessions[:]
-        random.shuffle(lectures)
+        # random.shuffle(lectures)
         # TODO: lijst maken met eerst grote vakken!!
 
         total = []
@@ -160,10 +160,10 @@ class Plan():
         # Je geeft dus aan deze functie een leeg schedule mee en de sessions waarmee
         # schedule gevuld moet worden. Doordat lectures en other_sessions nu gescheieden
         # zijn kunnen eerst de lectures gevuld worden en daarna pas de rest
-        plan.fill_schedule(schedule, total, other_sessions, empty_sessions)
+        plan.fill_schedule(schedule, lecture_sessions, other_sessions, empty_sessions)
         plan.schedule_counter += 1
 
-        return schedule, total, other_sessions, empty_sessions
+        return schedule, lecture_sessions, other_sessions, empty_sessions
 
 
     def fill_schedule(self, schedule, lectures, other_sessions, empty_sessions):
@@ -277,13 +277,13 @@ class Plan():
 
                             # check if the same course is already in that slot
                             if lectures[lecture_counter].name in e.name:
-                                print(lectures[lecture_counter].name in e.name)
                                 c += 1
                                 timeslot_counter += 1
                                 if c > 3:
                                     b += 1
                                     day_counter += 1
                                     c = 0
+
 
                                 # makes a new schedule if it failed
                                 if b > 4:
@@ -447,6 +447,13 @@ class Plan():
         df_html = df.to_html('../data/schedule.html')
         HTML(df_html)
 
+
+        # with open('test.csv', 'w', newline='') as csvfile:
+        #     writer = csv.writer(csvfile, delimiter=',')
+        #     for days in schedule:
+        #         for rooms in days:
+        #             for timeslots in rooms:
+        #                 writer.writerow(timeslots)
 
     # def fill_rooms_and_days(self, schedule):
     #
