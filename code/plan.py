@@ -607,14 +607,30 @@ class Plan():
 
 
         df = pd.DataFrame(schedule)
-        pd.set_option('display.max_colwidth',300)
+        pd.set_option('display.max_colwidth',350)
         df.columns = ['9:00 - 11:00', '11:00 - 13:00', '13:00 - 15:00', '15:00 - 17:00']
         df.index = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"]
         # Transpose rows and columns
         df = df.T
 
-        df_html = df.to_html('../data/schedule.html')
-        HTML(df_html)
+        html_string = '''
+        <html>
+          <head><title>Schedule</title></head>
+          <link rel="stylesheet" type="text/css" href="../data/style.css" href="https://www.w3schools.com/w3css/4/w3.css"/>
+          <body>
+            {table}
+          </body>
+        </html>.
+        '''
+
+        with open('../data/schedule.html', 'w') as f:
+            f.write(html_string.format(table=df.to_html(classes='style')))
+
+        # Even Quinten vragen welke van de twee beter is?
+        # df_html = df.to_html('../data/schedule.html')
+        # HTML(df_html)
+
+
 
 
     # def fill_rooms_and_days(self, schedule):
