@@ -131,7 +131,8 @@ class Plan():
 
         # shuffle de lectures zodat ze random zijn
         lectures = lecture_sessions[:]
-        random.shuffle(lectures)
+        # random.shuffle(lectures)
+
         # TODO: lijst maken met eerst grote vakken!!
 
         total = []
@@ -162,14 +163,14 @@ class Plan():
         # Je geeft dus aan deze functie een leeg schedule mee en de sessions waarmee
         # schedule gevuld moet worden. Doordat lectures en other_sessions nu gescheieden
         # zijn kunnen eerst de lectures gevuld worden en daarna pas de rest
-        plan.fill_schedule(schedule, total, other_sessions, empty_sessions)
+        plan.fill_schedule(schedule, total, other_sessions, empty_sessions, courses)
 
         plan.schedule_counter += 1
 
         return schedule, total, other_sessions, empty_sessions
 
 
-    def fill_schedule(self, schedule, lectures, other_sessions, empty_sessions):
+    def fill_schedule(self, schedule, lectures, other_sessions, empty_sessions, courses):
         """
         Fill empty schedule with sessions. Function will begin to fill all the lectures
         and will go on to fill other sessions.
@@ -265,9 +266,12 @@ class Plan():
         # return schedule
 
 
-        # Verdelen over slots als hard constraint
+        # # Verdelen over slots als hard constraint
         # for e in range(len(lectures)):
         #     found = False
+        #     for course in courses:
+        #         if lectures[e].name == course.name:
+        #            mutual_courses_session = course.mutual_courses
         #     for b in range(DAYS):
         #         for c in range(TIME_SLOTS):
         #             rooms_allowed = True
@@ -284,13 +288,11 @@ class Plan():
         #                         location.append(d)
         #
         #
-        #                 elif lectures[e].name in schedule[b][c][d].name:
-        #                     print(f"schedulename: {schedule[b][c][d].name}")
-        #                     print(f"schedulename: {lectures[e].name}")
-        #                     print("in elif1")
+        #                 elif lectures[e].name == schedule[b][c][d].name or schedule[b][c][d].name in mutual_courses_session:
         #                     rooms_allowed = False
-        #                     # break_counter += 1
         #                     break
+        #
+        #
         #
         #
         #             if rooms_allowed and bool(location):
@@ -336,14 +338,17 @@ class Plan():
         #
         # else:
         #     plan.initialize_schedule(plan.courses)
-
-
-
+        #
+        #
+        #
 
 
         # verdelen over dagen als hard constraint
         for e in range(len(lectures)):
 
+            for course in courses:
+                if lectures[e].name == course.name:
+                    mutual_courses_session = course.mutual_courses
             found = False
             for b in range(DAYS):
                 location = []
@@ -363,13 +368,23 @@ class Plan():
                                 location.append(d)
 
 
-                        elif lectures[e].name == schedule[b][c][d].name or
-                        schedule[b][c][d].name in lectures[e].mutual_courses:
+                        elif lectures[e].name == schedule[b][c][d].name:
+                            slots_allowed = False
+                            break
+
+                        elif schedule[b][c][d].name in mutual_courses_session:
+                            print("hoi")
                             rooms_allowed = False
                             break
 
-                    if not rooms_allowed:
-                        slots_allowed = False
+                    if rooms_allowed and bool(location):
+
+                        schedule[b][location[0]][location[1]] = lectures[e]
+                        found = True
+                        break
+
+
+                    if not slots_allowed:
                         break
 
                 if slots_allowed and bool(location):
@@ -383,6 +398,8 @@ class Plan():
             if not found:
                 print(e)
                 print("not found")
+                print(lectures[e])
+                return schedule
 
                 plan.initialize_schedule(plan.courses)
 
