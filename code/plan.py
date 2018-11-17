@@ -132,13 +132,9 @@ class Plan():
         # shuffle de lectures zodat ze random zijn
         # Make copy of sessions and shuffle
         lectures = lecture_sessions[:]
-<<<<<<< HEAD
-        random.shuffle(lectures)
-=======
         others = other_sessions[:]
         random.shuffle(lectures)
         random.shuffle(other_sessions)
->>>>>>> 650a6f44c91ac9cee6e05d997f5582e36b9d03af
 
         # TODO: lijst maken met eerst grote vakken!!
 
@@ -383,14 +379,16 @@ class Plan():
                             rooms_allowed = False
                             break
 
+                    if not slots_allowed:
+                        break
+                        
                     if rooms_allowed and bool(location):
 
                         schedule[b][location[0]][location[1]] = lectures[e]
                         found = True
                         break
 
-                    if not slots_allowed:
-                        break
+
 
                 if slots_allowed and bool(location):
 
