@@ -381,7 +381,7 @@ class Plan():
 
                     if not slots_allowed:
                         break
-                        
+
                     if rooms_allowed and bool(location):
 
                         schedule[b][location[0]][location[1]] = lectures[e]
@@ -602,11 +602,10 @@ class Plan():
             for row in wishes:
                 print(row)
 
-    def save_html(self, schedule):
+    def save_html(self, schedule, rooms):
         """
         Print into csv-file to visualize schedule.
         """
-
 
         df = pd.DataFrame(schedule)
         pd.set_option('display.max_colwidth',350)
@@ -614,6 +613,16 @@ class Plan():
         df.index = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"]
         # Transpose rows and columns
         df = df.T
+
+        # Als je het rooster van een specifieke dag wilt printen:
+        i = 0
+        print("Rooster van maandag per lokaal:")
+        tags = df['Monday'].apply(pd.Series)
+        # tags = tags.rename(columns = lambda x : 'Room ' + str(x))
+        tags.columns = [rooms[i], rooms[i+1], rooms[i+2], rooms[i+3], rooms[i+4], rooms[i+5], rooms[i+6]]
+        with pd.option_context('display.max_rows', None, 'display.max_columns', None):
+            print(tags)
+
 
         html_string = '''
         <html>
@@ -628,11 +637,39 @@ class Plan():
         with open('../data/schedule.html', 'w') as f:
             f.write(html_string.format(table=df.to_html(classes='style')))
 
+        # schedule = []
+        # for a in range(TIME_SLOTS):
+        #     for b in range(DAYS):
+        #         schedule.append([plan.get_cel(df, a, b)])
+        # print(schedule)
+        #
+        # with open('../data/test.csv', 'w') as csv_file:
+        #     writer = csv.writer(csv_file, delimiter=' ')
+        #     writer.writerow(["Test"])
+        #     for i in range(len(schedule)):
+        #         writer.writerow([schedule[i], schedule[i + 1]])
+
+
         # Even Quinten vragen welke van de twee beter is?
         # df_html = df.to_html('../data/schedule.html')
         # HTML(df_html)
 
-
+    # def get_cel(self, df, row, column):
+    #
+    #     # Hahah lol dit is echt meeeegaaaaaa lelijk dus moet even in een for loop
+    #
+    #     a = row
+    #     j = column
+    #     i = 0
+    #     cel = rooms[i] + ': ' + str(df.iat[a, j][i]) + '\n' \
+    #     + rooms[i + 1] + ': ' + str(df.iat[a ,j][i + 1]) + '\n' \
+    #     + rooms[i + 2] + ': ' + str(df.iat[a, j][i + 2]) + '\n' \
+    #     + rooms[i + 3] + ': ' + str(df.iat[a, j][i + 3]) + '\n' \
+    #     + rooms[i + 4] + ': ' + str(df.iat[a, j][i + 4]) + '\n' \
+    #     + rooms[i + 5] + ': ' + str(df.iat[a, j][i + 5]) + '\n' \
+    #     + rooms[i + 6] + ': ' + str(df.iat[a, j][i + 6])
+    #
+    #     return str(cel)
 
 
     # def fill_rooms_and_days(self, schedule):
@@ -688,10 +725,10 @@ if __name__ == "__main__":
     plan.courses = plan.load_courses()
     schedule, lectures, other_sessions, empty_sessions = plan.initialize_schedule(plan.courses)
 
-    plan.load_rooms()
+    rooms = plan.load_rooms()
 
     # Make a html file for the schedule
-    plan.save_html(schedule)
+    plan.save_html(schedule, rooms)
 
     now = time.time()
 
