@@ -130,8 +130,15 @@ class Plan():
 
 
         # shuffle de lectures zodat ze random zijn
+        # Make copy of sessions and shuffle
         lectures = lecture_sessions[:]
+<<<<<<< HEAD
         random.shuffle(lectures)
+=======
+        others = other_sessions[:]
+        random.shuffle(lectures)
+        random.shuffle(other_sessions)
+>>>>>>> 650a6f44c91ac9cee6e05d997f5582e36b9d03af
 
         # TODO: lijst maken met eerst grote vakken!!
 
@@ -164,8 +171,9 @@ class Plan():
         # schedule gevuld moet worden. Doordat lectures en other_sessions nu gescheieden
         # zijn kunnen eerst de lectures gevuld worden en daarna pas de rest
         plan.fill_schedule(schedule, total, other_sessions, empty_sessions, courses)
-
         plan.schedule_counter += 1
+
+
 
         return schedule, total, other_sessions, empty_sessions
 
@@ -367,13 +375,11 @@ class Plan():
                                 location.append(c)
                                 location.append(d)
 
-
                         elif lectures[e].name == schedule[b][c][d].name:
                             slots_allowed = False
                             break
 
                         elif schedule[b][c][d].name in mutual_courses_session:
-                            print("hoi")
                             rooms_allowed = False
                             break
 
@@ -382,7 +388,6 @@ class Plan():
                         schedule[b][location[0]][location[1]] = lectures[e]
                         found = True
                         break
-
 
                     if not slots_allowed:
                         break
@@ -400,25 +405,15 @@ class Plan():
                 print("not found")
                 print(lectures[e])
                 return schedule
-
+                plan.schedule_counter += 1
                 plan.initialize_schedule(plan.courses)
 
         if found:
-            print("laatste found")
             return schedule
 
         else:
+            plan.schedule_counter += 1
             plan.initialize_schedule(plan.courses)
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -493,7 +488,6 @@ class Plan():
     def random_schedule(self, schedule, sessions):
         """
         Generates a random schedule. Assigns every session to a random timeslot.
-
         # Hou bij welke random nummers al geweest zijn. De while loop
         # Zorgt ervoor dat er een random nummer wordt gemaakt die nog
         # niet is geweest.
@@ -513,7 +507,6 @@ class Plan():
     def get_session(self, sessions):
         """
         Generates a random schedule. Assigns every session to a random timeslot.
-
         # Hou bij welke random nummers al geweest zijn. De while loop
         # Zorgt ervoor dat er een random nummer wordt gemaakt die nog
         # niet is geweest.
@@ -618,14 +611,30 @@ class Plan():
 
 
         df = pd.DataFrame(schedule)
-        pd.set_option('display.max_colwidth',300)
+        pd.set_option('display.max_colwidth',350)
         df.columns = ['9:00 - 11:00', '11:00 - 13:00', '13:00 - 15:00', '15:00 - 17:00']
         df.index = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"]
         # Transpose rows and columns
         df = df.T
 
-        df_html = df.to_html('../data/schedule.html')
-        HTML(df_html)
+        html_string = '''
+        <html>
+          <head><title>Schedule</title></head>
+          <link rel="stylesheet" type="text/css" href="../data/style.css" href="https://www.w3schools.com/w3css/4/w3.css"/>
+          <body>
+            {table}
+          </body>
+        </html>.
+        '''
+
+        with open('../data/schedule.html', 'w') as f:
+            f.write(html_string.format(table=df.to_html(classes='style')))
+
+        # Even Quinten vragen welke van de twee beter is?
+        # df_html = df.to_html('../data/schedule.html')
+        # HTML(df_html)
+
+
 
 
     # def fill_rooms_and_days(self, schedule):
@@ -689,8 +698,4 @@ if __name__ == "__main__":
     now = time.time()
 
     print("It took:", now - then, "seconds")
-    print("Script made", plan.schedule_counter, "schedules until the right was found.")
-
-    # Test get_day en get_slot
-    print(plan.get_day(0))
-    print(plan.get_slot(0, 0))
+    print("Script made", plan.schedule_counter, "schedule(s) until the right was found.")
