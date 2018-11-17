@@ -131,7 +131,7 @@ class Plan():
 
         # shuffle de lectures zodat ze random zijn
         lectures = lecture_sessions[:]
-        # random.shuffle(lectures)
+        random.shuffle(lectures)
 
         # TODO: lijst maken met eerst grote vakken!!
 
