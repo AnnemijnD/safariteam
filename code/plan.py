@@ -95,11 +95,11 @@ class Plan():
             try:
                 name = session_list[i].name
             except IndexError:
-                name = '-'
+                name = ' '
             try:
                 type = session_list[i].type
             except IndexError:
-                type = '-'
+                type = ' '
             room = 'Empty room'
             timeslot = 'Empty timeslot'
             day = 'Empty day'
@@ -146,8 +146,8 @@ class Plan():
         # Dit stukje wordt gebruikt in de nested for loop waarbij aan elke cel
         # een sessie wordt meegegeven.
         for i in range(SLOTS):
-            name = '-'
-            type = '-'
+            name = ' '
+            type = ' '
             room = 'None'
             timeslot = 'None'
             day = 'None'
@@ -238,7 +238,7 @@ class Plan():
         #                         plan.initialize_schedule(plan.courses)
         #                     break
         #                 else:
-        #                     if schedule[i][j][k].name == '-':
+        #                     if schedule[i][j][k].name == ' ':
         #                         locations.append([j,k])
         #                         # print(locations)
         #             if day_counter > 0:
@@ -253,7 +253,7 @@ class Plan():
         #
         #     # for j in range(TIME_SLOTS):
         #     #     for k in range(ROOMS):
-        #     #         if schedule[i][j][k].name == '-':
+        #     #         if schedule[i][j][k].name == ' ':
         #     #             schedule[i][j][k] = lectures[lecture_counter]
         #     #             lecture_counter += 1
         #     #             i -= day_counter
@@ -284,7 +284,7 @@ class Plan():
         #             for d in range(ROOMS):
         #                 print(f'elke keer d:{b} {c} {d}')
         #                 # if the slot in the schedule is empty
-        #                 if schedule[b][c][d].name == '-':
+        #                 if schedule[b][c][d].name == ' ':
         #                     # print("in if1")
         #                     if not bool(location):
         #                         # print("in if1.1")
@@ -364,7 +364,7 @@ class Plan():
                     for d in range(ROOMS):
 
                         # if the slot in the schedule is empty
-                        if schedule[b][c][d].name == '-':
+                        if schedule[b][c][d].name == ' ':
                             # print("in if1")
                             if not bool(location):
                                 # print("in if1.1")
@@ -445,7 +445,7 @@ class Plan():
         #         for d in range(ROOMS):
         #
         #             # if the slot in the schedule is empty
-        #             if schedule[b][c][d].name == '-':
+        #             if schedule[b][c][d].name == ' ':
         #
         #                 #  loop through the rooms
         #                 for e in schedule[b][c]:
@@ -533,10 +533,10 @@ class Plan():
         keep_track_of_courses = []
         for row in schedule:
             # Controleer niet op lege sessions, dus sla deze over
-            if row.name is not '-':
+            if row.name is not ' ':
                 keep_track_of_courses.append([row.name, row.timeslot, row.day])
         for row in schedule:
-            if row.name is not '-':
+            if row.name is not ' ':
                 current_row = [row.name, row.timeslot, row.day]
                 for course in keep_track_of_courses:
                     # Intersection gebruiken?
@@ -555,7 +555,7 @@ class Plan():
         # lectures = []
         # counter = 0
         # for row in schedule:
-        #     if row.session is not '-' or row.type is not '-':
+        #     if row.session is not ' ' or row.type is not ' ':
         #         current_row = [row.session, row.type]
         #         if row.type == 'lecture':
         #             lectures.append(row.session)
@@ -614,14 +614,22 @@ class Plan():
         # Transpose rows and columns
         df = df.T
 
-        # Als je het rooster van een specifieke dag wilt printen:
+
         i = 0
-        print("Rooster van maandag per lokaal:")
         tags = df['Monday'].apply(pd.Series)
-        # tags = tags.rename(columns = lambda x : 'Room ' + str(x))
         tags.columns = [rooms[i], rooms[i+1], rooms[i+2], rooms[i+3], rooms[i+4], rooms[i+5], rooms[i+6]]
-        with pd.option_context('display.max_rows', None, 'display.max_columns', None):
-            print(tags)
+        tuesday = df['Tuesday'].apply(pd.Series)
+        tuesday.columns = [rooms[i], rooms[i+1], rooms[i+2], rooms[i+3], rooms[i+4], rooms[i+5], rooms[i+6]]
+        wednesday = df['Wednesday'].apply(pd.Series)
+        wednesday.columns = [rooms[i], rooms[i+1], rooms[i+2], rooms[i+3], rooms[i+4], rooms[i+5], rooms[i+6]]
+        thursday = df['Thursday'].apply(pd.Series)
+        thursday.columns = [rooms[i], rooms[i+1], rooms[i+2], rooms[i+3], rooms[i+4], rooms[i+5], rooms[i+6]]
+        friday = df['Friday'].apply(pd.Series)
+        friday.columns = [rooms[i], rooms[i+1], rooms[i+2], rooms[i+3], rooms[i+4], rooms[i+5], rooms[i+6]]
+
+        # Als je het rooster van een specifieke dag wilt printen:
+        # with pd.option_context('display.max_rows', None, 'display.max_columns', None):
+        #     print(tags)
 
 
         html_string = '''
@@ -636,6 +644,17 @@ class Plan():
 
         with open('../data/schedule.html', 'w') as f:
             f.write(html_string.format(table=df.to_html(classes='style')))
+            f.write("Monday:")
+            f.write(html_string.format(table=tags.to_html(classes='style')))
+            f.write("Tuesday")
+            f.write(html_string.format(table=tuesday.to_html(classes='style')))
+            f.write("Wednesday")
+            f.write(html_string.format(table=wednesday.to_html(classes='style')))
+            f.write("Thursday")
+            f.write(html_string.format(table=thursday.to_html(classes='style')))
+            f.write("Friday")
+            f.write(html_string.format(table=friday.to_html(classes='style')))
+
 
         # schedule = []
         # for a in range(TIME_SLOTS):
