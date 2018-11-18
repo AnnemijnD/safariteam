@@ -1,3 +1,7 @@
+SLOTS = 140
+TIME_SLOTS = 4
+DAYS = 5
+ROOMS = 7
 SPREAD_BONUS = 20
 
 
@@ -7,6 +11,7 @@ class Constraint(object):
     """
     def __init__(self, schedule):
         self.schedule = schedule
+        self.session_spread = self.session_spread_check(self.schedule)
 
 # Hier even een lijst met alle constraints:
 # 1. hoorcelleges voor werkcolleges en practica HARD
@@ -18,7 +23,7 @@ class Constraint(object):
 # Een fix_hard_constraints functie maken voor als na het soft maken van een
 # aantal constraints er niet meer wordt voldaan aan de hard constraints.
 
-    def session_spread_check(self, schedule):
+    def session_spread_check(schedule):
         # per course checken of die goed verspreid is
         # 1. weten hoeveel colleges het vak heeft
         # 2. checken of die goed verspreid zijn over de weeek
@@ -30,34 +35,52 @@ class Constraint(object):
         # 5 colleges --> nooit bonuspunten --> niet checken
 
         bonuspoints = 0
-        # IS HET NIET HANDIGER ALS WE ERGENS AL EEN COURSES LIST HEBBEN, NU
-        # OPNIEUW AANROEPEN IS BEETJE KUT.
+        # WILLEN WE LOAD_COURSES NIET ERGENS ANDERS DOEN DAN IN PLAN??
+        # NU KUNNEN WE HET NIET ECHT CHILL OPNIEUW AANROEPEN
         courses = plan.load_courses()
-        monday = schedule[0]
-        tuesday = schedule[1]
-        wednesday = schedule[2]
-        thursday = schedule[3]
-        friday = schedule[4]
+        monday = self.get_day(schedule, 0)
+        tuesday = self.get_day(schedule, 1)
+        wednesday = self.get_day(schedule, 2)
+        thursday = self.get_day(schedule, 3)
+        friday = self.get_day(schedule, 4)
         for course in courses:
             nmbr_sessions = course.sessions
 
             if nmbr_sessions == 2:
+                if course in monday:
+                    if course in thursday:
+                        bonuspoints += SPREAD_BONUS
+                elif course in tuesday:
+                    if course in friday:
+                        bonuspoints += SPREAD_BONUS
 
-                # DIT KAN NOG NIET WANT MONDAY IS LIJST MET LIJSTEN ERIN!
-                # --> GET_DAY FUNCTIE MAKEN DIE ER EEN LANGE LIJST VAN MAAKT!
-
-                # if course in monday:
-                #     if course in thursday:
-                #         bonuspoints += SPREAD_BONUS
-                # elif course in tuesday:
-                #     if course in friday:
-                #         bonuspoints += SPREAD_BONUS
-                # else:
-                #     bonuspoints += 0
-                pass
             elif nmbr_sessions == 3:
-                pass
+                if course in monday:
+                    if course in wednesday:
+                        if course in friday:
+                            bonuspoints += SPREAD_BONUS
+
             elif nmbr_sessions == 4:
-                pass
+                if (course in monday) and (course in tuesday) and (course in thursday) and (course in friday):
+                    bonuspoints += SPREAD_BONUS
             else:
                 bonuspoints += 0
+
+        return bonuspoints
+
+    def get_day(self, schedule, day):
+        """
+        Returns a linear list of the schedule of a specific day.
+
+        DIT GAAT PAS MOOI IN EEN LIJST ALS DE VAKKKEN NIET MEER ALS
+        VAKNAAM, VAKSOORT
+        IN HET ROOSTER STAAN. WANT NU WORDT HET AUTOMATISCH EEN LIJST MET
+        DAARIN LIJSTEN EN DAT WILLEN WE NIET.
+        """
+        all_days = []
+        for i in range(DAYS):
+            for j in range(TIME_SLOTS):
+                for k in range(ROOMS):
+                    all_days.append(schedule[i][j][k])
+                    print(schedule[i][j][k])
+        return all_days[TIME_SLOTS * ROOMS * day:TIME_SLOTS * ROOMS * (day + 1)]

@@ -1,6 +1,7 @@
 # Heuristieken 2018 -- Lesroosters
 # Namen: Annemijn, Sanne & Rebecca
 
+from constraint import Constraint
 from course import Course
 from session import Session
 from schedule import Schedule
@@ -572,23 +573,22 @@ class Plan():
 
         return schedule
 
-    def get_day(self, schedule, day):
-        """
-        Returns a linear list of the schedule of a specific day.
-
-        DIT GAAT PAS MOOI IN EEN LIJST ALS DE VAKKKEN NIET MEER ALS
-        VAKNAAM, VAKSOORT
-        IN HET ROOSTER STAAN. WANT NU WORDT HET AUTOMATISCH EEN LIJST MET
-        DAARIN LIJSTEN EN DAT WILLEN WE NIET.
-        """
-        all_days = []
-        for i in range(DAYS):
-            for j in range(TIME_SLOTS):
-                for k in range(ROOMS):
-                    all_days.append(schedule[i][j][k])
-                    print(schedule[i][j][k])
-        print(all_days[TIME_SLOTS * ROOMS * day:TIME_SLOTS * ROOMS * (day + 1)])
-        return all_days[TIME_SLOTS * ROOMS * day:TIME_SLOTS * ROOMS * (day + 1)]
+    # def get_day(self, schedule, day):
+    #     """
+    #     Returns a linear list of the schedule of a specific day.
+    #
+    #     DIT GAAT PAS MOOI IN EEN LIJST ALS DE VAKKKEN NIET MEER ALS
+    #     VAKNAAM, VAKSOORT
+    #     IN HET ROOSTER STAAN. WANT NU WORDT HET AUTOMATISCH EEN LIJST MET
+    #     DAARIN LIJSTEN EN DAT WILLEN WE NIET.
+    #     """
+    #     all_days = []
+    #     for i in range(DAYS):
+    #         for j in range(TIME_SLOTS):
+    #             for k in range(ROOMS):
+    #                 all_days.append(schedule[i][j][k])
+    #                 print(schedule[i][j][k])
+    #     return all_days[TIME_SLOTS * ROOMS * day:TIME_SLOTS * ROOMS * (day + 1)]
 
     # WERKT NIET EN IS EIGENLIJK OOK NIET NODIG WANT RETURNED ALLEEN IETS, JOE
     # def get_day(schedule, day):
@@ -699,5 +699,5 @@ if __name__ == "__main__":
     print("Script made", plan.schedule_counter, "schedules until the right was found.")
 
     # Test get_day en get_slot
-    print(plan.get_day(schedule, 0))
-    # print(plan.get_slot(0, 0))
+    # print(plan.get_day(schedule, 0))
+    print(Constraint.session_spread_check(schedule))
