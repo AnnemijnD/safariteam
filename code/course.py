@@ -7,23 +7,23 @@ class Course(object):
     Representation of a course in Session.
     """
 
-    def __init__(self, name, course_id, lecture, tutorial, practical, max_students):
+    def __init__(self, name, course_id, lecture, tutorial, practical, max_students_tutorial, max_students_practical):
         self.name = name
         self.course_id = course_id
         self.lecture = lecture
         self.tutorial = tutorial
         self.practical = practical
-        self.max_students = max_students
         self.sessions = self.lecture + self.tutorial + self.practical
-        self.session_lecture = self.load_sessions(self.lecture, 'lecture')
-        self.session_tutorial = self.load_sessions(self.tutorial, 'tutorial')
-        self.session_practical = self.load_sessions(self.practical, 'practical')
+        self.session_lecture = self.load_sessions(self.lecture, 'lecture', 'nvt')
+        self.session_tutorial = self.load_sessions(self.tutorial, 'tutorial', max_students_tutorial)
+        self.session_practical = self.load_sessions(self.practical, 'practical', max_students_practical)
         self.sessions_total = self.session_lecture + self.session_tutorial + self.session_practical
-        # print(self.name)
         self.mutual_courses = self.load_mutual_courses(self.name)
+        self.max_students_tutorial = max_students_tutorial
+        self.max_students_practical = max_students_practical
 
 
-    def load_sessions(self, int_session, type):
+    def load_sessions(self, int_session, type, max_students):
         """
         Loads all the session types for every course.
 
@@ -41,8 +41,9 @@ class Course(object):
         sessions = []
 
         # Make session for each lecture, tutorial and practical.
+        # Hier ergens ook max_students inladen??
         for i in range(int_session):
-            session = Session(self.name, type)
+            session = Session(self.name, type, max_students)
             sessions.append(session)
 
         return sessions

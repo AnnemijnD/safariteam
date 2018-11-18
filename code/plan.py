@@ -46,12 +46,20 @@ class Plan():
                 name = row[0]
                 lecture = int(row[1])
                 tutorial = int(row[2])
-                max_students = row[3]
                 practical = int(row[4])
                 course_id = id_counter
 
+                if row[3].isdigit():
+                    max_students_tutorial = int(row[3])
+                else:
+                    max_students_tutorial = 'nvt'
+                if row[5].isdigit():
+                    max_students_practical = int(row[5])
+                else:
+                    max_students_practical = 'nvt'
+
                 # Use Course class to create objects for every course
-                course = Course(name, course_id, lecture, tutorial, practical, max_students)
+                course = Course(name, course_id, lecture, tutorial, practical, max_students_tutorial, max_students_practical)
                 courses_list.append(course)
                 # Count id_course
                 id_counter += 1
@@ -67,11 +75,11 @@ class Plan():
         with open(room) as rooms:
             rooms = csv.reader(rooms, delimiter=';')
             next(rooms)
-
             roomnumbers = []
-
             for row in rooms:
-                roomnumbers.append(row[0])
+                string = str(row[0] + '{row[1]}')
+                string = f'{row[0]} (max: {row[1]})'
+                roomnumbers.append(string)
 
         return roomnumbers
 
@@ -100,26 +108,12 @@ class Plan():
                 type = session_list[i].type
             except IndexError:
                 type = ' '
-            room = 'Empty room'
-            timeslot = 'Empty timeslot'
-            day = 'Empty day'
+            try:
+                max_students = session_list[i].max_students
+            except IndexError:
+                max_students = 'nvt'
 
-            session = Session(name, type)
-            # session = Session(name, type, room, timeslot, day)
-            # PROBLEEM: als we een sessie in het rooster zetten, weet de sessie niet op welke
-            # dag die is. Dus dat moeten we er ook aan mee gaan geven. MAar ik ben moe dus ga lekker stoppenself.
-            # we hebben het er morgen over KUSJES
-            # for k in range(len(schedule)):
-            #     if schedule[k] is None:
-            #         break
-            #     elif session.session in schedule[k].session:
-            #         similar = []
-            #         for j in range(k + 1):
-            #             print("test")
-            #             if session.session == schedule[j].session:
-            #                 similar.append(schedule[j])
-            #         print(similar[-1].day)
-            #         day = similar[-1].day + 1
+            session = Session(name, type, max_students)
 
             # Get all the lectures
             if session.type == "lecture":
@@ -148,10 +142,8 @@ class Plan():
         for i in range(SLOTS):
             name = ' '
             type = ' '
-            room = 'None'
-            timeslot = 'None'
-            day = 'None'
-            session = Session(name, type)
+            max_students = 'nvt'
+            session = Session(name, type, max_students)
             # session = Session(name, type, room, timeslot, day)
             empty_sessions.append(session)
 
@@ -168,8 +160,6 @@ class Plan():
         # zijn kunnen eerst de lectures gevuld worden en daarna pas de rest
         plan.fill_schedule(schedule, total, other_sessions, empty_sessions, courses)
         plan.schedule_counter += 1
-
-
 
         return schedule, total, other_sessions, empty_sessions
 
