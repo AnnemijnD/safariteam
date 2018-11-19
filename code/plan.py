@@ -393,13 +393,9 @@ class Plan():
             if not found:
                 print(e)
                 print("not found")
-<<<<<<< HEAD
-
-=======
                 print(lectures[e])
                 return schedule
                 plan.schedule_counter += 1
->>>>>>> 3ed7a029cca5b95f5d996c075ed0fcac17625b10
                 plan.initialize_schedule(plan.courses)
 
         if found:
@@ -769,4 +765,4 @@ if __name__ == "__main__":
 
     # Test get_day en get_slot
     # print(plan.get_day(schedule, 0))
-    print(Constraint.session_spread_check(schedule))
+    print(Constraint.session_spread_check(schedule, plan.courses))
