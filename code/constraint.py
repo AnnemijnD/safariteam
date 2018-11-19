@@ -9,9 +9,9 @@ class Constraint():
     """
     A class with all the constraint functions
     """
-    def __init__(self, schedule):
-        self.schedule = schedule
-        # self.session_spread = self.session_spread_check(self.schedule)
+    # def __init__(self, schedule):
+    #     self.schedule = schedule
+    # self.session_spread = self.session_spread_check(self.schedule)
 
 # Hier even een lijst met alle constraints:
 # 1. hoorcelleges voor werkcolleges en practica HARD
@@ -51,12 +51,35 @@ class Constraint():
 
             elif nmbr_sessions == 4:
                 if (course.name in monday) and (course.name in tuesday) and \
-                (course.name in thursday) and (course.name in friday):
+                   (course.name in thursday) and (course.name in friday):
                     bonuspoints += SPREAD_BONUS
             else:
                 bonuspoints += 0
 
         return bonuspoints
+
+    def all_constraints(schedule, courses):
+        """
+        Dit wordt een functie waarin we zoveel mogelijk preprocessen. Een hele
+        slechte naam maar weet even niets beters JOE
+        -----
+        PSEUDO:
+        door schedule heen loopen (1x het liefst) en dan voor iedere course een
+        lijste opslaan waarin staat wanneer dat vak allemaal geroosterd is
+        Deze lijsten opslaan in een grotere lijst en dan op de volgorde vd
+        course_ids.
+        """
+        courses_schedule = []
+        for course in courses:
+            course_schedule = []
+            for i in range(DAYS):
+                for j in range(TIME_SLOTS):
+                    for k in range(ROOMS):
+                        if course.name == schedule[i][j][k].name:
+                            course_schedule.append((i, j, k, schedule[i][j][k].type))
+            courses_schedule.append(course_schedule)
+
+        return courses_schedule
 
     def get_day(schedule, day):
         """
