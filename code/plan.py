@@ -47,12 +47,21 @@ class Plan():
                 name = row[0]
                 lecture = int(row[1])
                 tutorial = int(row[2])
-                max_students = row[3]
                 practical = int(row[4])
                 course_id = id_counter
 
+                if row[3].isdigit():
+                    max_students_tutorial = int(row[3])
+                else:
+                    max_students_tutorial = 'nvt'
+                if row[5].isdigit():
+                    max_students_practical = int(row[5])
+                else:
+                    max_students_practical = 'nvt'
+                max_students_lecture = int(row[6])
+
                 # Use Course class to create objects for every course
-                course = Course(name, course_id, lecture, tutorial, practical, max_students)
+                course = Course(name, course_id, lecture, tutorial, practical, max_students_lecture, max_students_tutorial, max_students_practical)
                 courses_list.append(course)
                 # Count id_course
                 id_counter += 1
@@ -68,11 +77,11 @@ class Plan():
         with open(room) as rooms:
             rooms = csv.reader(rooms, delimiter=';')
             next(rooms)
-
             roomnumbers = []
-
             for row in rooms:
-                roomnumbers.append(row[0])
+                string = str(row[0] + '{row[1]}')
+                string = f'{row[0]} (max: {row[1]})'
+                roomnumbers.append(string)
 
         return roomnumbers
 
@@ -96,31 +105,17 @@ class Plan():
             try:
                 name = session_list[i].name
             except IndexError:
-                name = '-'
+                name = ' '
             try:
                 type = session_list[i].type
             except IndexError:
-                type = '-'
-            room = 'Empty room'
-            timeslot = 'Empty timeslot'
-            day = 'Empty day'
+                type = ' '
+            try:
+                max_students = session_list[i].max_students
+            except IndexError:
+                max_students = 'nvt'
 
-            session = Session(name, type)
-            # session = Session(name, type, room, timeslot, day)
-            # PROBLEEM: als we een sessie in het rooster zetten, weet de sessie niet op welke
-            # dag die is. Dus dat moeten we er ook aan mee gaan geven. MAar ik ben moe dus ga lekker stoppenself.
-            # we hebben het er morgen over KUSJES
-            # for k in range(len(schedule)):
-            #     if schedule[k] is None:
-            #         break
-            #     elif session.session in schedule[k].session:
-            #         similar = []
-            #         for j in range(k + 1):
-            #             print("test")
-            #             if session.session == schedule[j].session:
-            #                 similar.append(schedule[j])
-            #         print(similar[-1].day)
-            #         day = similar[-1].day + 1
+            session = Session(name, type, max_students)
 
             # Get all the lectures
             if session.type == "lecture":
@@ -131,8 +126,12 @@ class Plan():
 
 
         # shuffle de lectures zodat ze random zijn
+        # Make copy of sessions and shuffle
         lectures = lecture_sessions[:]
+        others = other_sessions[:]
         random.shuffle(lectures)
+        random.shuffle(other_sessions)
+
         # TODO: lijst maken met eerst grote vakken!!
 
         total = []
@@ -143,12 +142,10 @@ class Plan():
         # Dit stukje wordt gebruikt in de nested for loop waarbij aan elke cel
         # een sessie wordt meegegeven.
         for i in range(SLOTS):
-            name = '-'
-            type = '-'
-            room = 'None'
-            timeslot = 'None'
-            day = 'None'
-            session = Session(name, type)
+            name = ' '
+            type = ' '
+            max_students = ' '
+            session = Session(name, type, max_students)
             # session = Session(name, type, room, timeslot, day)
             empty_sessions.append(session)
 
@@ -163,13 +160,13 @@ class Plan():
         # Je geeft dus aan deze functie een leeg schedule mee en de sessions waarmee
         # schedule gevuld moet worden. Doordat lectures en other_sessions nu gescheieden
         # zijn kunnen eerst de lectures gevuld worden en daarna pas de rest
-        plan.fill_schedule(schedule, total, other_sessions, empty_sessions)
+        plan.fill_schedule(schedule, total, other_sessions, empty_sessions, courses)
         plan.schedule_counter += 1
 
         return schedule, total, other_sessions, empty_sessions
 
 
-    def fill_schedule(self, schedule, lectures, other_sessions, empty_sessions):
+    def fill_schedule(self, schedule, lectures, other_sessions, empty_sessions, courses):
         """
         Fill empty schedule with sessions. Function will begin to fill all the lectures
         and will go on to fill other sessions.
@@ -233,7 +230,7 @@ class Plan():
         #                         plan.initialize_schedule(plan.courses)
         #                     break
         #                 else:
-        #                     if schedule[i][j][k].name == '-':
+        #                     if schedule[i][j][k].name == ' ':
         #                         locations.append([j,k])
         #                         # print(locations)
         #             if day_counter > 0:
@@ -248,7 +245,7 @@ class Plan():
         #
         #     # for j in range(TIME_SLOTS):
         #     #     for k in range(ROOMS):
-        #     #         if schedule[i][j][k].name == '-':
+        #     #         if schedule[i][j][k].name == ' ':
         #     #             schedule[i][j][k] = lectures[lecture_counter]
         #     #             lecture_counter += 1
         #     #             i -= day_counter
@@ -264,14 +261,13 @@ class Plan():
         #
         # return schedule
 
-        # lecture_counter = 0
-        # counter = 0
-        # break_counter = 0
-        # day_counter = 0
-        # timeslot_counter = 0
-        #
+
+        # # Verdelen over slots als hard constraint
         # for e in range(len(lectures)):
         #     found = False
+        #     for course in courses:
+        #         if lectures[e].name == course.name:
+        #            mutual_courses_session = course.mutual_courses
         #     for b in range(DAYS):
         #         for c in range(TIME_SLOTS):
         #             rooms_allowed = True
@@ -280,7 +276,7 @@ class Plan():
         #             for d in range(ROOMS):
         #                 print(f'elke keer d:{b} {c} {d}')
         #                 # if the slot in the schedule is empty
-        #                 if schedule[b][c][d].name == '-':
+        #                 if schedule[b][c][d].name == ' ':
         #                     # print("in if1")
         #                     if not bool(location):
         #                         # print("in if1.1")
@@ -288,13 +284,11 @@ class Plan():
         #                         location.append(d)
         #
         #
-        #                 elif lectures[e].name in schedule[b][c][d].name:
-        #                     print(f"schedulename: {schedule[b][c][d].name}")
-        #                     print(f"schedulename: {lectures[e].name}")
-        #                     print("in elif1")
+        #                 elif lectures[e].name == schedule[b][c][d].name or schedule[b][c][d].name in mutual_courses_session:
         #                     rooms_allowed = False
-        #                     # break_counter += 1
         #                     break
+        #
+        #
         #
         #
         #             if rooms_allowed and bool(location):
@@ -340,17 +334,17 @@ class Plan():
         #
         # else:
         #     plan.initialize_schedule(plan.courses)
+        #
+        #
+        #
 
 
-
-        lecture_counter = 0
-        counter = 0
-        break_counter = 0
-        day_counter = 0
-        timeslot_counter = 0
-
+        # verdelen over dagen als hard constraint
         for e in range(len(lectures)):
 
+            for course in courses:
+                if lectures[e].name == course.name:
+                    mutual_courses_session = course.mutual_courses
             found = False
             for b in range(DAYS):
                 location = []
@@ -362,22 +356,31 @@ class Plan():
                     for d in range(ROOMS):
 
                         # if the slot in the schedule is empty
-                        if schedule[b][c][d].name == '-':
+                        if schedule[b][c][d].name == ' ':
                             # print("in if1")
                             if not bool(location):
                                 # print("in if1.1")
                                 location.append(c)
                                 location.append(d)
 
+                        elif lectures[e].name == schedule[b][c][d].name:
+                            slots_allowed = False
+                            break
 
-                        elif lectures[e].name in schedule[b][c][d].name:
-
+                        elif schedule[b][c][d].name in mutual_courses_session:
                             rooms_allowed = False
                             break
 
-                    if not rooms_allowed:
-                        slots_allowed = False
+                    if not slots_allowed:
                         break
+
+                    if rooms_allowed and bool(location):
+
+                        schedule[b][location[0]][location[1]] = lectures[e]
+                        found = True
+                        break
+
+
 
                 if slots_allowed and bool(location):
 
@@ -390,25 +393,21 @@ class Plan():
             if not found:
                 print(e)
                 print("not found")
+<<<<<<< HEAD
 
+=======
+                print(lectures[e])
+                return schedule
+                plan.schedule_counter += 1
+>>>>>>> 3ed7a029cca5b95f5d996c075ed0fcac17625b10
                 plan.initialize_schedule(plan.courses)
 
         if found:
-            print("laatste found")
             return schedule
 
         else:
+            plan.schedule_counter += 1
             plan.initialize_schedule(plan.courses)
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -442,7 +441,7 @@ class Plan():
         #         for d in range(ROOMS):
         #
         #             # if the slot in the schedule is empty
-        #             if schedule[b][c][d].name == '-':
+        #             if schedule[b][c][d].name == ' ':
         #
         #                 #  loop through the rooms
         #                 for e in schedule[b][c]:
@@ -483,7 +482,6 @@ class Plan():
     def random_schedule(self, schedule, sessions):
         """
         Generates a random schedule. Assigns every session to a random timeslot.
-
         # Hou bij welke random nummers al geweest zijn. De while loop
         # Zorgt ervoor dat er een random nummer wordt gemaakt die nog
         # niet is geweest.
@@ -503,7 +501,6 @@ class Plan():
     def get_session(self, sessions):
         """
         Generates a random schedule. Assigns every session to a random timeslot.
-
         # Hou bij welke random nummers al geweest zijn. De while loop
         # Zorgt ervoor dat er een random nummer wordt gemaakt die nog
         # niet is geweest.
@@ -532,10 +529,10 @@ class Plan():
         keep_track_of_courses = []
         for row in schedule:
             # Controleer niet op lege sessions, dus sla deze over
-            if row.name is not '-':
+            if row.name is not ' ':
                 keep_track_of_courses.append([row.name, row.timeslot, row.day])
         for row in schedule:
-            if row.name is not '-':
+            if row.name is not ' ':
                 current_row = [row.name, row.timeslot, row.day]
                 for course in keep_track_of_courses:
                     # Intersection gebruiken?
@@ -554,7 +551,7 @@ class Plan():
         # lectures = []
         # counter = 0
         # for row in schedule:
-        #     if row.session is not '-' or row.type is not '-':
+        #     if row.session is not ' ' or row.type is not ' ':
         #         current_row = [row.session, row.type]
         #         if row.type == 'lecture':
         #             lectures.append(row.session)
@@ -618,21 +615,93 @@ class Plan():
             for row in wishes:
                 print(row)
 
-    def save_html(self, schedule):
+    def save_html(self, schedule, rooms):
         """
         Print into csv-file to visualize schedule.
         """
 
-
         df = pd.DataFrame(schedule)
-        pd.set_option('display.max_colwidth',300)
+        pd.set_option('display.max_colwidth',350)
         df.columns = ['9:00 - 11:00', '11:00 - 13:00', '13:00 - 15:00', '15:00 - 17:00']
         df.index = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"]
         # Transpose rows and columns
         df = df.T
 
-        df_html = df.to_html('../data/schedule.html')
-        HTML(df_html)
+        # Stel de column namen vast
+        i = 0
+        tags = df['Monday'].apply(pd.Series)
+        tags.columns = [rooms[i], rooms[i+1], rooms[i+2], rooms[i+3], rooms[i+4], rooms[i+5], rooms[i+6]]
+        tuesday = df['Tuesday'].apply(pd.Series)
+        tuesday.columns = [rooms[i], rooms[i+1], rooms[i+2], rooms[i+3], rooms[i+4], rooms[i+5], rooms[i+6]]
+        wednesday = df['Wednesday'].apply(pd.Series)
+        wednesday.columns = [rooms[i], rooms[i+1], rooms[i+2], rooms[i+3], rooms[i+4], rooms[i+5], rooms[i+6]]
+        thursday = df['Thursday'].apply(pd.Series)
+        thursday.columns = [rooms[i], rooms[i+1], rooms[i+2], rooms[i+3], rooms[i+4], rooms[i+5], rooms[i+6]]
+        friday = df['Friday'].apply(pd.Series)
+        friday.columns = [rooms[i], rooms[i+1], rooms[i+2], rooms[i+3], rooms[i+4], rooms[i+5], rooms[i+6]]
+
+        # Als je het rooster van een specifieke dag wilt printen:
+        # with pd.option_context('display.max_rows', None, 'display.max_columns', None):
+        #     print(tags)
+
+
+        html_string = '''
+        <html>
+          <head><title>Schedule</title></head>
+          <link rel="stylesheet" type="text/css" href="../data/style.css" href="https://www.w3schools.com/w3css/4/w3.css"/>
+          <body>
+            {table}
+          </body>
+        </html>.
+        '''
+
+        with open('../data/schedule.html', 'w') as f:
+            f.write(html_string.format(table=df.to_html(classes='style')))
+            f.write("Monday:")
+            f.write(html_string.format(table=tags.to_html(classes='style')))
+            f.write("Tuesday")
+            f.write(html_string.format(table=tuesday.to_html(classes='style')))
+            f.write("Wednesday")
+            f.write(html_string.format(table=wednesday.to_html(classes='style')))
+            f.write("Thursday")
+            f.write(html_string.format(table=thursday.to_html(classes='style')))
+            f.write("Friday")
+            f.write(html_string.format(table=friday.to_html(classes='style')))
+
+
+        # schedule = []
+        # for a in range(TIME_SLOTS):
+        #     for b in range(DAYS):
+        #         schedule.append([plan.get_cel(df, a, b)])
+        # print(schedule)
+        #
+        # with open('../data/test.csv', 'w') as csv_file:
+        #     writer = csv.writer(csv_file, delimiter=' ')
+        #     writer.writerow(["Test"])
+        #     for i in range(len(schedule)):
+        #         writer.writerow([schedule[i], schedule[i + 1]])
+
+
+        # Even Quinten vragen welke van de twee beter is?
+        # df_html = df.to_html('../data/schedule.html')
+        # HTML(df_html)
+
+    # def get_cel(self, df, row, column):
+    #
+    #     # Hahah lol dit is echt meeeegaaaaaa lelijk dus moet even in een for loop
+    #
+    #     a = row
+    #     j = column
+    #     i = 0
+    #     cel = rooms[i] + ': ' + str(df.iat[a, j][i]) + '\n' \
+    #     + rooms[i + 1] + ': ' + str(df.iat[a ,j][i + 1]) + '\n' \
+    #     + rooms[i + 2] + ': ' + str(df.iat[a, j][i + 2]) + '\n' \
+    #     + rooms[i + 3] + ': ' + str(df.iat[a, j][i + 3]) + '\n' \
+    #     + rooms[i + 4] + ': ' + str(df.iat[a, j][i + 4]) + '\n' \
+    #     + rooms[i + 5] + ': ' + str(df.iat[a, j][i + 5]) + '\n' \
+    #     + rooms[i + 6] + ': ' + str(df.iat[a, j][i + 6])
+    #
+    #     return str(cel)
 
 
     # def fill_rooms_and_days(self, schedule):
@@ -688,10 +757,10 @@ if __name__ == "__main__":
     plan.courses = plan.load_courses()
     schedule, lectures, other_sessions, empty_sessions = plan.initialize_schedule(plan.courses)
 
-    plan.load_rooms()
+    rooms = plan.load_rooms()
 
     # Make a html file for the schedule
-    plan.save_html(schedule)
+    plan.save_html(schedule, rooms)
 
     now = time.time()
 

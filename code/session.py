@@ -7,12 +7,10 @@ class Session(object):
     Representation of a schedule.
     """
 
-    def __init__(self, name, type):
+    def __init__(self, name, type, max_students):
         self.name = name
         self.type = type
-        # self.room = room
-        # self.timeslot = timeslot
-        # self.day = day
+        self.max_students = max_students
 
     def __iter__(self):
         """
@@ -30,4 +28,7 @@ class Session(object):
         return self.day
 
     def __str__(self):
-        return f'{self.name}, {self.type}'
+        if self.max_students == " ":
+            return f'{self.name} {self.type}'
+        else:
+            return f'{self.name} {self.type}, ({self.max_students} students)'
