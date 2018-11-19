@@ -61,14 +61,12 @@ class Constraint():
 
     def all_constraints(schedule, courses):
         """
-        Dit wordt een functie waarin we zoveel mogelijk preprocessen. Een hele
-        slechte naam maar weet even niets beters JOE
+        Makes a list that contains lists of every course with the moment and
+        type of the courses in the schedule. The courses are in the list in
+        order of their course_id.
         -----
-        PSEUDO:
-        door schedule heen loopen (1x het liefst) en dan voor iedere course een
-        lijste opslaan waarin staat wanneer dat vak allemaal geroosterd is
-        Deze lijsten opslaan in een grotere lijst en dan op de volgorde vd
-        course_ids.
+        Dit is het begin voor het preprocessen. Een hele slechte naam maar
+        weet even niets beters JOE
         """
         courses_schedule = []
         for course in courses:
@@ -83,6 +81,10 @@ class Constraint():
         return courses_schedule
 
     def lecture_first(schedule, courses):
+        """
+        Returns true if the lectures are before the tutorials and or
+        practicals, otherwise returns false.
+        """
         courses_schedule = Constraint.all_constraints(schedule, courses)
         for course in courses:
             for i in range(course.lecture):
@@ -90,6 +92,29 @@ class Constraint():
                     return False
 
         return True
+
+    def mutual_courses_check(schedule, courses):
+        """
+        Checks if the mutual courses aren't scheduled in the same slot
+        ----
+        !!!!!!! WERKT NOG NIET !!!!!!!!!!!
+        ZIJN NOG MEERDERE PROBLEMEN!!
+        1 course.mutual_courses bevat alleen maar de naam vd courses
+        2 de doorsnede gaat nu sowieso niet goed want het hoeft niet hetzelfde
+        college type te zijn
+        Waarschijnlijk is dit niet moeilijk te fixen maar ik ga lekker chilllen
+        (slapen) nu ik spreek jullie lateeerrrrr
+        """
+
+        courses_schedule = Constraint.all_constraints(schedule, courses)
+        for course in courses:
+            checked_course = courses_schedule[course.course_id]
+            for mutual in course.mutual_courses:
+                if set(courses_schedule[mutual.course_id]) & set(checked_course) != []:
+                    return False
+
+        return True
+
 
     def get_day(schedule, day):
         """
