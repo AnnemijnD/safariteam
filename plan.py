@@ -755,12 +755,9 @@ if __name__ == "__main__":
     plan.courses = plan.load_courses()
     schedule, lectures, other_sessions, empty_sessions = plan.initialize_schedule(plan.courses)
     rooms = plan.load_rooms()
-    
+
     # Switch sessions
-    switch.test_if_schedule_loaded(schedule)
-
-
-
+    schedule = switch.switch_session(schedule)
 
 
     # Make a html file for the schedule
