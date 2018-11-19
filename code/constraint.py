@@ -11,7 +11,7 @@ class Constraint(object):
     """
     def __init__(self, schedule):
         self.schedule = schedule
-        self.session_spread = self.session_spread_check(self.schedule)
+        # self.session_spread = self.session_spread_check(self.schedule)
 
 # Hier even een lijst met alle constraints:
 # 1. hoorcelleges voor werkcolleges en practica HARD
@@ -23,17 +23,7 @@ class Constraint(object):
 # Een fix_hard_constraints functie maken voor als na het soft maken van een
 # aantal constraints er niet meer wordt voldaan aan de hard constraints.
 
-    def session_spread_check(schedule):
-        # per course checken of die goed verspreid is
-        # 1. weten hoeveel colleges het vak heeft
-        # 2. checken of die goed verspreid zijn over de weeek
-        #
-        # 1 college --> nooit bonuspunten --> niet checken
-        # 2 colleges --> twee opties: ma-do & di-vrij
-        # 3 colleges --> ma-woe-vrij
-        # 4 colleges --> ma-di-do-vrij
-        # 5 colleges --> nooit bonuspunten --> niet checken
-
+    def session_spread_check(self, schedule):
         bonuspoints = 0
         # WILLEN WE LOAD_COURSES NIET ERGENS ANDERS DOEN DAN IN PLAN??
         # NU KUNNEN WE HET NIET ECHT CHILL OPNIEUW AANROEPEN
