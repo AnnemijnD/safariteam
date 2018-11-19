@@ -34,23 +34,26 @@ class Constraint():
         friday = Constraint.get_day(schedule, 4)
         for course in courses:
             nmbr_sessions = course.sessions
-
             if nmbr_sessions == 2:
-                if course in monday:
-                    if course in thursday:
+                print(course.name)
+                print(monday)
+                if course.name in monday:
+                    print("HALLOOOOOOO")
+
+                    if course.name in thursday:
                         bonuspoints += SPREAD_BONUS
-                elif course in tuesday:
-                    if course in friday:
+                elif course.name in tuesday:
+                    if course.name in friday:
                         bonuspoints += SPREAD_BONUS
 
             elif nmbr_sessions == 3:
-                if course in monday:
-                    if course in wednesday:
-                        if course in friday:
+                if course.name in monday:
+                    if course.name in wednesday:
+                        if course.name in friday:
                             bonuspoints += SPREAD_BONUS
 
             elif nmbr_sessions == 4:
-                if (course in monday) and (course in tuesday) and (course in thursday) and (course in friday):
+                if (course.name in monday) and (course.name in tuesday) and (course.name in thursday) and (course.name in friday):
                     bonuspoints += SPREAD_BONUS
             else:
                 bonuspoints += 0
@@ -60,12 +63,6 @@ class Constraint():
     def get_day(schedule, day):
         """
         Returns a linear list of the schedule of a specific day.
-
-        DIT GAAT PAS MOOI IN EEN LIJST ALS DE VAKKKEN NIET MEER ALS
-        VAKNAAM, VAKSOORT
-        IN HET ROOSTER STAAN. WANT NU WORDT HET AUTOMATISCH EEN LIJST MET
-        DAARIN LIJSTEN EN DAT WILLEN WE NIET. DUS DE CONSTRAINT FUNCTIE WERKT
-        NOG NIET MAAR HET IDEE IS WEL GOED.
         """
         all_days = []
         for i in range(DAYS):
@@ -73,4 +70,5 @@ class Constraint():
                 for k in range(ROOMS):
                     all_days.append(schedule[i][j][k])
                     # print(schedule[i][j][k])
+        # print(all_days[TIME_SLOTS * ROOMS * day:TIME_SLOTS * ROOMS * (day + 1)])
         return all_days[TIME_SLOTS * ROOMS * day:TIME_SLOTS * ROOMS * (day + 1)]
