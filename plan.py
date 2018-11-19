@@ -87,7 +87,6 @@ class Plan():
             next(rooms)
             roomnumbers = []
             for row in rooms:
-                string = str(row[0] + '{row[1]}')
                 string = f'{row[0]} (max: {row[1]})'
                 roomnumbers.append(string)
 
@@ -158,13 +157,7 @@ class Plan():
             empty_sessions.append(session)
 
 
-        # Lijst in een lijst in een lijst
-        schedule = DAYS * [TIME_SLOTS * [ROOMS * ['None']]]
-
-        # Probleem: omdat je in schedule2 een keer-teken gebruikt, wordt alles vermenigvuldigt..
-        # We moeten een kopie maken van schedule2 en daarin dingen veranderen??
-        # Tijdelijke oplossing:
-        schedule = [[['None', 'None', 'None', 'None', 'None', 'None', 'None'], ['None', 'None', 'None', 'None', 'None', 'None', 'None'], ['None', 'None', 'None', 'None', 'None', 'None', 'None'], ['None', 'None', 'None', 'None', 'None', 'None', 'None']], [['None', 'None', 'None', 'None', 'None', 'None', 'None'], ['None', 'None', 'None', 'None', 'None', 'None', 'None'], ['None', 'None', 'None', 'None', 'None', 'None', 'None'], ['None', 'None', 'None', 'None', 'None', 'None', 'None']], [['None', 'None', 'None', 'None', 'None', 'None', 'None'], ['None', 'None', 'None', 'None', 'None', 'None', 'None'], ['None', 'None', 'None', 'None', 'None', 'None', 'None'], ['None', 'None', 'None', 'None', 'None', 'None', 'None']], [['None', 'None', 'None', 'None', 'None', 'None', 'None'], ['None', 'None', 'None', 'None', 'None', 'None', 'None'], ['None', 'None', 'None', 'None', 'None', 'None', 'None'], ['None', 'None', 'None', 'None', 'None', 'None', 'None']], [['None', 'None', 'None', 'None', 'None', 'None', 'None'], ['None', 'None', 'None', 'None', 'None', 'None', 'None'], ['None', 'None', 'None', 'None', 'None', 'None', 'None'], ['None', 'None', 'None', 'None', 'None', 'None', 'None']]]
+        schedule = [[[['None'] for i in range(ROOMS)] for i in range(TIME_SLOTS)] for i in range(DAYS)]
 
         # Je geeft dus aan deze functie een leeg schedule mee en de sessions waarmee
         # schedule gevuld moet worden. Doordat lectures en other_sessions nu gescheieden
@@ -185,168 +178,12 @@ class Plan():
         # Je geeft hierbij een lijst met sessies mee aan de functie get_session
         # De lijst met sessies is al gemaakt in initialize_schedule()
 
-
-        # PSEUDOCODE om elke lecture in te roosteren en te letten op overlap met vakken.
-        # _______________________________________________________________________________
-        # Voor elk hoorcollege (dus voor elk item in lecture_sessions):
-        # WHILE niet ingeroosterd, itereer over elke cel, check of hij leeg is, zo niet, rooster in. Zo wel, ga naar volgende cel.
-        #
-        # Itereer over elke cel (dus schedule2[b][c][d])
-        # for days in range(DAYS):
-        #     for timeslots in range(TIME_SLOTS):
-        #         for rooms in range(ROOMS):
-        #             schedule2[b][c][d]
-        #             # check of de cel leeg is:
-        #              if schedule2[b][c][d] == 'None':
-        #                   # check of er al een hoorcollege van dat vak is ingeroosterd in deze timeslot
-        #                   if item in schedule2[b][c]:
-        #                   # zo ja, check of je naar de volgende cel kan gaan (dus volgende timeslot)
-        #                       # if c += 1 is mogelijk (try):
-        #                       doe dan c += 1
-        #                       if c += 1 niet mogelijk:
-        #                       ga dan naar de volgende dag en doe de check opnieuw,
-        #                           d += 1
-        #                           dus misschien een while loop maken:
-
         # Vul eerst met lege sessions
         counter = 0
         for b in range(DAYS):
             for c in range(TIME_SLOTS):
                 for d in range(ROOMS):
                     schedule[b][c][d] = empty_sessions[counter]
-
-        # PROBLEEM: als er nu een tijdslot wordt gevonden waar dat vak
-        # al in zit, itereert hij naar volgende tijdslot, maar er wordt niet
-        # terug geïtereerd om een ander vak in dat lege tijdslot te zetten...
-        # NOG EEN PROBLEEM: Niet alle lectures worden op deze manier ingeroosterd,
-        # Sommige worden nu overgeslagen.
-        # lecture_counter = 0
-        # counter = 0
-        # day_counter = 0
-        # timeslot_counter = 0
-        # break_counter = 0
-        #
-        # for i in range(DAYS):
-        #     locations = []
-        #     day_counter = 0
-        #     for j in range(TIME_SLOTS):
-        #         for k in range(ROOMS):
-        #             for l in schedule[i][j]:
-        #                 if lectures[lecture_counter].name in l.name:
-        #                     day_counter += 1
-        #                     if i == 4:
-        #                         # loopende functie, help?!??1
-        #                         plan.initialize_schedule(plan.courses)
-        #                     break
-        #                 else:
-        #                     if schedule[i][j][k].name == ' ':
-        #                         locations.append([j,k])
-        #                         # print(locations)
-        #             if day_counter > 0:
-        #                 break
-        #         if day_counter > 0:
-        #             break
-        #
-        #     timeslot = locations[0][0]
-        #     room = locations[0][1]
-        #     schedule[i][timeslot][room] = lectures[lecture_counter]
-        #     lecture_counter += 1
-        #
-        #     # for j in range(TIME_SLOTS):
-        #     #     for k in range(ROOMS):
-        #     #         if schedule[i][j][k].name == ' ':
-        #     #             schedule[i][j][k] = lectures[lecture_counter]
-        #     #             lecture_counter += 1
-        #     #             i -= day_counter
-        #     #             break
-        #     #     if break_counter > 0:
-        #     #         break
-        #
-        #     # time_slot = locations[0][0]
-        #     # room = locations[0][1]
-        #     # schedule[i][time_slot][room] = lectures[lecture_counter]
-        #     # lecture_counter += 1
-        #     # i -= day_counter
-        #
-        # return schedule
-
-
-        # # Verdelen over slots als hard constraint
-        # for e in range(len(lectures)):
-        #     found = False
-        #     for course in courses:
-        #         if lectures[e].name == course.name:
-        #            mutual_courses_session = course.mutual_courses
-        #     for b in range(DAYS):
-        #         for c in range(TIME_SLOTS):
-        #             rooms_allowed = True
-        #             # availibility = True
-        #             location = []
-        #             for d in range(ROOMS):
-        #                 print(f'elke keer d:{b} {c} {d}')
-        #                 # if the slot in the schedule is empty
-        #                 if schedule[b][c][d].name == ' ':
-        #                     # print("in if1")
-        #                     if not bool(location):
-        #                         # print("in if1.1")
-        #                         location.append(c)
-        #                         location.append(d)
-        #
-        #
-        #                 elif lectures[e].name == schedule[b][c][d].name or schedule[b][c][d].name in mutual_courses_session:
-        #                     rooms_allowed = False
-        #                     break
-        #
-        #
-        #
-        #
-        #             if rooms_allowed and bool(location):
-        #
-        #                 print(f'gevonden:{b} {c} {d}')
-        #                 # print("in if2")
-        #                 schedule[b][location[0]][location[1]] = lectures[e]
-        #                 # lecture_counter += 1
-        #
-        #                 # b -= day_counter
-        #                 # d -= break_counter
-        #                 # c -= timeslot_counter
-        #                 # day_counter = 0
-        #                 # break_counter = 0
-        #                 # timeslot_counter = 0
-        #                 found = True
-        #
-        #                 break
-        #
-        #             #
-        #             # elif c == 3:
-        #             #     # print("in elif2")
-        #             #     # day_counter += 1
-        #             #     break
-        #
-        #             # else:
-        #             #     # print("in else2")
-        #             #     # timeslot_counter += 1
-        #
-        #         if found:
-        #             break
-        #             # print("in if3")
-        #             # if lecture_counter == len(lectures):
-        #             #     # print("in if 4")
-        #             #     return schedule
-        #             # else:
-        #             #     # print("in else4")
-        #             #     plan.initialize_schedule(plan.courses)
-        #
-        #
-        # if found:
-        #     return schedule
-        #
-        # else:
-        #     plan.initialize_schedule(plan.courses)
-        #
-        #
-        #
-
 
         # verdelen over dagen als hard constraint
         for e in range(len(lectures)):
@@ -414,27 +251,8 @@ class Plan():
             plan.schedule_counter += 1
             plan.initialize_schedule(plan.courses)
 
-                    # makes a new schedule if it failed
 
 
-
-                    # set the session in the schedule
-
-                    # QUINTEN!: is dit sneller in een if statement?
-                    # d += 1
-                    # d %= 7
-                    #
-                    # #  returns to the previous timeslot/day in the loop if it skipped one
-                    # if timeslot_counter > 0:
-                    #     c -= timeslot_counter
-                    #     timeslot_counter = 0
-                    # if day_counter > 0:
-                    #     b -= day_counter
-                    #     day_counter = 0
-                    #
-                    # # if all the sessions are scheduled return schedule
-                    # if lecture_counter is len(lectures):
-                    #     return schedule
         # lecture_counter = 0
         # counter = 0
         # day_counter = 0
@@ -517,95 +335,6 @@ class Plan():
 
         return sessions[rand]
 
-    def calc_malus(self, schedule):
-        """
-        Calcalates malus point (only for mutual courses).
-        If number of maluspoints is higher that a given maximum, make a new schedule.
-        """
-        # Dit was Sannes pseudocode:
-        #  if schedule.name in schedules.name:
-        #    select all the schedule uit schedules and put them in similar = []
-        #    select the day of similar[-1] and insert schedule.name one day after the
-        #    day of similar[-1]
-
-        counter = 0
-        keep_track_of_courses = []
-        for row in schedule:
-            # Controleer niet op lege sessions, dus sla deze over
-            if row.name is not ' ':
-                keep_track_of_courses.append([row.name, row.timeslot, row.day])
-        for row in schedule:
-            if row.name is not ' ':
-                current_row = [row.name, row.timeslot, row.day]
-                for course in keep_track_of_courses:
-                    # Intersection gebruiken?
-                    # Als len == 3 dan overlapt de hele rij
-                    if len(set(course) & set(current_row)) == 3:
-                        # Counter is in dit geval het aantal rijen die
-                        # elkaar overlappen, dus vakken die in hetzelfde
-                        # tijdslot en dag voorkomen.
-                        counter += 1
-        # Het aantal sessions (dus len(keep_track_of_courses)) moet er af gehaald
-        # worden, aangezien er sowieso 72 dingen zijn die met elkaar overlappen.
-        malus_points = counter - len(keep_track_of_courses)
-
-        # _________ NOG NIET AF ___________
-        # Test voor hoorcolleges voor werkcolleges en practica
-        # lectures = []
-        # counter = 0
-        # for row in schedule:
-        #     if row.session is not ' ' or row.type is not ' ':
-        #         current_row = [row.session, row.type]
-        #         if row.type == 'lecture':
-        #             lectures.append(row.session)
-        #         # Geef maluspunt als er van dit vak nog geen hoorcollege is gegeven
-        #         if row.session not in lectures:
-        #             counter += 1
-        # # Haal er voor nu een aantal maluspunten vanaf want anders kost
-        # # vet veel tijd om een rooser te maken
-        # lecture_points = counter - 10
-        lecture_points = 0
-
-        if malus_points > MAX_MALUSPOINTS or lecture_points > MAX_MALUSPOINTS:
-            # DIT MOET ANDERS. Nu laden we de hele tijd opnieuw
-            # ALLE rooms in. HeeeeEEUeel onnodig. Iemand ideeën? xxx R
-            plan.schedule(plan.courses)
-
-        return schedule
-
-    # def get_day(self, schedule, day):
-    #     """
-    #     Returns a linear list of the schedule of a specific day.
-    #
-    #     DIT GAAT PAS MOOI IN EEN LIJST ALS DE VAKKKEN NIET MEER ALS
-    #     VAKNAAM, VAKSOORT
-    #     IN HET ROOSTER STAAN. WANT NU WORDT HET AUTOMATISCH EEN LIJST MET
-    #     DAARIN LIJSTEN EN DAT WILLEN WE NIET.
-    #     """
-    #     all_days = []
-    #     for i in range(DAYS):
-    #         for j in range(TIME_SLOTS):
-    #             for k in range(ROOMS):
-    #                 all_days.append(schedule[i][j][k])
-    #                 print(schedule[i][j][k])
-    #     return all_days[TIME_SLOTS * ROOMS * day:TIME_SLOTS * ROOMS * (day + 1)]
-
-    # WERKT NIET EN IS EIGENLIJK OOK NIET NODIG WANT RETURNED ALLEEN IETS, JOE
-    # def get_day(schedule, day):
-    #     """
-    #     Returns the schedule of a specific day. Where the day is an integer
-    #     between 0 and 4.
-    #     """
-    #     return schedule[day]
-    #
-    # def get_slot(slot, day):
-    #     """
-    #     Returns the schedule of a specific slot on a specific day.
-    #     The slot will be an integer between 0 and 3 and the day an integer
-    #     between 0 and 4.
-    #     """
-    #     return plan.get_day(day)[slot]
-
     def load_individual(self):
         """
         Loads individual student courses.
@@ -667,83 +396,6 @@ class Plan():
             f.write(html_string.format(table=friday.to_html(classes='style')))
 
 
-        # schedule = []
-        # for a in range(TIME_SLOTS):
-        #     for b in range(DAYS):
-        #         schedule.append([plan.get_cel(df, a, b)])
-        # print(schedule)
-        #
-        # with open('data/test.csv', 'w') as csv_file:
-        #     writer = csv.writer(csv_file, delimiter=' ')
-        #     writer.writerow(["Test"])
-        #     for i in range(len(schedule)):
-        #         writer.writerow([schedule[i], schedule[i + 1]])
-
-
-        # Even Quinten vragen welke van de twee beter is?
-        # df_html = df.to_html('data/schedule.html')
-        # HTML(df_html)
-
-    # def get_cel(self, df, row, column):
-    #
-    #     # Hahah lol dit is echt meeeegaaaaaa lelijk dus moet even in een for loop
-    #
-    #     a = row
-    #     j = column
-    #     i = 0
-    #     cel = rooms[i] + ': ' + str(df.iat[a, j][i]) + '\n' \
-    #     + rooms[i + 1] + ': ' + str(df.iat[a ,j][i + 1]) + '\n' \
-    #     + rooms[i + 2] + ': ' + str(df.iat[a, j][i + 2]) + '\n' \
-    #     + rooms[i + 3] + ': ' + str(df.iat[a, j][i + 3]) + '\n' \
-    #     + rooms[i + 4] + ': ' + str(df.iat[a, j][i + 4]) + '\n' \
-    #     + rooms[i + 5] + ': ' + str(df.iat[a, j][i + 5]) + '\n' \
-    #     + rooms[i + 6] + ': ' + str(df.iat[a, j][i + 6])
-    #
-    #     return str(cel)
-
-
-    # def fill_rooms_and_days(self, schedule):
-    #
-    #     #  -------------- DIT IS VOOR HOE HET ERUIT GAAT ZIEN ---------------------------
-    #     # Quinten vindt dit vast ook niet leuk :(, moeten we even inladen eigenlijk?
-    #     timeslots = ROOMS * DAYS * ['9:00 - 11:00', '11:00 - 13:00', '13:00 - 15:00', '15:00 - 17:00']
-    #     # Dit moet anders want nu worden rooms steeds opnieuw ingeladen
-    #     rooms = DAYS * TIME_SLOTS * plan.load_rooms()
-    #     days = ROOMS * TIME_SLOTS * ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"]
-    #
-    #     # Fill all the days
-    #     for c in range(ROOMS):
-    #         for d in range(TIME_SLOTS):
-    #             schedule[0][c][d].day = 'Monday'
-    #             schedule[1][c][d].day = 'Tuesday'
-    #             schedule[2][c][d].day = 'Wednesday'
-    #             schedule[3][c][d].day = 'Thursday'
-    #             schedule[4][c][d].day = 'Friday'
-    #
-    #     # Fill all the rooms
-    #     counter = 0
-    #     for a in range(DAYS):
-    #         for b in range(ROOMS):
-    #             for c in range(TIME_SLOTS):
-    #                 schedule[a][b][c].room = rooms[counter % 7]
-    #             counter += 1
-    #
-    #     # Fill all the timeslots
-    #     counter = 0
-    #     for a in range(DAYS):
-    #         for b in range(ROOMS):
-    #             for c in range(TIME_SLOTS):
-    #                 schedule[a][b][c].timeslot = timeslots[counter]
-    #                 counter += 1
-    #     #
-    #     # for b in range(DAYS):
-    #     #     for c in range(ROOMS):
-    #     #         for d in range(TIME_SLOTS):
-    #     #             print(schedule[b][c][d])
-    #
-    #     return schedule
-
-
 if __name__ == "__main__":
 
     then = time.time()
@@ -755,12 +407,17 @@ if __name__ == "__main__":
     plan.courses = plan.load_courses()
     schedule, lectures, other_sessions, empty_sessions = plan.initialize_schedule(plan.courses)
     rooms = plan.load_rooms()
+<<<<<<< HEAD
 
     # Switch sessions
     switch.test_if_schedule_loaded(schedule)
 
 
+=======
+>>>>>>> 3ddb75fdc9786eba864e100e4073568af43b58a4
 
+    # Switch sessions
+    schedule = switch.switch_session(schedule)
 
 
     # Make a html file for the schedule
