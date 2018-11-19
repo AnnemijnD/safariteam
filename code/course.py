@@ -59,7 +59,7 @@ class Course(object):
 
         # Dit moet even ergens anders neergezet worden zodat het niet opnieuw ingeladen wordt de hele tijd!
         # Waarom kan je niet doen: from Plan import plan??
-        df = pd.read_csv("../data/tegelijkvolgbaar.csv", delimiter=";")
+        df = pd.read_csv("data/tegelijkvolgbaar.csv", delimiter=";")
 
         mutual_courses = []
         row_counter = 0

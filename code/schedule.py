@@ -19,7 +19,7 @@ class Schedule():
         self.type = type
         self.mutual_courses = mutual_courses
         self.group = []
-        self.schedule = [DAYS * [ROOMS * [TIME_SLOTS * ["None"]]]]
+        self.schedule = [DAYS * [ROOMS * [TIME_SLOTS * [None]]]]
 
     def initialize_schedule(self, courses):
         """

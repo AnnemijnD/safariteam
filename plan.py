@@ -1,6 +1,11 @@
 # Heuristieken 2018 -- Lesroosters
 # Namen: Annemijn, Sanne & Rebecca
 
+import os, sys
+
+directory = os.path.dirname(os.path.realpath(__file__))
+sys.path.append(os.path.join(directory, "code"))
+
 from constraint import Constraint
 from course import Course
 from session import Session
@@ -30,7 +35,7 @@ class Plan():
         """
         Loads all the courses from a csv file.
         """
-        course = '../data/vakken.csv'
+        course = 'data/vakken.csv'
 
         with open(course) as courses:
             courses = csv.reader(courses, delimiter=';')
@@ -72,7 +77,7 @@ class Plan():
         """
         loads all the rooms from a csv file.
         """
-        room = '../data/zalen.csv'
+        room = 'data/zalen.csv'
 
         with open(room) as rooms:
             rooms = csv.reader(rooms, delimiter=';')
@@ -152,6 +157,7 @@ class Plan():
 
         # Lijst in een lijst in een lijst
         schedule = DAYS * [TIME_SLOTS * [ROOMS * ['None']]]
+
         # Probleem: omdat je in schedule2 een keer-teken gebruikt, wordt alles vermenigvuldigt..
         # We moeten een kopie maken van schedule2 en daarin dingen veranderen??
         # Tijdelijke oplossing:
@@ -393,13 +399,10 @@ class Plan():
             if not found:
                 print(e)
                 print("not found")
-<<<<<<< HEAD
-
-=======
                 print(lectures[e])
                 return schedule
                 plan.schedule_counter += 1
->>>>>>> 3ed7a029cca5b95f5d996c075ed0fcac17625b10
+
                 plan.initialize_schedule(plan.courses)
 
         if found:
@@ -617,11 +620,11 @@ class Plan():
 
     def save_html(self, schedule, rooms):
         """
-        Print into csv-file to visualize schedule.
+        Print into html to visualize schedule.
         """
 
         df = pd.DataFrame(schedule)
-        pd.set_option('display.max_colwidth',350)
+        pd.set_option('display.max_colwidth', 350)
         df.columns = ['9:00 - 11:00', '11:00 - 13:00', '13:00 - 15:00', '15:00 - 17:00']
         df.index = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"]
         # Transpose rows and columns
@@ -640,22 +643,17 @@ class Plan():
         friday = df['Friday'].apply(pd.Series)
         friday.columns = [rooms[i], rooms[i+1], rooms[i+2], rooms[i+3], rooms[i+4], rooms[i+5], rooms[i+6]]
 
-        # Als je het rooster van een specifieke dag wilt printen:
-        # with pd.option_context('display.max_rows', None, 'display.max_columns', None):
-        #     print(tags)
-
-
         html_string = '''
         <html>
           <head><title>Schedule</title></head>
-          <link rel="stylesheet" type="text/css" href="../data/style.css" href="https://www.w3schools.com/w3css/4/w3.css"/>
+          <link rel="stylesheet" type="text/css" href="data/style.css" href="https://www.w3schools.com/w3css/4/w3.css"/>
           <body>
             {table}
           </body>
         </html>.
         '''
 
-        with open('../data/schedule.html', 'w') as f:
+        with open('resultaten/schedule.html', 'w') as f:
             f.write(html_string.format(table=df.to_html(classes='style')))
             f.write("Monday:")
             f.write(html_string.format(table=tags.to_html(classes='style')))
@@ -675,7 +673,7 @@ class Plan():
         #         schedule.append([plan.get_cel(df, a, b)])
         # print(schedule)
         #
-        # with open('../data/test.csv', 'w') as csv_file:
+        # with open('data/test.csv', 'w') as csv_file:
         #     writer = csv.writer(csv_file, delimiter=' ')
         #     writer.writerow(["Test"])
         #     for i in range(len(schedule)):
@@ -683,7 +681,7 @@ class Plan():
 
 
         # Even Quinten vragen welke van de twee beter is?
-        # df_html = df.to_html('../data/schedule.html')
+        # df_html = df.to_html('data/schedule.html')
         # HTML(df_html)
 
     # def get_cel(self, df, row, column):
@@ -769,4 +767,4 @@ if __name__ == "__main__":
 
     # Test get_day en get_slot
     # print(plan.get_day(schedule, 0))
-    print(Constraint.session_spread_check(schedule))
+    # print(Constraint.session_spread_check(schedule))
