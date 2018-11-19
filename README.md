@@ -1,10 +1,10 @@
 # UvA Lesroosters
 
-Beschrijving van het probleem...
+Probleem: hoe kan een lesrooster zo efficiënt mogelijk ingedeeld worden?
 
 ## Inhoud
 
-![alt text](http://heuristieken.nl/wiki/images/f/f5/Roostering2.jpg)
+...
 
 ### Vereisten
 
@@ -33,3 +33,7 @@ python plan.py
 ## Auteurs
 
 Annemijn, Sanne en Rebecca
+
+## Leuk plaatje
+
+![alt text](http://heuristieken.nl/wiki/images/f/f5/Roostering2.jpg)

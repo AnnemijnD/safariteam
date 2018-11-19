@@ -5,8 +5,11 @@ import os, sys
 
 directory = os.path.dirname(os.path.realpath(__file__))
 sys.path.append(os.path.join(directory, "code"))
+sys.path.append(os.path.join(directory, "code", "classes"))
+sys.path.append(os.path.join(directory, "code", "algoritmes"))
 
 from constraint import Constraint
+import switch
 from course import Course
 from session import Session
 from schedule import Schedule
@@ -751,16 +754,21 @@ if __name__ == "__main__":
     plan.schedule_counter = 0
     plan.courses = plan.load_courses()
     schedule, lectures, other_sessions, empty_sessions = plan.initialize_schedule(plan.courses)
-
     rooms = plan.load_rooms()
+    
+    # Switch sessions
+    switch.test_if_schedule_loaded(schedule)
+
+
+
+
 
     # Make a html file for the schedule
     plan.save_html(schedule, rooms)
 
     now = time.time()
-
-    print("It took:", now - then, "seconds")
-    print("Script made", plan.schedule_counter, "schedules until the right was found.")
+    print("It took:", now - then, "seconds.")
+    print("Succesfully made", plan.schedule_counter, "schedule(s) until the right was found.")
 
     # Test get_day en get_slot
     # print(plan.get_day(schedule, 0))
