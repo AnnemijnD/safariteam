@@ -1,4 +1,4 @@
-# negeer alle python gecompileerde bestanden van NumPy
-__pycache__/
-*.py[cod]
+*__pycache__
 *.DS_Store
+*code/__pycache__
+*code/.DS_Store
