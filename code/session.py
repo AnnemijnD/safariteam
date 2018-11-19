@@ -28,7 +28,7 @@ class Session(object):
         return self.day
 
     def __str__(self):
-        if self.max_students == "nvt":
+        if self.max_students == " ":
             return f'{self.name} {self.type}'
         else:
             return f'{self.name} {self.type}, ({self.max_students} students)'

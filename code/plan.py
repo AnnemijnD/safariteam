@@ -57,9 +57,10 @@ class Plan():
                     max_students_practical = int(row[5])
                 else:
                     max_students_practical = 'nvt'
+                max_students_lecture = int(row[6])
 
                 # Use Course class to create objects for every course
-                course = Course(name, course_id, lecture, tutorial, practical, max_students_tutorial, max_students_practical)
+                course = Course(name, course_id, lecture, tutorial, practical, max_students_lecture, max_students_tutorial, max_students_practical)
                 courses_list.append(course)
                 # Count id_course
                 id_counter += 1
@@ -142,7 +143,7 @@ class Plan():
         for i in range(SLOTS):
             name = ' '
             type = ' '
-            max_students = 'nvt'
+            max_students = ' '
             session = Session(name, type, max_students)
             # session = Session(name, type, room, timeslot, day)
             empty_sessions.append(session)
