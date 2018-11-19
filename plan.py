@@ -773,4 +773,4 @@ if __name__ == "__main__":
     # Test get_day en get_slot
     # print(plan.get_day(schedule, 0))
     # print(Constraint.session_spread_check(schedule, plan.courses))
-    print(Constraint.all_constraints(schedule, plan.courses))
+    print(Constraint.lecture_first(schedule, plan.courses))

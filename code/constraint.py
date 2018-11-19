@@ -3,6 +3,7 @@ TIME_SLOTS = 4
 DAYS = 5
 ROOMS = 7
 SPREAD_BONUS = 20
+# COURSES = 29
 
 
 class Constraint():
@@ -80,6 +81,15 @@ class Constraint():
             courses_schedule.append(course_schedule)
 
         return courses_schedule
+
+    def lecture_first(schedule, courses):
+        courses_schedule = Constraint.all_constraints(schedule, courses)
+        for course in courses:
+            for i in range(course.lecture):
+                if courses_schedule[course.course_id][i][3] != "lecture":
+                    return False
+
+        return True
 
     def get_day(schedule, day):
         """
