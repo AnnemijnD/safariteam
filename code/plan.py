@@ -604,7 +604,7 @@ class Plan():
         # Transpose rows and columns
         df = df.T
 
-
+        # Stel de column namen vast
         i = 0
         tags = df['Monday'].apply(pd.Series)
         tags.columns = [rooms[i], rooms[i+1], rooms[i+2], rooms[i+3], rooms[i+4], rooms[i+5], rooms[i+6]]
@@ -741,5 +741,5 @@ if __name__ == "__main__":
 
     now = time.time()
 
-    print("It took:", now - then, "seconds")
-    print("Script made", plan.schedule_counter, "schedule(s) until the right was found.")
+    print("It took:", now - then, "seconds.")
+    print("Succesfully made", plan.schedule_counter, "schedule(s) until the right was found.")

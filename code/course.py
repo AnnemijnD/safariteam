@@ -1,5 +1,6 @@
 from session import Session
 import pandas as pd
+# from plan import Plan ??
 
 
 class Course(object):
@@ -55,6 +56,7 @@ class Course(object):
     def load_mutual_courses(self, coursename):
 
         # Dit moet even ergens anders neergezet worden zodat het niet opnieuw ingeladen wordt de hele tijd!
+        # Waarom kan je niet doen: from Plan import plan??
         df = pd.read_csv("../data/tegelijkvolgbaar.csv", delimiter=";")
 
         mutual_courses = []
