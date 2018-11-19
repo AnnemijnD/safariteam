@@ -755,7 +755,7 @@ if __name__ == "__main__":
     plan.courses = plan.load_courses()
     schedule, lectures, other_sessions, empty_sessions = plan.initialize_schedule(plan.courses)
     rooms = plan.load_rooms()
-    
+
     # Switch sessions
     switch.test_if_schedule_loaded(schedule)
 
@@ -772,4 +772,4 @@ if __name__ == "__main__":
 
     # Test get_day en get_slot
     # print(plan.get_day(schedule, 0))
-    # print(Constraint.session_spread_check(schedule))
+    # print(Constraint.session_spread_check(schedule, plan.courses))
