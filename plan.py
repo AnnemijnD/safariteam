@@ -402,7 +402,6 @@ class Plan():
                 print(lectures[e])
                 return schedule
                 plan.schedule_counter += 1
-
                 plan.initialize_schedule(plan.courses)
 
         if found:
@@ -412,9 +411,7 @@ class Plan():
             plan.schedule_counter += 1
             plan.initialize_schedule(plan.courses)
 
-
-
-                            # makes a new schedule if it failed
+                    # makes a new schedule if it failed
 
 
 

@@ -22,7 +22,7 @@ class Session(object):
         """
         Represents an object when it is printed.
         """
-        return str([self.name, self.type])
+        return self.name
 
     def __getitem__(self, day):
         return self.day
