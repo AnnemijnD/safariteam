@@ -1,21 +1,38 @@
 """
-Switch one or more RANDOM sessions. \
-Input is a schedule, output is a schedule with switched sessions. \
+Switch one or more RANDOM sessions.
+Input is a schedule, output is a schedule with switched sessions.
 """
 
 from random import randint
+import numpy as np
+
+SLOTS = 140
+TIME_SLOTS = 4
+DAYS = 5
+ROOMS = 7
+random_numbers = []
 
 def switch_session(schedule):
 
-    DAYS = randint(0, 4)
-    TIME_SLOTS = randint(0, 3)
-    ROOMS = randint(0, 6)
-    DAYS_switch = randint(0, 4)
-    TIME_SLOTS_switch = randint(0, 3)
-    ROOMS_switch = randint(0, 6)
+    # number_of_switched = 2
+    # numbers = get_random_numbers(2)
 
-    temp = schedule[DAYS][TIME_SLOTS][ROOMS]
-    schedule[DAYS][TIME_SLOTS][ROOMS] = schedule[DAYS_switch][TIME_SLOTS_switch][ROOMS_switch]
-    schedule[DAYS_switch][TIME_SLOTS_switch][ROOMS_switch] = temp
+    # Get two random numbers
+    random_number = randint(0, SLOTS - 1)
+    random_switch_number = randint(0, SLOTS - 1)
+
+    # Flatten schedule to get a 1D list to switch elements
+    flatten = np.array(schedule).flatten()
+    temp = flatten[random_number]
+    flatten[random_number] = flatten[random_switch_number]
+    flatten[random_switch_number] = temp
+
+    # Convert back to 3D list
+    schedule = flatten.reshape(DAYS, TIME_SLOTS, ROOMS).tolist()
 
     return schedule
+
+
+def get_random_numbers(int):
+
+    return int
