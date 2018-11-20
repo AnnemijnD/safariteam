@@ -23,16 +23,7 @@ def switch_session(schedule, number_of_switches):
         random_number = randint(0, SLOTS - 1)
         random_switch_number = randint(0, SLOTS - 1)
 
-        # temp = flatten[random_number]
-        # print(temp)
-        # flatten[random_number] = '2'
-        # print(flatten[random_number])
-        # flatten[random_switch_number] = temp
-
-        x = flatten[random_number]
-        y = flatten[random_switch_number]
-
-        flatten[random_number], flatten[random_switch_number] = y, x
+        flatten[random_number], flatten[random_switch_number] = flatten[random_switch_number], flatten[random_number]
 
     # Convert back to 3D list
     schedule = flatten.reshape(DAYS, TIME_SLOTS, ROOMS).tolist()
