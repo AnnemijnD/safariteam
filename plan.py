@@ -409,7 +409,7 @@ if __name__ == "__main__":
     rooms = plan.load_rooms()
 
     # Switch sessions
-    schedule = switch.switch_session(schedule)
+    switch.switch_session(schedule)
 
 
     # Make a html file for the schedule
@@ -421,4 +421,4 @@ if __name__ == "__main__":
 
     # Test get_day en get_slot
     # print(plan.get_day(schedule, 0))
-    # print(Constraint.session_spread_check(schedule))
+    # print(Constraint.session_spread_check(schedule, plan.courses))
