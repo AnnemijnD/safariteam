@@ -375,7 +375,7 @@ class Plan():
         html_string = '''
         <html>
           <head><title>Schedule</title></head>
-          <link rel="stylesheet" type="text/css" href="data/style.css" href="https://www.w3schools.com/w3css/4/w3.css"/>
+          <link rel="stylesheet" type="text/css" href="style.css" href="https://www.w3schools.com/w3css/4/w3.css"/>
           <body>
             {table}
           </body>
@@ -408,9 +408,8 @@ if __name__ == "__main__":
     schedule, lectures, other_sessions, empty_sessions = plan.initialize_schedule(plan.courses)
     rooms = plan.load_rooms()
 
-    # Switch sessions
-    switch.switch_session(schedule)
-
+    # Switch sessions: input is a schedule and number of sessions to be swapped
+    schedule = switch.switch_session(schedule, 20)
 
     # Make a html file for the schedule
     plan.save_html(schedule, rooms)
