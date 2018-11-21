@@ -352,6 +352,13 @@ class Plan():
         Print into html to visualize schedule.
         """
 
+        print("It took:", time.time() - plan.then, "seconds.")
+        print("Succesfully made", plan.schedule_counter, "schedule(s) until the 'right' was found.")
+
+        # Test get_day en get_slot
+        print("Bonus points:", Constraint.session_spread_check(schedule, plan.courses), "out of 400.")
+        
+
         df = pd.DataFrame(schedule)
         pd.set_option('display.max_colwidth', 350)
         df.columns = ['9:00 - 11:00', '11:00 - 13:00', '13:00 - 15:00', '15:00 - 17:00']
@@ -398,11 +405,10 @@ class Plan():
 
 if __name__ == "__main__":
 
-    print("Loading...")
-    then = time.time()
-
     # Load all the courses and sessions
     plan = Plan()
+    plan.then = time.time()
+    print("Loading...")
     plan.random_numbers = []
     plan.schedule_counter = 0
     plan.courses = plan.load_courses()
@@ -417,11 +423,3 @@ if __name__ == "__main__":
 
     # Make a html file for the schedule
     plan.save_html(schedule, rooms)
-
-    now = time.time()
-    print("It took:", now - then, "seconds.")
-    print("Succesfully made", plan.schedule_counter, "schedule(s) until the 'right' was found.")
-
-    # Test get_day en get_slot
-    print("Bonus points:", Constraint.session_spread_check(schedule, plan.courses), "out of 400.")
-    # Constraint.lecture_first(schedule, plan.courses)

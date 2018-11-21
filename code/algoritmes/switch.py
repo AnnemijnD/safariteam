@@ -18,6 +18,8 @@ def switch_session(schedule, number_of_switches):
     # Flatten schedule to get a 1D list to switch elements
     flatten = np.array(schedule).flatten()
 
+    # Moet er alleen nog voor zorgen dat de random nummers niet gelijk
+    # kunnen zijn aan elkaar anders gaan er spook sessies (dubbele sessies) komen
     for i in range(number_of_switches):
         # Get two random numbers
         random_number = randint(0, SLOTS - 1)
