@@ -28,7 +28,5 @@ def switch_session(schedule, number_of_switches):
     # Convert back to 3D list
     schedule = flatten.reshape(DAYS, TIME_SLOTS, ROOMS).tolist()
 
-    print(schedule)
-
     # Return 3D matrix of schedule
     return schedule

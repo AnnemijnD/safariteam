@@ -398,6 +398,7 @@ class Plan():
 
 if __name__ == "__main__":
 
+    print("Loading...")
     then = time.time()
 
     # Load all the courses and sessions
@@ -408,16 +409,19 @@ if __name__ == "__main__":
     schedule, lectures, other_sessions, empty_sessions = plan.initialize_schedule(plan.courses)
     rooms = plan.load_rooms()
 
-    # Switch sessions: input is a schedule and number of sessions to be swapped
-    schedule = switch.switch_session(schedule, 20)
+    # R: Komt nooit hoger dan 180 !??? HoeE KAN DAT?
+    while Constraint.session_spread_check(schedule, plan.courses) < 100:
+        # Switch sessions: input is a schedule and number of sessions to be swapped
+        schedule = switch.switch_session(schedule, 20)
+        plan.schedule_counter += 1
 
     # Make a html file for the schedule
     plan.save_html(schedule, rooms)
 
     now = time.time()
     print("It took:", now - then, "seconds.")
-    print("Succesfully made", plan.schedule_counter, "schedule(s) until the right was found.")
+    print("Succesfully made", plan.schedule_counter, "schedule(s) until the 'right' was found.")
 
     # Test get_day en get_slot
-    # print(plan.get_day(schedule, 0))
-    # print(Constraint.session_spread_check(schedule, plan.courses))
+    print("Bonus points:", Constraint.session_spread_check(schedule, plan.courses), "out of 400.")
+    # Constraint.lecture_first(schedule, plan.courses)
