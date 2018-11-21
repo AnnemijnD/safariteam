@@ -409,7 +409,7 @@ if __name__ == "__main__":
     schedule, lectures, other_sessions, empty_sessions = plan.initialize_schedule(plan.courses)
     rooms = plan.load_rooms()
 
-    # R: Komt nooit hoger dan 180 !??? HoeE KAN DAT?
+    # R: Komt nooit hoger dan 180 !??? HoeE KAN DAT? Super raar
     while Constraint.session_spread_check(schedule, plan.courses) < 100:
         # Switch sessions: input is a schedule and number of sessions to be swapped
         schedule = switch.switch_session(schedule, 20)

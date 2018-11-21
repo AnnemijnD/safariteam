@@ -131,10 +131,16 @@ class Constraint():
         return True
 
 
-    def student_numbers(schedule):
+    def student_numbers(schedule, courses):
         """
         Checks if the number of students in a room matches the room capacity.
         """
+
+        # for course in courses:
+            # get_room
+        pass
+
+    def get_room(schedule, room):
         pass
 
 
