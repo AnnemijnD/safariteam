@@ -95,16 +95,16 @@ class Constraint():
         Returns true if the lectures are before the tutorials and or
         practicals, otherwise returns false.
         """
+        
         lecture_points = 0
         courses_schedule = Constraint.all_constraints(schedule, courses)
         for course in courses:
 
             # checks for the amount of lectures if the lectures are planned first
             for i in range(course.lecture):
-                if courses_schedule[course.course_id][i][3] != "lecture":
+                if courses_schedule[course.course_id]["type"][i] != "lecture":
                     return [False, lecture_points]
                 else:
-                    # Hou bij hoeveel lectures wel goed ingeroosterd zijn.
                     lecture_points += 1
 
         return [True, lecture_points]

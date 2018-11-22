@@ -135,6 +135,7 @@ class Plan():
                 other_sessions.append(session)
             sessions.append(session)
 
+
         # shuffle de lectures zodat ze random zijn
         # Make copy of sessions and shuffle
         lectures = lecture_sessions[:]
@@ -422,19 +423,20 @@ if __name__ == "__main__":
 
     #### SORRY JONGENS DIT MOET IN ALGORITMEN STAAN --------------------------------
 
-    # schedule = switch.switch_session(schedule, 10)
-    # # Onthou dit rooster
-    # save_schedule = schedule
-    #
-    # while Constraint.lecture_first(schedule, plan.courses)[1] < MAXSCHEDULEPOINTS:
-    #     # Maak nieuw rooster en kijk of deze beter is
-    #     schedule_test = switch.switch_session(save_schedule, 1)
-    #     plan.schedule_counter += 1
-    #     if Constraint.lecture_first(schedule_test, plan.courses)[1] > Constraint.lecture_first(save_schedule, plan.courses)[1]:
-    #         # Als het aantal punten groter is, accepteer dit rooster en ga hiermee door.
-    #         schedule = schedule_test
-    #     else:
-    #         schedule = save_schedule
+    schedule = switch.switch_session(schedule, 5)
+    # Onthou dit rooster
+    save_schedule = schedule
+
+    # Oplossing wordt snel gevonden of wordt helemaal niet gevonden. 
+    while Constraint.lecture_first(schedule, plan.courses)[1] < MAXSCHEDULEPOINTS:
+        # Maak nieuw rooster en kijk of deze beter is
+        schedule_test = switch.switch_session(save_schedule, 1)
+        plan.schedule_counter += 1
+        if Constraint.lecture_first(schedule_test, plan.courses)[1] > Constraint.lecture_first(save_schedule, plan.courses)[1]:
+            # Als het aantal punten groter is, accepteer dit rooster en ga hiermee door.
+            schedule = schedule_test
+        else:
+            schedule = save_schedule
 
     # --------------------------------------------------------------------------------
 
@@ -446,9 +448,8 @@ if __name__ == "__main__":
     #     schedule = switch.switch_session(schedule, 30)
     #     plan.schedule_counter += 1
 
-    Constraint.mutual_courses_check(schedule, plan.courses)
+    # Constraint.mutual_courses_check(schedule, plan.courses)
     Constraint.own_sessions_check(schedule, plan.courses)
-    # print(Constraint.all_constraints(schedule, plan.courses))
 
     # Make a html file for the schedule
     plan.save_html(schedule, rooms)
