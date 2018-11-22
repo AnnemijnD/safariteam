@@ -25,6 +25,11 @@ def switch_session(schedule, number_of_switches):
         random_number = randint(0, SLOTS - 1)
         random_switch_number = randint(0, SLOTS - 1)
 
+        # If the numbers are equal to each other, make another number
+        while random_number is random_switch_number:
+            random_number = randint(0, SLOTS - 1)
+            random_switch_number = randint(0, SLOTS - 1)
+
         flatten[random_number], flatten[random_switch_number] = flatten[random_switch_number], flatten[random_number]
 
     # Convert back to 3D list

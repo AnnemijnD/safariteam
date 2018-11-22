@@ -352,12 +352,12 @@ class Plan():
         Print into html to visualize schedule.
         """
 
-        print("It took:", time.time() - plan.then, "seconds.")
+        print("It took:", round(time.time() - plan.then, 3), "seconds.")
         print("Succesfully made", plan.schedule_counter, "schedule(s) until the 'right' was found.")
 
         # Test get_day en get_slot
         print("Bonus points:", Constraint.session_spread_check(schedule, plan.courses), "out of 400.")
-        
+
 
         df = pd.DataFrame(schedule)
         pd.set_option('display.max_colwidth', 350)
@@ -418,7 +418,7 @@ if __name__ == "__main__":
     # R: Komt nooit hoger dan 180 !??? HoeE KAN DAT? Super raar
     while Constraint.session_spread_check(schedule, plan.courses) < 100:
         # Switch sessions: input is a schedule and number of sessions to be swapped
-        schedule = switch.switch_session(schedule, 20)
+        schedule = switch.switch_session(schedule, 30)
         plan.schedule_counter += 1
 
     # Make a html file for the schedule
