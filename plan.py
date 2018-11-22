@@ -422,6 +422,7 @@ if __name__ == "__main__":
         plan.schedule_counter += 1
 
     # Constraint.mutual_courses_check(schedule, plan.courses)
+    Constraint.own_sessions_check(schedule, plan.courses)
 
     # Make a html file for the schedule
     plan.save_html(schedule, rooms)

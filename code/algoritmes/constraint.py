@@ -10,9 +10,6 @@ class Constraint():
     """
     A class with all the constraint functions
     """
-    # def __init__(self, schedule):
-    #     self.schedule = schedule
-    # self.session_spread = self.session_spread_check(self.schedule)
 
 # Hier even een lijst met alle constraints:
 # 1. hoorcelleges voor werkcolleges en practica HARD
@@ -23,6 +20,27 @@ class Constraint():
 #
 # Een fix_hard_constraints functie maken voor als na het soft maken van een
 # aantal constraints er niet meer wordt voldaan aan de hard constraints.
+
+    def all_constraints(schedule, courses):
+        """
+        Makes a list that contains lists of every course with the moment and
+        type of the courses in the schedule. The courses are in the list in
+        order of their course_id.
+        -----
+        Dit is het begin voor het preprocessen. Een hele slechte naam maar
+        weet even niets beters JOE
+        """
+        courses_schedule = []
+        for course in courses:
+            course_schedule = []
+            for i in range(DAYS):
+                for j in range(TIME_SLOTS):
+                    for k in range(ROOMS):
+                        if course.name == schedule[i][j][k].name:
+                            course_schedule.append((i, j, k, schedule[i][j][k].type))
+            courses_schedule.append(course_schedule)
+
+        return courses_schedule
 
     def session_spread_check(schedule, courses):
         """
@@ -46,7 +64,6 @@ class Constraint():
 
         for course in courses:
             if course.sessions == 2:
-                # print(courses_schedule[course.course_id][0][0], courses_schedule[course.course_id][1][0])
                 # checks if the courses are on monday and thursday
                 if (courses_schedule[course.course_id][0][0] == 0) and \
                    (courses_schedule[course.course_id][1][0] == 3):
@@ -76,62 +93,6 @@ class Constraint():
 
         return bonuspoints
 
-
-        # bonuspoints = 0
-        # monday = Constraint.get_day(schedule, 0)
-        # tuesday = Constraint.get_day(schedule, 1)
-        # wednesday = Constraint.get_day(schedule, 2)
-        # thursday = Constraint.get_day(schedule, 3)
-        # friday = Constraint.get_day(schedule, 4)
-        # for course in courses:
-        #     nmbr_sessions = course.sessions
-        #     if nmbr_sessions == 2:
-        #         # print(course.name)
-        #         # print(monday)
-        #         if course.name in monday:
-        #             if course.name in thursday:
-        #                 print("TEEESTTTTT")
-        #                 bonuspoints += SPREAD_BONUS
-        #         elif course.name in tuesday:
-        #             if course.name in friday:
-        #                 bonuspoints += SPREAD_BONUS
-        #
-        #     elif nmbr_sessions == 3:
-        #         if course.name in monday:
-        #             if course.name in wednesday:
-        #                 if course.name in friday:
-        #                     bonuspoints += SPREAD_BONUS
-        #
-        #     elif nmbr_sessions == 4:
-        #         if (course.name in monday) and (course.name in tuesday) and \
-        #            (course.name in thursday) and (course.name in friday):
-        #             bonuspoints += SPREAD_BONUS
-        #     else:
-        #         bonuspoints += 0
-        #
-        # return bonuspoints
-
-    def all_constraints(schedule, courses):
-        """
-        Makes a list that contains lists of every course with the moment and
-        type of the courses in the schedule. The courses are in the list in
-        order of their course_id.
-        -----
-        Dit is het begin voor het preprocessen. Een hele slechte naam maar
-        weet even niets beters JOE
-        """
-        courses_schedule = []
-        for course in courses:
-            course_schedule = []
-            for i in range(DAYS):
-                for j in range(TIME_SLOTS):
-                    for k in range(ROOMS):
-                        if course.name == schedule[i][j][k].name:
-                            course_schedule.append([i, j, k, schedule[i][j][k].type])
-            courses_schedule.append(course_schedule)
-
-        return courses_schedule
-
     def lecture_first(schedule, courses):
         """
         Returns true if the lectures are before the tutorials and or
@@ -139,6 +100,8 @@ class Constraint():
         """
         courses_schedule = Constraint.all_constraints(schedule, courses)
         for course in courses:
+
+            # checks for the amount of lectures if the lectures are planned first
             for i in range(course.lecture):
                 if courses_schedule[course.course_id][i][3] != "lecture":
                     return False
@@ -180,6 +143,25 @@ class Constraint():
             #     # checks if course is planned at the same time as mutual course
             #     if set(courses_schedule[mutual.course_id]) & set(checked_course) != []:
             #         return False
+
+        return True
+
+    def own_sessions_check(schedule, courses):
+        """
+        Returns true if the sessions of a course aren't planned in the same
+        slot, otherwise returns false.
+        """
+        courses_schedule = Constraint.all_constraints(schedule, courses)
+
+        for course in courses:
+
+            # removes room and type of course in course_schedule
+            for i in range(len(courses_schedule[course.course_id])):
+                courses_schedule[course.course_id][i] = courses_schedule[course.course_id][i][0:2]
+
+            checked_course = courses_schedule[course.course_id]
+            if len(set(checked_course)) < len(checked_course):
+                return False
 
         return True
 
