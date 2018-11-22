@@ -3,7 +3,6 @@ TIME_SLOTS = 4
 DAYS = 5
 ROOMS = 7
 SPREAD_BONUS = 20
-# COURSES = 29
 
 
 class Constraint():
@@ -37,7 +36,6 @@ class Constraint():
                 for j in range(TIME_SLOTS):
                     for k in range(ROOMS):
                         if course.name == schedule[i][j][k].name:
-                            # course_schedule.append((i, j, k, schedule[i][j][k].type))
                             course_schedule["day"].append(i)
                             course_schedule["slot"].append(j)
                             course_schedule["room"].append(k)
@@ -58,10 +56,6 @@ class Constraint():
         - nu kijkjen we nog niet voor werkgroepen maar als we dat wel gaan doen
         mag het maar 20/(aantal werkgroepen) punten krijgen (en dan nog iets
         handigs bedenken met dat we hele getallen hebben)
-
-        -----
-        HUH MEGA GEK, IK HAD GECOMMIT EN INEENS WAREN AL REBECCA HAAR COMMENTS
-        WEG. PANIEK.
         """
         courses_schedule = Constraint.all_constraints(schedule, courses)
         bonuspoints = 0
@@ -102,15 +96,18 @@ class Constraint():
         Returns true if the lectures are before the tutorials and or
         practicals, otherwise returns false.
         """
+        lecture_points = 0
         courses_schedule = Constraint.all_constraints(schedule, courses)
         for course in courses:
 
             # checks for the amount of lectures if the lectures are planned first
             for i in range(course.lecture):
                 if courses_schedule[course.course_id]["type"][i] != "lecture":
-                    return False
+                    return [False, lecture_points]
+                else:
+                    lecture_points += 1
 
-        return True
+        return [True, lecture_points]
 
     def mutual_courses_check(schedule, courses):
         """
