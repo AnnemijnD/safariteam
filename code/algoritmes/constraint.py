@@ -32,12 +32,16 @@ class Constraint():
         """
         courses_schedule = []
         for course in courses:
-            course_schedule = []
+            course_schedule = {"day": [], "slot": [], "room": [], "type": []}
             for i in range(DAYS):
                 for j in range(TIME_SLOTS):
                     for k in range(ROOMS):
                         if course.name == schedule[i][j][k].name:
-                            course_schedule.append((i, j, k, schedule[i][j][k].type))
+                            # course_schedule.append((i, j, k, schedule[i][j][k].type))
+                            course_schedule["day"].append(i)
+                            course_schedule["slot"].append(j)
+                            course_schedule["room"].append(k)
+                            course_schedule["type"].append(schedule[i][j][k].type)
             courses_schedule.append(course_schedule)
 
         return courses_schedule
@@ -65,30 +69,30 @@ class Constraint():
         for course in courses:
             if course.sessions == 2:
                 # checks if the courses are on monday and thursday
-                if (courses_schedule[course.course_id][0][0] == 0) and \
-                   (courses_schedule[course.course_id][1][0] == 3):
+                if (courses_schedule[course.course_id]["day"][0] == 0) and \
+                   (courses_schedule[course.course_id]["day"][1] == 3):
                     bonuspoints += SPREAD_BONUS
 
                 # checks if the courses are on tuesday an friday
-                elif (courses_schedule[course.course_id][0][0] == 1) and \
-                     (courses_schedule[course.course_id][1][0] == 4):
+                elif (courses_schedule[course.course_id]["day"][0] == 1) and \
+                     (courses_schedule[course.course_id]["day"][1] == 4):
                     bonuspoints += SPREAD_BONUS
 
             elif course.sessions == 3:
 
                 # checks if the courses are on monday, wednesday and friday
-                if (courses_schedule[course.course_id][0][0] == 0) and \
-                   (courses_schedule[course.course_id][1][0] == 2) and \
-                   (courses_schedule[course.course_id][2][0] == 4):
+                if (courses_schedule[course.course_id]["day"][0] == 0) and \
+                   (courses_schedule[course.course_id]["day"][1] == 2) and \
+                   (courses_schedule[course.course_id]["day"][2] == 4):
                     bonuspoints += SPREAD_BONUS
 
             elif course.sessions == 4:
 
                 # checks if the courses are on monday, tuesday, thursday and friday
-                if (courses_schedule[course.course_id][0][0] == 0) and \
-                   (courses_schedule[course.course_id][1][0] == 1) and \
-                   (courses_schedule[course.course_id][2][0] == 3) and \
-                   (courses_schedule[course.course_id][3][0] == 4):
+                if (courses_schedule[course.course_id]["day"][0] == 0) and \
+                   (courses_schedule[course.course_id]["day"][1] == 1) and \
+                   (courses_schedule[course.course_id]["day"][2] == 3) and \
+                   (courses_schedule[course.course_id]["day"][3] == 4):
                     bonuspoints += SPREAD_BONUS
 
         return bonuspoints
@@ -103,7 +107,7 @@ class Constraint():
 
             # checks for the amount of lectures if the lectures are planned first
             for i in range(course.lecture):
-                if courses_schedule[course.course_id][i][3] != "lecture":
+                if courses_schedule[course.course_id]["type"][i] != "lecture":
                     return False
 
         return True
@@ -121,27 +125,24 @@ class Constraint():
 
         for course in courses:
 
-            # checks if room and type of course are still in courses_schedule
-            if len(courses_schedule[course.course_id]) > 2:
-
-                # removes room and type of course in course_schedule
-                for i in range(len(courses_schedule[course.course_id])):
-                    courses_schedule[course.course_id][i] = courses_schedule[course.course_id][i][0:2]
-
+            # adds (day, slot) of every session of course to course_sessions
             checked_course = courses_schedule[course.course_id]
+            course_sessions = []
+            for i in range(len(checked_course["day"])):
+                course_sessions.append((checked_course["day"][i], checked_course["slot"][i]))
 
             # # checks for all the mutual courses if they are at the same time
             # for mutual in course.mutual_courses:
+            #     mutual_course = courses_schedule[mutual.course_id]
             #
-            #     # checks if room and type of course are still in course_schedule
-            #     if len(courses_schedule[mutual.course_id[0]]) > 2:
+            #     # adds (day, slot) of every session of mutual to mutual_sessions
+            #     mutual_sessions = []
+            #     for i in range(len(mutual_course)):
+            #         mutual_sessions.append((mutual_course["day"][i], mutual_course["slot"][i]))
             #
-            #         # removes room and type of course in course_schedule
-            #         for i in range(len(courses_schedule[mutual.course_id])):
-            #             courses_schedule[mutual.course_id][i] = courses_schedule[mutual.course_id][i][0:2]
-            #
-            #     # checks if course is planned at the same time as mutual course
-            #     if set(courses_schedule[mutual.course_id]) & set(checked_course) != []:
+            #     # return False if there are sessions planned at the same time
+            #     checked_sessions = course_sessions + mutual_sessions
+            #     if len(set(checked_sessions)) < len(checked_sessions):
             #         return False
 
         return True
@@ -154,17 +155,18 @@ class Constraint():
         courses_schedule = Constraint.all_constraints(schedule, courses)
 
         for course in courses:
-
-            # removes room and type of course in course_schedule
-            for i in range(len(courses_schedule[course.course_id])):
-                courses_schedule[course.course_id][i] = courses_schedule[course.course_id][i][0:2]
-
             checked_course = courses_schedule[course.course_id]
-            if len(set(checked_course)) < len(checked_course):
+
+            # adds (day, slot) of every session to course_sessions
+            course_sessions = []
+            for i in range(len(checked_course["day"])):
+                course_sessions.append((checked_course["day"][i], checked_course["slot"][i]))
+
+            # return False if there are sessions planned at the same time
+            if len(set(course_sessions)) < len(checked_course):
                 return False
 
         return True
-
 
     def get_day(schedule, day):
         """

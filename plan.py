@@ -423,6 +423,7 @@ if __name__ == "__main__":
 
     # Constraint.mutual_courses_check(schedule, plan.courses)
     Constraint.own_sessions_check(schedule, plan.courses)
+    # print(Constraint.all_constraints(schedule, plan.courses))
 
     # Make a html file for the schedule
     plan.save_html(schedule, rooms)
