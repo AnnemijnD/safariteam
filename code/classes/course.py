@@ -19,6 +19,7 @@ class Course(object):
         self.session_lecture = self.load_sessions(self.lecture, 'lecture', max_students_lecture, expected_students)
         self.session_tutorial = self.load_sessions(self.tutorial, 'tutorial', max_students_tutorial, expected_students)
         self.session_practical = self.load_sessions(self.practical, 'practical', max_students_practical, expected_students)
+        # print(self.session_practical)
         self.sessions_total = self.session_lecture + self.session_tutorial + self.session_practical
         # Mutual courses moeten objecten worden.
         self.mutual_courses = self.load_mutual_courses(self.name)
@@ -65,15 +66,21 @@ class Course(object):
                 group_count = math.ceil(float(expected_students/max_students))
                 # Set a counter for group_id
                 group_id = 0
+                # make a session for every group
                 for j in range(group_count):
                     session = Session(self.name, type, max_students, group_id)
                     sessions_with_groups.append(session)
                     group_id += 1
+            else:
+                group_id = 0
+                session = Session(self.name, type, max_students, group_id)
+                sessions_with_groups.append(session)
+
 
             session = Session(self.name, type, max_students, group_id)
             sessions.append(session)
 
-        return sessions
+        return sessions_with_groups
 
         #  DIT IS EEN TEST OM TE KIJKEN OF JE ZO DINGEN VAN EEN COURSE KAN AANROEPEN
     # def __str__(self):

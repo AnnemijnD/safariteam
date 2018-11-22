@@ -135,7 +135,6 @@ class Plan():
                 other_sessions.append(session)
             sessions.append(session)
 
-
         # shuffle de lectures zodat ze random zijn
         # Make copy of sessions and shuffle
         lectures = lecture_sessions[:]
@@ -192,7 +191,6 @@ class Plan():
 
         # verdelen over dagen als hard constraint
         for e in range(len(lectures)):
-
             for course in courses:
                 if lectures[e].name == course.name:
                     mutual_courses_session = course.mutual_courses
@@ -231,15 +229,12 @@ class Plan():
                         found = True
                         break
 
-
-
                 if slots_allowed and bool(location):
 
                         # print("in if2")
                     schedule[b][location[0]][location[1]] = lectures[e]
                     found = True
                     break
-
 
             if not found:
                 print(e)
@@ -420,23 +415,23 @@ if __name__ == "__main__":
     schedule, lectures, other_sessions, empty_sessions = plan.initialize_schedule(plan.courses)
     rooms = plan.load_rooms()
 
-
-    #### SORRY JONGENS DIT MOET IN ALGORITMEN STAAN --------------------------------
-
-    schedule = switch.switch_session(schedule, 5)
-    # Onthou dit rooster
-    save_schedule = schedule
-
-    # Oplossing wordt snel gevonden of wordt helemaal niet gevonden. 
-    while Constraint.lecture_first(schedule, plan.courses)[1] < MAXSCHEDULEPOINTS:
-        # Maak nieuw rooster en kijk of deze beter is
-        schedule_test = switch.switch_session(save_schedule, 1)
-        plan.schedule_counter += 1
-        if Constraint.lecture_first(schedule_test, plan.courses)[1] > Constraint.lecture_first(save_schedule, plan.courses)[1]:
-            # Als het aantal punten groter is, accepteer dit rooster en ga hiermee door.
-            schedule = schedule_test
-        else:
-            schedule = save_schedule
+    # -----------------------------------------------------------------------------------
+    #### SORRY JONGENS DIT MOET IN ALGORITMEN STAAN, (maar wat voor algoritme is dit...?)
+    #
+    # schedule = switch.switch_session(schedule, 5)
+    # # Onthou dit rooster
+    # save_schedule = schedule
+    #
+    # # Oplossing wordt snel gevonden of wordt helemaal niet gevonden.
+    # while Constraint.lecture_first(schedule, plan.courses)[1] < MAXSCHEDULEPOINTS:
+    #     # Maak nieuw rooster en kijk of deze beter is
+    #     schedule_test = switch.switch_session(save_schedule, 1)
+    #     plan.schedule_counter += 1
+    #     if Constraint.lecture_first(schedule_test, plan.courses)[1] > Constraint.lecture_first(save_schedule, plan.courses)[1]:
+    #         # Als het aantal punten groter is, accepteer dit rooster en ga hiermee door.
+    #         schedule = schedule_test
+    #     else:
+    #         schedule = save_schedule
 
     # --------------------------------------------------------------------------------
 
