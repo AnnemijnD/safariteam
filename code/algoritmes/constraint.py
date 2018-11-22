@@ -48,16 +48,11 @@ class Constraint():
         courses over the week. Where a course with 2 sessions should be on
         either monday and thursday or tuesday and friday. See the rest of the
         constrains in the comments bellow.
-
         -----
         TODO:
         - nu kijkjen we nog niet voor werkgroepen maar als we dat wel gaan doen
         mag het maar 20/(aantal werkgroepen) punten krijgen (en dan nog iets
         handigs bedenken met dat we hele getallen hebben)
-
-        -----
-        HUH MEGA GEK, IK HAD GECOMMIT EN INEENS WAREN AL REBECCA HAAR COMMENTS
-        WEG. PANIEK.
         """
         courses_schedule = Constraint.all_constraints(schedule, courses)
         bonuspoints = 0
@@ -65,30 +60,30 @@ class Constraint():
         for course in courses:
             if course.sessions == 2:
                 # checks if the courses are on monday and thursday
-                if (courses_schedule[course.course_id][0][0] == 0) and \
-                   (courses_schedule[course.course_id][1][0] == 3):
+                if (courses_schedule[course.course_id]["day"][0] == 0) and \
+                   (courses_schedule[course.course_id]["day"][1] == 3):
                     bonuspoints += SPREAD_BONUS
 
                 # checks if the courses are on tuesday an friday
-                elif (courses_schedule[course.course_id][0][0] == 1) and \
-                     (courses_schedule[course.course_id][1][0] == 4):
+                elif (courses_schedule[course.course_id]["day"][0] == 1) and \
+                     (courses_schedule[course.course_id]["day"][1] == 4):
                     bonuspoints += SPREAD_BONUS
 
             elif course.sessions == 3:
 
                 # checks if the courses are on monday, wednesday and friday
-                if (courses_schedule[course.course_id][0][0] == 0) and \
-                   (courses_schedule[course.course_id][1][0] == 2) and \
-                   (courses_schedule[course.course_id][2][0] == 4):
+                if (courses_schedule[course.course_id]["day"][0] == 0) and \
+                   (courses_schedule[course.course_id]["day"][1] == 2) and \
+                   (courses_schedule[course.course_id]["day"][2] == 4):
                     bonuspoints += SPREAD_BONUS
 
             elif course.sessions == 4:
 
                 # checks if the courses are on monday, tuesday, thursday and friday
-                if (courses_schedule[course.course_id][0][0] == 0) and \
-                   (courses_schedule[course.course_id][1][0] == 1) and \
-                   (courses_schedule[course.course_id][2][0] == 3) and \
-                   (courses_schedule[course.course_id][3][0] == 4):
+                if (courses_schedule[course.course_id]["day"][0] == 0) and \
+                   (courses_schedule[course.course_id]["day"][1] == 1) and \
+                   (courses_schedule[course.course_id]["day"][2] == 3) and \
+                   (courses_schedule[course.course_id]["day"][3] == 4):
                     bonuspoints += SPREAD_BONUS
 
         return bonuspoints
@@ -98,15 +93,19 @@ class Constraint():
         Returns true if the lectures are before the tutorials and or
         practicals, otherwise returns false.
         """
+        lecture_points = 0
         courses_schedule = Constraint.all_constraints(schedule, courses)
         for course in courses:
 
             # checks for the amount of lectures if the lectures are planned first
             for i in range(course.lecture):
                 if courses_schedule[course.course_id][i][3] != "lecture":
-                    return False
+                    return [False, lecture_points]
+                else:
+                    # Hou bij hoeveel lectures wel goed ingeroosterd zijn.
+                    lecture_points += 1
 
-        return True
+        return [True, lecture_points]
 
     def mutual_courses_check(schedule, courses):
         """

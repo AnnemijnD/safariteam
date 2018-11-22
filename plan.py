@@ -23,7 +23,8 @@ SLOTS = 140
 TIME_SLOTS = 4
 DAYS = 5
 ROOMS = 7
-MAX_MALUSPOINTS = 0
+MAXMALUSPOINTS = 0
+MAXSCHEDULEPOINTS = 39
 
 
 class Plan():
@@ -57,6 +58,7 @@ class Plan():
                 tutorial = int(row[2])
                 practical = int(row[4])
                 course_id = id_counter
+                expected_students = int(row[6])
 
                 if row[3].isdigit():
                     max_students_tutorial = int(row[3])
@@ -69,7 +71,7 @@ class Plan():
                 max_students_lecture = int(row[6])
 
                 # Use Course class to create objects for every course
-                course = Course(name, course_id, lecture, tutorial, practical, max_students_lecture, max_students_tutorial, max_students_practical)
+                course = Course(name, course_id, lecture, tutorial, practical, max_students_lecture, max_students_tutorial, max_students_practical, expected_students)
                 courses_list.append(course)
                 # Count id_course
                 id_counter += 1
@@ -122,7 +124,9 @@ class Plan():
             except IndexError:
                 max_students = 'nvt'
 
-            session = Session(name, type, max_students)
+            group_id = 'nvt'
+
+            session = Session(name, type, max_students, group_id)
 
             # Get all the lectures
             if session.type == "lecture":
@@ -130,7 +134,6 @@ class Plan():
             elif session.type == "tutorial" or session.type == "practical":
                 other_sessions.append(session)
             sessions.append(session)
-
 
         # shuffle de lectures zodat ze random zijn
         # Make copy of sessions and shuffle
@@ -152,7 +155,8 @@ class Plan():
             name = ' '
             type = ' '
             max_students = ' '
-            session = Session(name, type, max_students)
+            group_id = 'nvt2'
+            session = Session(name, type, max_students, group_id)
             # session = Session(name, type, room, timeslot, day)
             empty_sessions.append(session)
 
@@ -356,7 +360,7 @@ class Plan():
         print("Succesfully made", plan.schedule_counter, "schedule(s) until the 'right' was found.")
 
         # Test get_day en get_slot
-        print("Bonus points:", Constraint.session_spread_check(schedule, plan.courses), "out of 400.")
+        # print("Bonus points:", Constraint.session_spread_check(schedule, plan.courses), "out of 400.")
 
 
         df = pd.DataFrame(schedule)
@@ -415,13 +419,34 @@ if __name__ == "__main__":
     schedule, lectures, other_sessions, empty_sessions = plan.initialize_schedule(plan.courses)
     rooms = plan.load_rooms()
 
-    # R: Komt nooit hoger dan 180 !??? HoeE KAN DAT? Super raar
-    while Constraint.session_spread_check(schedule, plan.courses) < 100:
-        # Switch sessions: input is a schedule and number of sessions to be swapped
-        schedule = switch.switch_session(schedule, 30)
-        plan.schedule_counter += 1
 
-    # Constraint.mutual_courses_check(schedule, plan.courses)
+    #### SORRY JONGENS DIT MOET IN ALGORITMEN STAAN --------------------------------
+
+    # schedule = switch.switch_session(schedule, 10)
+    # # Onthou dit rooster
+    # save_schedule = schedule
+    #
+    # while Constraint.lecture_first(schedule, plan.courses)[1] < MAXSCHEDULEPOINTS:
+    #     # Maak nieuw rooster en kijk of deze beter is
+    #     schedule_test = switch.switch_session(save_schedule, 1)
+    #     plan.schedule_counter += 1
+    #     if Constraint.lecture_first(schedule_test, plan.courses)[1] > Constraint.lecture_first(save_schedule, plan.courses)[1]:
+    #         # Als het aantal punten groter is, accepteer dit rooster en ga hiermee door.
+    #         schedule = schedule_test
+    #     else:
+    #         schedule = save_schedule
+
+    # --------------------------------------------------------------------------------
+
+
+    print(Constraint.lecture_first(schedule, plan.courses)[1])
+    # R: Komt nooit hoger dan 180 !??? HoeE KAN DAT? Super raar
+    # while Constraint.lecture_first(schedule, plan.courses) == False:
+    #     # Switch sessions: input is a schedule and number of sessions to be swapped
+    #     schedule = switch.switch_session(schedule, 30)
+    #     plan.schedule_counter += 1
+
+    Constraint.mutual_courses_check(schedule, plan.courses)
     Constraint.own_sessions_check(schedule, plan.courses)
 
     # Make a html file for the schedule
