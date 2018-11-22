@@ -3,7 +3,6 @@ TIME_SLOTS = 4
 DAYS = 5
 ROOMS = 7
 SPREAD_BONUS = 20
-# COURSES = 29
 
 
 class Constraint():
@@ -32,12 +31,15 @@ class Constraint():
         """
         courses_schedule = []
         for course in courses:
-            course_schedule = []
+            course_schedule = {"day": [], "slot": [], "room": [], "type": []}
             for i in range(DAYS):
                 for j in range(TIME_SLOTS):
                     for k in range(ROOMS):
                         if course.name == schedule[i][j][k].name:
-                            course_schedule.append((i, j, k, schedule[i][j][k].type))
+                            course_schedule["day"].append(i)
+                            course_schedule["slot"].append(j)
+                            course_schedule["room"].append(k)
+                            course_schedule["type"].append(schedule[i][j][k].type)
             courses_schedule.append(course_schedule)
 
         return courses_schedule
@@ -120,27 +122,24 @@ class Constraint():
 
         for course in courses:
 
-            # checks if room and type of course are still in courses_schedule
-            if len(courses_schedule[course.course_id]) > 2:
-
-                # removes room and type of course in course_schedule
-                for i in range(len(courses_schedule[course.course_id])):
-                    courses_schedule[course.course_id][i] = courses_schedule[course.course_id][i][0:2]
-
+            # adds (day, slot) of every session of course to course_sessions
             checked_course = courses_schedule[course.course_id]
+            course_sessions = []
+            for i in range(len(checked_course["day"])):
+                course_sessions.append((checked_course["day"][i], checked_course["slot"][i]))
 
             # # checks for all the mutual courses if they are at the same time
             # for mutual in course.mutual_courses:
+            #     mutual_course = courses_schedule[mutual.course_id]
             #
-            #     # checks if room and type of course are still in course_schedule
-            #     if len(courses_schedule[mutual.course_id[0]]) > 2:
+            #     # adds (day, slot) of every session of mutual to mutual_sessions
+            #     mutual_sessions = []
+            #     for i in range(len(mutual_course)):
+            #         mutual_sessions.append((mutual_course["day"][i], mutual_course["slot"][i]))
             #
-            #         # removes room and type of course in course_schedule
-            #         for i in range(len(courses_schedule[mutual.course_id])):
-            #             courses_schedule[mutual.course_id][i] = courses_schedule[mutual.course_id][i][0:2]
-            #
-            #     # checks if course is planned at the same time as mutual course
-            #     if set(courses_schedule[mutual.course_id]) & set(checked_course) != []:
+            #     # return False if there are sessions planned at the same time
+            #     checked_sessions = course_sessions + mutual_sessions
+            #     if len(set(checked_sessions)) < len(checked_sessions):
             #         return False
 
         return True
@@ -153,17 +152,18 @@ class Constraint():
         courses_schedule = Constraint.all_constraints(schedule, courses)
 
         for course in courses:
-
-            # removes room and type of course in course_schedule
-            for i in range(len(courses_schedule[course.course_id])):
-                courses_schedule[course.course_id][i] = courses_schedule[course.course_id][i][0:2]
-
             checked_course = courses_schedule[course.course_id]
-            if len(set(checked_course)) < len(checked_course):
+
+            # adds (day, slot) of every session to course_sessions
+            course_sessions = []
+            for i in range(len(checked_course["day"])):
+                course_sessions.append((checked_course["day"][i], checked_course["slot"][i]))
+
+            # return False if there are sessions planned at the same time
+            if len(set(course_sessions)) < len(checked_course):
                 return False
 
         return True
-
 
     def get_day(schedule, day):
         """
