@@ -25,39 +25,91 @@ class Constraint():
 # aantal constraints er niet meer wordt voldaan aan de hard constraints.
 
     def session_spread_check(schedule, courses):
+        """
+        Calculates the amount of bonuspoints earned by correctly spreading the
+        courses over the week. Where a course with 2 sessions should be on
+        either monday and thursday or tuesday and friday. See the rest of the
+        constrains in the comments bellow.
+
+        -----
+        TODO:
+        - nu kijkjen we nog niet voor werkgroepen maar als we dat wel gaan doen
+        mag het maar 20/(aantal werkgroepen) punten krijgen (en dan nog iets
+        handigs bedenken met dat we hele getallen hebben)
+
+        -----
+        HUH MEGA GEK, IK HAD GECOMMIT EN INEENS WAREN AL REBECCA HAAR COMMENTS
+        WEG. PANIEK.
+        """
+        courses_schedule = Constraint.all_constraints(schedule, courses)
         bonuspoints = 0
-        monday = Constraint.get_day(schedule, 0)
-        tuesday = Constraint.get_day(schedule, 1)
-        wednesday = Constraint.get_day(schedule, 2)
-        thursday = Constraint.get_day(schedule, 3)
-        friday = Constraint.get_day(schedule, 4)
+
         for course in courses:
-            nmbr_sessions = course.sessions
-            if nmbr_sessions == 2:
-                # print(course.name)
-                # print(monday)
-                if course.name in monday:
-                    if course.name in thursday:
-                        print("TEEESTTTTT")
-                        bonuspoints += SPREAD_BONUS
-                elif course.name in tuesday:
-                    if course.name in friday:
-                        bonuspoints += SPREAD_BONUS
-
-            elif nmbr_sessions == 3:
-                if course.name in monday:
-                    if course.name in wednesday:
-                        if course.name in friday:
-                            bonuspoints += SPREAD_BONUS
-
-            elif nmbr_sessions == 4:
-                if (course.name in monday) and (course.name in tuesday) and \
-                   (course.name in thursday) and (course.name in friday):
+            if course.sessions == 2:
+                # print(courses_schedule[course.course_id][0][0], courses_schedule[course.course_id][1][0])
+                # checks if the courses are on monday and thursday
+                if (courses_schedule[course.course_id][0][0] == 0) and \
+                   (courses_schedule[course.course_id][1][0] == 3):
                     bonuspoints += SPREAD_BONUS
-            else:
-                bonuspoints += 0
+
+                # checks if the courses are on tuesday an friday
+                elif (courses_schedule[course.course_id][0][0] == 1) and \
+                     (courses_schedule[course.course_id][1][0] == 4):
+                    bonuspoints += SPREAD_BONUS
+
+            elif course.sessions == 3:
+
+                # checks if the courses are on monday, wednesday and friday
+                if (courses_schedule[course.course_id][0][0] == 0) and \
+                   (courses_schedule[course.course_id][1][0] == 2) and \
+                   (courses_schedule[course.course_id][2][0] == 4):
+                    bonuspoints += SPREAD_BONUS
+
+            elif course.sessions == 4:
+
+                # checks if the courses are on monday, tuesday, thursday and friday
+                if (courses_schedule[course.course_id][0][0] == 0) and \
+                   (courses_schedule[course.course_id][1][0] == 1) and \
+                   (courses_schedule[course.course_id][2][0] == 3) and \
+                   (courses_schedule[course.course_id][3][0] == 4):
+                    bonuspoints += SPREAD_BONUS
 
         return bonuspoints
+
+
+        # bonuspoints = 0
+        # monday = Constraint.get_day(schedule, 0)
+        # tuesday = Constraint.get_day(schedule, 1)
+        # wednesday = Constraint.get_day(schedule, 2)
+        # thursday = Constraint.get_day(schedule, 3)
+        # friday = Constraint.get_day(schedule, 4)
+        # for course in courses:
+        #     nmbr_sessions = course.sessions
+        #     if nmbr_sessions == 2:
+        #         # print(course.name)
+        #         # print(monday)
+        #         if course.name in monday:
+        #             if course.name in thursday:
+        #                 print("TEEESTTTTT")
+        #                 bonuspoints += SPREAD_BONUS
+        #         elif course.name in tuesday:
+        #             if course.name in friday:
+        #                 bonuspoints += SPREAD_BONUS
+        #
+        #     elif nmbr_sessions == 3:
+        #         if course.name in monday:
+        #             if course.name in wednesday:
+        #                 if course.name in friday:
+        #                     bonuspoints += SPREAD_BONUS
+        #
+        #     elif nmbr_sessions == 4:
+        #         if (course.name in monday) and (course.name in tuesday) and \
+        #            (course.name in thursday) and (course.name in friday):
+        #             bonuspoints += SPREAD_BONUS
+        #     else:
+        #         bonuspoints += 0
+        #
+        # return bonuspoints
 
     def all_constraints(schedule, courses):
         """
