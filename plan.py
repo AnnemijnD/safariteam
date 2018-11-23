@@ -87,7 +87,7 @@ class Plan():
         # Maak lege sessies aan om lege cellen mee op te vullen
         # Dit stukje wordt gebruikt in de nested for loop waarbij aan elke cel
         # een sessie wordt meegegeven.
-        for i in range(140-129):
+        for i in range(140-72):
             name = None
             type = None
             max_students = None
@@ -99,7 +99,7 @@ class Plan():
         # De lijst met totale sessies bestaat dus uit een lijst met eerst
         # Hoorcolleges, daarna de andere sessies en is opgevuld tot 140 met lege sessies
         total = []
-        total = lectures + other_sessions + empty_sessions
+        total = lectures + other_sessions
 
         schedule = [[[[None] for i in range(ROOMS)] for i in range(TIME_SLOTS)] for i in range(DAYS)]
 
@@ -260,18 +260,15 @@ class Plan():
 
         random_numbers = []
 
-        for i in range(SLOTS):
+        for i in range(len(sessions)):
             rand = random.randint(0, SLOTS - 1)
             while rand in random_numbers:
                 rand = random.randint(0, SLOTS - 1)
-                random_numbers.append(rand)
-
+            random_numbers.append(rand)
             flatten[rand] = sessions[i]
-            print(flatten[rand])
 
         # Convert back to 3D list
         schedule = flatten.reshape(DAYS, TIME_SLOTS, ROOMS).tolist()
-
 
         # Keep track of how many schedules were made
         plan.schedule_counter += 1
@@ -371,15 +368,16 @@ if __name__ == "__main__":
     # --------------------------------------------------------------------------------
 
 
-    # print(Constraint.lecture_first(schedule, plan.courses)[1])
+    print(Constraint.lecture_first(schedule, plan.courses)[1])
     # R: Komt nooit hoger dan 180 !??? HoeE KAN DAT? Super raar
     # while Constraint.lecture_first(schedule, plan.courses) == False:
     #     # Switch sessions: input is a schedule and number of sessions to be swapped
     #     schedule = switch.switch_session(schedule, 30)
     #     plan.schedule_counter += 1
 
-    # Constraint.mutual_courses_check(schedule, plan.courses)
+    Constraint.mutual_courses_check(schedule, plan.courses)
     # Constraint.own_sessions_check(schedule, plan.courses)
+    Constraint.all_constraints(schedule, plan.courses)
 
     # Print the end-text
     plan.end()

@@ -29,13 +29,17 @@ class Constraint():
         Dit is het begin voor het preprocessen. Een hele slechte naam maar
         weet even niets beters JOE
         """
+
         courses_schedule = []
         for course in courses:
             course_schedule = {"day": [], "slot": [], "room": [], "type": []}
             for i in range(DAYS):
                 for j in range(TIME_SLOTS):
                     for k in range(ROOMS):
-                        if schedule[i][j][k] is not "None":
+                        # print(schedule[i][j][k] is None)
+                        # print(schedule[i][j][k])
+                        if schedule[i][j][k] is not None:
+                            # print("??????")
                             if course.name == schedule[i][j][k].name:
                                 course_schedule["day"].append(i)
                                 course_schedule["slot"].append(j)
@@ -51,6 +55,7 @@ class Constraint():
         courses over the week. Where a course with 2 sessions should be on
         either monday and thursday or tuesday and friday. See the rest of the
         constrains in the comments bellow.
+
         -----
         TODO:
         - nu kijkjen we nog niet voor werkgroepen maar als we dat wel gaan doen
@@ -59,12 +64,10 @@ class Constraint():
         """
         courses_schedule = Constraint.all_constraints(schedule, courses)
         bonuspoints = 0
-        print(courses_schedule)
 
         for course in courses:
             if course.sessions == 2:
-                print(course.name)
-                print(courses_schedule[course.course_id]["day"][0])
+                # print(courses_schedule[course.course_id]["day"][0])
                 # checks if the courses are on monday and thursday
                 if (courses_schedule[course.course_id]["day"][0] == 0) and \
                    (courses_schedule[course.course_id]["day"][1] == 3):
@@ -99,7 +102,6 @@ class Constraint():
         Returns true if the lectures are before the tutorials and or
         practicals, otherwise returns false.
         """
-
         lecture_points = 0
         courses_schedule = Constraint.all_constraints(schedule, courses)
         for course in courses:
@@ -168,6 +170,9 @@ class Constraint():
                 return False
 
         return True
+
+    def students_fit(schedule, course):
+        pass
 
     def get_day(schedule, day):
         """
