@@ -10,6 +10,7 @@ sys.path.append(os.path.join(directory, "code", "algoritmes"))
 
 from constraint import Constraint
 import switch
+import loaddata
 from course import Course
 from session import Session
 from schedule import Schedule
@@ -18,79 +19,20 @@ import random
 import time
 import pandas as pd
 from IPython.display import HTML
+import numpy as np
 
 SLOTS = 140
 TIME_SLOTS = 4
 DAYS = 5
 ROOMS = 7
-MAX_MALUSPOINTS = 0
+MAXMALUSPOINTS = 0
+MAXSCHEDULEPOINTS = 39
 
 
 class Plan():
     """
-    Main scripts to make a schedule.
+    Main script to make a schedule.
     """
-
-    def __init__(self):
-        pass
-
-    def load_courses(self):
-        """
-        Loads all the courses from a csv file.
-        """
-        course = 'data/vakken.csv'
-
-        with open(course) as courses:
-            courses = csv.reader(courses, delimiter=';')
-            # Skip file header
-            next(courses)
-
-            # Keep track of course_id with a counter
-            id_counter = 0
-            # Make a list of all the course objects
-            courses_list = []
-
-            # Define every item of the course; each row is a different course
-            for row in courses:
-                name = row[0]
-                lecture = int(row[1])
-                tutorial = int(row[2])
-                practical = int(row[4])
-                course_id = id_counter
-
-                if row[3].isdigit():
-                    max_students_tutorial = int(row[3])
-                else:
-                    max_students_tutorial = 'nvt'
-                if row[5].isdigit():
-                    max_students_practical = int(row[5])
-                else:
-                    max_students_practical = 'nvt'
-                max_students_lecture = int(row[6])
-
-                # Use Course class to create objects for every course
-                course = Course(name, course_id, lecture, tutorial, practical, max_students_lecture, max_students_tutorial, max_students_practical)
-                courses_list.append(course)
-                # Count id_course
-                id_counter += 1
-
-            return courses_list
-
-    def load_rooms(self):
-        """
-        loads all the rooms from a csv file.
-        """
-        room = 'data/zalen.csv'
-
-        with open(room) as rooms:
-            rooms = csv.reader(rooms, delimiter=';')
-            next(rooms)
-            roomnumbers = []
-            for row in rooms:
-                string = f'{row[0]} (max: {row[1]})'
-                roomnumbers.append(string)
-
-        return roomnumbers
 
     def initialize_schedule(self, courses):
         """
@@ -122,7 +64,9 @@ class Plan():
             except IndexError:
                 max_students = 'nvt'
 
-            session = Session(name, type, max_students)
+            group_id = 'nvt'
+
+            session = Session(name, type, max_students, group_id)
 
             # Get all the lectures
             if session.type == "lecture":
@@ -130,7 +74,6 @@ class Plan():
             elif session.type == "tutorial" or session.type == "practical":
                 other_sessions.append(session)
             sessions.append(session)
-
 
         # shuffle de lectures zodat ze random zijn
         # Make copy of sessions and shuffle
@@ -141,28 +84,35 @@ class Plan():
 
         # TODO: lijst maken met eerst grote vakken!!
 
-        total = []
-        total = lectures + other_sessions
-
-
         # Maak lege sessies aan om lege cellen mee op te vullen
         # Dit stukje wordt gebruikt in de nested for loop waarbij aan elke cel
         # een sessie wordt meegegeven.
-        for i in range(SLOTS):
+        for i in range(140-129):
             name = ' '
             type = ' '
             max_students = ' '
-            session = Session(name, type, max_students)
+            group_id = 'nvt2'
+            session = Session(name, type, max_students, group_id)
             # session = Session(name, type, room, timeslot, day)
             empty_sessions.append(session)
 
+        # De lijst met totale sessies bestaat dus uit een lijst met eerst
+        # Hoorcolleges, daarna de andere sessies en is opgevuld tot 140 met lege sessies
+        total = []
+        total = lectures + other_sessions + empty_sessions
 
-        schedule = [[[['None'] for i in range(ROOMS)] for i in range(TIME_SLOTS)] for i in range(DAYS)]
+        schedule = [[[[None] for i in range(ROOMS)] for i in range(TIME_SLOTS)] for i in range(DAYS)]
+
 
         # Je geeft dus aan deze functie een leeg schedule mee en de sessions waarmee
         # schedule gevuld moet worden. Doordat lectures en other_sessions nu gescheieden
         # zijn kunnen eerst de lectures gevuld worden en daarna pas de rest
-        plan.fill_schedule(schedule, total, other_sessions, empty_sessions, courses)
+
+        # plan.fill_schedule(schedule, total, other_sessions, empty_sessions, courses)
+
+
+        # VOOR NU: Even een random rooster
+        schedule = plan.random_schedule(schedule, total)
         plan.schedule_counter += 1
 
         return schedule, total, other_sessions, empty_sessions
@@ -187,7 +137,6 @@ class Plan():
 
         # verdelen over dagen als hard constraint
         for e in range(len(lectures)):
-
             for course in courses:
                 if lectures[e].name == course.name:
                     mutual_courses_session = course.mutual_courses
@@ -226,15 +175,12 @@ class Plan():
                         found = True
                         break
 
-
-
                 if slots_allowed and bool(location):
 
                         # print("in if2")
                     schedule[b][location[0]][location[1]] = lectures[e]
                     found = True
                     break
-
 
             if not found:
                 print(e)
@@ -308,56 +254,33 @@ class Plan():
         # niet is geweest.
         """
 
+        # Maak een 1D lijst van schedule
+        flatten = np.array(schedule, dtype=object).flatten()
+
+
+        random_numbers = []
+
         for i in range(SLOTS):
             rand = random.randint(0, SLOTS - 1)
             while rand in random_numbers:
                 rand = random.randint(0, SLOTS - 1)
-            # Hier wordt de session in dat timeslot gezet met een random nummer
-            schedule[rand] = sessions[i]
-            plan.random_numbers.append(rand)
+                random_numbers.append(rand)
+
+            flatten[rand] = sessions[i]
+
+        # Convert back to 3D list
+        schedule = flatten.reshape(DAYS, TIME_SLOTS, ROOMS).tolist()
+
 
         # Keep track of how many schedules were made
         plan.schedule_counter += 1
 
-    def get_session(self, sessions):
-        """
-        Generates a random schedule. Assigns every session to a random timeslot.
-        # Hou bij welke random nummers al geweest zijn. De while loop
-        # Zorgt ervoor dat er een random nummer wordt gemaakt die nog
-        # niet is geweest.
-        """
-
-        for i in range(len(sessions)):
-            rand = random.randint(0, (len(sessions)) - 1)
-            while rand in plan.random_numbers:
-                rand = random.randint(0, len(sessions) - 1)
-                plan.random_numbers.append(rand)
-
-        return sessions[rand]
-
-    def load_individual(self):
-        """
-        Loads individual student courses.
-        """
-        # Use encoding='iso-8859-1' to ensure that content is accessible as bytes
-        with open('data/studentenenvakken.csv', encoding='iso-8859-1') as wishes:
-            wishes = csv.reader(wishes, delimiter=';')
-
-            # Optional code to visualize data
-            for row in wishes:
-                print(row)
+        return schedule
 
     def save_html(self, schedule, rooms):
         """
         Print into html to visualize schedule.
         """
-
-        print("It took:", round(time.time() - plan.then, 3), "seconds.")
-        print("Succesfully made", plan.schedule_counter, "schedule(s) until the 'right' was found.")
-
-        # Test get_day en get_slot
-        print("Bonus points:", Constraint.session_spread_check(schedule, plan.courses), "out of 400.")
-
 
         df = pd.DataFrame(schedule)
         pd.set_option('display.max_colwidth', 350)
@@ -402,6 +325,17 @@ class Plan():
             f.write("Friday")
             f.write(html_string.format(table=friday.to_html(classes='style')))
 
+    def end(self):
+        """
+        Prints text to tell user how many schedules were made and how long it took to make
+        """
+
+        print("It took:", round(time.time() - plan.then, 3), "seconds.")
+        print("Succesfully made", plan.schedule_counter, "schedule(s) until the 'right' was found.")
+
+        # Test get_day en get_slot
+        # print("Bonus points:", Constraint.session_spread_check(schedule, plan.courses), "out of 400.")
+
 
 if __name__ == "__main__":
 
@@ -411,19 +345,43 @@ if __name__ == "__main__":
     print("Loading...")
     plan.random_numbers = []
     plan.schedule_counter = 0
-    plan.courses = plan.load_courses()
+    plan.courses = loaddata.load_courses()
     schedule, lectures, other_sessions, empty_sessions = plan.initialize_schedule(plan.courses)
-    rooms = plan.load_rooms()
+    rooms = loaddata.load_rooms()
 
+    # -----------------------------------------------------------------------------------
+    #### SORRY JONGENS DIT MOET IN ALGORITMEN STAAN, (maar wat voor algoritme is dit...?)
+    #
+    # schedule = switch.switch_session(schedule, 5)
+    # # Onthou dit rooster
+    # save_schedule = schedule
+    #
+    # # Oplossing wordt snel gevonden of wordt helemaal niet gevonden.
+    # while Constraint.lecture_first(schedule, plan.courses)[1] < MAXSCHEDULEPOINTS:
+    #     # Maak nieuw rooster en kijk of deze beter is
+    #     schedule_test = switch.switch_session(save_schedule, 1)
+    #     plan.schedule_counter += 1
+    #     if Constraint.lecture_first(schedule_test, plan.courses)[1] > Constraint.lecture_first(save_schedule, plan.courses)[1]:
+    #         # Als het aantal punten groter is, accepteer dit rooster en ga hiermee door.
+    #         schedule = schedule_test
+    #     else:
+    #         schedule = save_schedule
+
+    # --------------------------------------------------------------------------------
+
+
+    # print(Constraint.lecture_first(schedule, plan.courses)[1])
     # R: Komt nooit hoger dan 180 !??? HoeE KAN DAT? Super raar
-    while Constraint.session_spread_check(schedule, plan.courses) < 100:
-        # Switch sessions: input is a schedule and number of sessions to be swapped
-        schedule = switch.switch_session(schedule, 30)
-        plan.schedule_counter += 1
+    # while Constraint.lecture_first(schedule, plan.courses) == False:
+    #     # Switch sessions: input is a schedule and number of sessions to be swapped
+    #     schedule = switch.switch_session(schedule, 30)
+    #     plan.schedule_counter += 1
 
     # Constraint.mutual_courses_check(schedule, plan.courses)
-    Constraint.own_sessions_check(schedule, plan.courses)
-    # print(Constraint.all_constraints(schedule, plan.courses))
+    # Constraint.own_sessions_check(schedule, plan.courses)
+
+    # Print the end-text
+    plan.end()
 
     # Make a html file for the schedule
     plan.save_html(schedule, rooms)

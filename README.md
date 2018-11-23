@@ -2,9 +2,9 @@
 
 Probleem: hoe kan een lesrooster zo efficiënt mogelijk ingedeeld worden?
 
-## Inhoud
+## Link naar het rooster
 
-...
+https://annemijnd.github.io/safariteam/resultaten/schedule.html
 
 ### Vereisten
 
