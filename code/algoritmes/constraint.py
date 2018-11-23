@@ -3,6 +3,7 @@ TIME_SLOTS = 4
 DAYS = 5
 ROOMS = 7
 SPREAD_BONUS = 20
+SESSION_LEN = 72
 
 
 class Constraint():
@@ -155,6 +156,9 @@ class Constraint():
         Returns true if the sessions of a course aren't planned in the same
         slot, otherwise returns false.
         """
+        # HIER MOET HET AANTAL SESSIES KOMEN TE STAAN! Voor nu gehardcode sorry
+        own_session_malus = SESSION_LEN
+
         courses_schedule = Constraint.all_constraints(schedule, courses)
 
         for course in courses:
@@ -167,9 +171,10 @@ class Constraint():
 
             # return False if there are sessions planned at the same time
             if len(set(course_sessions)) < len(checked_course):
-                return False
+                own_session_malus -= 1
+                # return False
 
-        return True
+        return True, own_session_malus
 
     def students_fit(schedule, course):
         pass

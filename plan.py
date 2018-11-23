@@ -9,11 +9,12 @@ sys.path.append(os.path.join(directory, "code", "classes"))
 sys.path.append(os.path.join(directory, "code", "algoritmes"))
 
 from constraint import Constraint
-import switch
 import loaddata
 from course import Course
 from session import Session
 from schedule import Schedule
+import switch
+import firstalgorithm
 import csv
 import random
 import time
@@ -278,12 +279,14 @@ class Plan():
             f.write("Friday")
             f.write(html_string.format(table=friday.to_html(classes='style')))
 
-    def makeplot(self,points):
-
+    def makeplot(self, points):
+        """
+        Plots a graph of all the points on the y-axis and number of schedules
+        on the x-axis.
+        """
         plt.plot(points)
         plt.ylabel("Points (out of 39)")
         plt.show()
-
 
     def end(self):
         """
@@ -307,48 +310,22 @@ if __name__ == "__main__":
     plan.courses = loaddata.load_courses()
     schedule, lectures, other_sessions, empty_sessions = plan.initialize_schedule(plan.courses)
     rooms = loaddata.load_rooms()
-    plan.points = []
 
-    # Begin met een rooster
-    save_schedule = schedule
-    # Ga door totdat alle hoorcolleges voor de andere sessies zijn ingeroosterd,
-    # Dus totdat de lecture_first functie True is.
-    while Constraint.lecture_first(schedule, plan.courses)[0] == False:
-        plan.points.append(Constraint.lecture_first(schedule, plan.courses)[1])
-        plan.schedule_counter += 1
-        # Bewaar het eerste rooster
-        schedule1 = schedule
-        # Maak een nieuw roosters
-        # 5 dingen per keer switchen gaat iets sneller dan 1 per keer
-        schedule2 = switch.switch_session(schedule, 6)
-        # Als deze hetzelfde aantal of meer punten heeft, accepteer dit rooster dan.
-        if Constraint.lecture_first(schedule2, plan.courses)[1] >= Constraint.lecture_first(schedule1, plan.courses)[1]:
-            # Accepteer dit rooster
-            schedule = schedule2
-        # Als deze minder punten heeft, ga dan terug naar het vorige rooster
-        else:
-            schedule = schedule1
-        # Als het rooster 10 punten verder is, bewaar het rooster dan om er later op terug te kunnen komen
-        if Constraint.lecture_first(schedule, plan.courses)[1] % 10 == 0:
-            schedule_10_points = schedule
-        # Als het rooster vast blijft zitten, ga dan terug naar het originele rooster of naar het bewaarde rooster.
-        if plan.schedule_counter % 700 == 0:
-            if Constraint.lecture_first(schedule, plan.courses)[1] % 10 == 0:
-                if schedule_10_points:
-                    schedule = schedule_10_points
-                else:
-                    schedule = save_schedule
 
+    schedule, points, plan.schedule_counter, own_session_points = firstalgorithm.algorithm(schedule, plan.courses, plan.schedule_counter)
+
+    print(own_session_points)
     # Constraint.mutual_courses_check(schedule, plan.courses)
     # Constraint.own_sessions_check(schedule, plan.courses)
     # Constraint.all_constraints(schedule, plan.courses)
     # Constraint.session_spread_check(schedule, plan.courses)
 
-
     # Print the end-text
     plan.end()
-
-    plan.makeplot(plan.points)
-
+    # Make a plot of the points
+    try:
+        plan.makeplot(points)
+    except:
+        print("No points to plot for now.")
     # Make a html file for the schedule
     plan.save_html(schedule, rooms)
