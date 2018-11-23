@@ -20,6 +20,9 @@ import time
 import pandas as pd
 from IPython.display import HTML
 import numpy as np
+import matplotlib
+matplotlib.use('TkAgg')
+import matplotlib.pyplot as plt
 
 SLOTS = 140
 TIME_SLOTS = 4
@@ -323,6 +326,13 @@ class Plan():
             f.write("Friday")
             f.write(html_string.format(table=friday.to_html(classes='style')))
 
+    def makeplot(self,points):
+
+        plt.plot(points)
+        plt.ylabel("Points (out of 39)")
+        plt.show()
+
+
     def end(self):
         """
         Prints text to tell user how many schedules were made and how long it took to make
@@ -346,26 +356,71 @@ if __name__ == "__main__":
     plan.courses = loaddata.load_courses()
     schedule, lectures, other_sessions, empty_sessions = plan.initialize_schedule(plan.courses)
     rooms = loaddata.load_rooms()
+    plan.points = []
 
     # -----------------------------------------------------------------------------------
-    #### SORRY JONGENS DIT MOET IN ALGORITMEN STAAN, (maar wat voor algoritme is dit...?)
+    ### SORRY JONGENS DIT MOET IN ALGORITMEN STAAN, (maar wat voor algoritme is dit...?)
     #
     # schedule = switch.switch_session(schedule, 5)
     # # Onthou dit rooster
     # save_schedule = schedule
+    # save_schedule2 = schedule
     #
-    # # Oplossing wordt snel gevonden of wordt helemaal niet gevonden.
-    # while Constraint.lecture_first(schedule, plan.courses)[1] < MAXSCHEDULEPOINTS:
+    # while Constraint.lecture_first(schedule, plan.courses)[1] < 11:
+    #     save_schedule = schedule
+    #     plan.points.append(Constraint.lecture_first(schedule, plan.courses)[1])
     #     # Maak nieuw rooster en kijk of deze beter is
-    #     schedule_test = switch.switch_session(save_schedule, 1)
+    #     schedule_test = switch.switch_session(save_schedule, 100)
     #     plan.schedule_counter += 1
-    #     if Constraint.lecture_first(schedule_test, plan.courses)[1] > Constraint.lecture_first(save_schedule, plan.courses)[1]:
+    #
+    #     # Check of het nieuwe rooster meer punten heeft dan het vorige rooster
+    #     if Constraint.lecture_first(schedule_test, plan.courses)[1] >= Constraint.lecture_first(save_schedule, plan.courses)[1]:
     #         # Als het aantal punten groter is, accepteer dit rooster en ga hiermee door.
     #         schedule = schedule_test
+    #
     #     else:
     #         schedule = save_schedule
+    #         plan.points.append(Constraint.lecture_first(schedule, plan.courses)[1])
+    #
+    #     # Als het algoritme vast zit, ga dan weer naar een random rooster
+    #     if plan.schedule_counter % 1000 == 0:
+    #         # plan.makeplot(plan.points)
+    #         schedule = save_schedule2
+
 
     # --------------------------------------------------------------------------------
+    # Begin met een rooster
+    save_schedule = schedule
+    # Ga door tot de punten van schedule groter zijn dan 11 ofzo
+    while Constraint.lecture_first(schedule, plan.courses)[1] < 39:
+        plan.points.append(Constraint.lecture_first(schedule, plan.courses)[1])
+        plan.schedule_counter += 1
+        # Bewaar het eerste rooster
+        schedule1 = schedule
+        # Maak een nieuw roosters
+        # 5 dingen per keer switchen gaat iets sneller
+        schedule2 = switch.switch_session(schedule, 5)
+        # Als deze hetzelfde aantal of meer punten heeft, accepteer dit rooster dan.
+        if Constraint.lecture_first(schedule2, plan.courses)[1] >= Constraint.lecture_first(schedule1, plan.courses)[1]:
+            # Accepteer dit rooster
+            schedule = schedule2
+        # Als deze minder punten heeft, ga dan terug naar het vorige rooster
+        else:
+            schedule = schedule1
+        # Als het rooster 10 punten verder is, bewaar het rooster dan om er later op terug te kunnen komen
+        if Constraint.lecture_first(schedule, plan.courses)[1] % 10 == 0:
+            schedule_10_points = schedule
+        # Als het rooster vast blijft zitten, ga dan terug naar het originele rooster of naar het bewaarde rooster.
+        if plan.schedule_counter % 1500 == 0:
+            if Constraint.lecture_first(schedule, plan.courses)[1] % 10 == 0:
+                if schedule_10_points:
+                    schedule = schedule_10_points
+                else:
+                    schedule = save_schedule
+
+
+
+
 
 
     print(Constraint.lecture_first(schedule, plan.courses)[1])
@@ -383,6 +438,8 @@ if __name__ == "__main__":
 
     # Print the end-text
     plan.end()
+
+    plan.makeplot(plan.points)
 
     # Make a html file for the schedule
     plan.save_html(schedule, rooms)
