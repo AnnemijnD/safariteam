@@ -79,8 +79,8 @@ class Plan():
         # Make copy of sessions and shuffle
         lectures = lecture_sessions[:]
         others = other_sessions[:]
-        random.shuffle(lectures)
-        random.shuffle(other_sessions)
+        # random.shuffle(lectures)
+        # random.shuffle(other_sessions)
 
         # TODO: lijst maken met eerst grote vakken!!
 
@@ -88,9 +88,9 @@ class Plan():
         # Dit stukje wordt gebruikt in de nested for loop waarbij aan elke cel
         # een sessie wordt meegegeven.
         for i in range(140-129):
-            name = ' '
-            type = ' '
-            max_students = ' '
+            name = None
+            type = None
+            max_students = None
             group_id = 'nvt2'
             session = Session(name, type, max_students, group_id)
             # session = Session(name, type, room, timeslot, day)
@@ -139,6 +139,7 @@ class Plan():
         for e in range(len(lectures)):
             for course in courses:
                 if lectures[e].name == course.name:
+                    # Lijst van elke lecture die er op dat moment is
                     mutual_courses_session = course.mutual_courses
             found = False
             for b in range(DAYS):
@@ -257,7 +258,6 @@ class Plan():
         # Maak een 1D lijst van schedule
         flatten = np.array(schedule, dtype=object).flatten()
 
-
         random_numbers = []
 
         for i in range(SLOTS):
@@ -267,6 +267,7 @@ class Plan():
                 random_numbers.append(rand)
 
             flatten[rand] = sessions[i]
+            print(flatten[rand])
 
         # Convert back to 3D list
         schedule = flatten.reshape(DAYS, TIME_SLOTS, ROOMS).tolist()
@@ -334,7 +335,7 @@ class Plan():
         print("Succesfully made", plan.schedule_counter, "schedule(s) until the 'right' was found.")
 
         # Test get_day en get_slot
-        # print("Bonus points:", Constraint.session_spread_check(schedule, plan.courses), "out of 400.")
+        print("Bonus points:", Constraint.session_spread_check(schedule, plan.courses), "out of 400.")
 
 
 if __name__ == "__main__":

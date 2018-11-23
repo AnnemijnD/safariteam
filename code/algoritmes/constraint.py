@@ -35,7 +35,7 @@ class Constraint():
             for i in range(DAYS):
                 for j in range(TIME_SLOTS):
                     for k in range(ROOMS):
-                        if schedule[i][j][k] is not None:
+                        if schedule[i][j][k] is not "None":
                             if course.name == schedule[i][j][k].name:
                                 course_schedule["day"].append(i)
                                 course_schedule["slot"].append(j)
@@ -58,11 +58,13 @@ class Constraint():
         handigs bedenken met dat we hele getallen hebben)
         """
         courses_schedule = Constraint.all_constraints(schedule, courses)
-        print(courses_schedule)
         bonuspoints = 0
+        print(courses_schedule)
 
         for course in courses:
             if course.sessions == 2:
+                print(course.name)
+                print(courses_schedule[course.course_id]["day"][0])
                 # checks if the courses are on monday and thursday
                 if (courses_schedule[course.course_id]["day"][0] == 0) and \
                    (courses_schedule[course.course_id]["day"][1] == 3):
