@@ -88,9 +88,9 @@ class Plan():
         # Dit stukje wordt gebruikt in de nested for loop waarbij aan elke cel
         # een sessie wordt meegegeven.
         for i in range(140-72):
-            name = None
-            type = None
-            max_students = None
+            name = ' '
+            type = ' '
+            max_students = ' '
             group_id = 'nvt2'
             session = Session(name, type, max_students, group_id)
             # session = Session(name, type, room, timeslot, day)
@@ -375,9 +375,11 @@ if __name__ == "__main__":
     #     schedule = switch.switch_session(schedule, 30)
     #     plan.schedule_counter += 1
 
-    Constraint.mutual_courses_check(schedule, plan.courses)
+    # Constraint.mutual_courses_check(schedule, plan.courses)
     # Constraint.own_sessions_check(schedule, plan.courses)
     Constraint.all_constraints(schedule, plan.courses)
+    # Constraint.session_spread_check(schedule, plan.courses)
+
 
     # Print the end-text
     plan.end()
