@@ -87,7 +87,7 @@ class Plan():
         # Maak lege sessies aan om lege cellen mee op te vullen
         # Dit stukje wordt gebruikt in de nested for loop waarbij aan elke cel
         # een sessie wordt meegegeven.
-        for i in range(140-129):
+        for i in range(140-72):
             name = ' '
             type = ' '
             max_students = ' '
@@ -108,11 +108,11 @@ class Plan():
         # schedule gevuld moet worden. Doordat lectures en other_sessions nu gescheieden
         # zijn kunnen eerst de lectures gevuld worden en daarna pas de rest
 
-        # plan.fill_schedule(schedule, total, other_sessions, empty_sessions, courses)
+        plan.fill_schedule(schedule, total, other_sessions, empty_sessions, courses)
 
 
         # VOOR NU: Even een random rooster
-        schedule = plan.random_schedule(schedule, total)
+        # schedule = plan.random_schedule(schedule, total)
         plan.schedule_counter += 1
 
         return schedule, total, other_sessions, empty_sessions
@@ -260,7 +260,7 @@ class Plan():
 
         random_numbers = []
 
-        for i in range(SLOTS):
+        for i in range(len(sessions)):
             rand = random.randint(0, SLOTS - 1)
             while rand in random_numbers:
                 rand = random.randint(0, SLOTS - 1)
@@ -334,7 +334,7 @@ class Plan():
         print("Succesfully made", plan.schedule_counter, "schedule(s) until the 'right' was found.")
 
         # Test get_day en get_slot
-        # print("Bonus points:", Constraint.session_spread_check(schedule, plan.courses), "out of 400.")
+        print("Bonus points:", Constraint.session_spread_check(schedule, plan.courses), "out of 400.")
 
 
 if __name__ == "__main__":
@@ -377,8 +377,9 @@ if __name__ == "__main__":
     #     schedule = switch.switch_session(schedule, 30)
     #     plan.schedule_counter += 1
 
-    Constraint.mutual_courses_check(schedule, plan.courses)
+    # Constraint.mutual_courses_check(schedule, plan.courses)
     # Constraint.own_sessions_check(schedule, plan.courses)
+    # Constraint.session_spread_check(schedule, plan.courses)
 
     # Print the end-text
     plan.end()
