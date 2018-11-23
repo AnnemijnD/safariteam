@@ -202,54 +202,6 @@ class Plan():
             plan.initialize_schedule(plan.courses)
 
 
-
-        # lecture_counter = 0
-        # counter = 0
-        # day_counter = 0
-        # timeslot_counter = 0
-        # for b in range(DAYS):
-        #     for c in range(TIME_SLOTS):
-        #         for d in range(ROOMS):
-        #
-        #             # if the slot in the schedule is empty
-        #             if schedule[b][c][d].name == ' ':
-        #
-        #                 #  loop through the rooms
-        #                 for e in schedule[b][c]:
-        #
-        #                     # check if the same course is already in that slot
-        #                     if lectures[lecture_counter].name in e.name:
-        #                         print(lectures[lecture_counter].name in e.name)
-        #                         c += 1
-        #                         timeslot_counter += 1
-        #                         if c > 3:
-        #                             b += 1
-        #                             day_counter += 1
-        #                             c = 0
-        #
-        #                         # makes a new schedule if it failed
-        #                         if b > 4:
-        #                             plan.initialize_schedule(plan.courses)
-        #
-        #                 # set the session in the schedule
-        #                 schedule[b][c][d] = lectures[lecture_counter]
-        #                 lecture_counter += 1
-        #                 # QUINTEN!: is dit sneller in een if statement?
-        #                 d += 1
-        #                 d %= 7
-        #
-        #                 #  returns to the previous timeslot/day in the loop if it skipped one
-        #                 if timeslot_counter > 0:
-        #                     c -= timeslot_counter
-        #                     timeslot_counter = 0
-        #                 if day_counter > 0:
-        #                     b -= day_counter
-        #                     day_counter = 0
-        #
-        #                 # if all the sessions are scheduled return schedule
-        #                 if lecture_counter is len(lectures):
-        #                     return schedule
-
     def random_schedule(self, schedule, sessions):
         """
         Generates a random schedule. Assigns every session to a random timeslot.
@@ -337,12 +289,11 @@ class Plan():
         """
         Prints text to tell user how many schedules were made and how long it took to make
         """
-
+        print("SUCCES!!")
         print("It took:", round(time.time() - plan.then, 3), "seconds.")
-        print("Succesfully made", plan.schedule_counter, "schedule(s) until the 'right' was found.")
-
-        # Test get_day en get_slot
-        print("Bonus points:", Constraint.session_spread_check(schedule, plan.courses), "out of 400.")
+        print("Made", plan.schedule_counter, "schedule(s) until the 'right' was found.")
+        print(Constraint.lecture_first(schedule, plan.courses)[1], "correctly places lectures.")
+        print("Spread points:", Constraint.session_spread_check(schedule, plan.courses), "out of 400.")
 
 
 if __name__ == "__main__":
@@ -358,48 +309,18 @@ if __name__ == "__main__":
     rooms = loaddata.load_rooms()
     plan.points = []
 
-    # -----------------------------------------------------------------------------------
-    ### SORRY JONGENS DIT MOET IN ALGORITMEN STAAN, (maar wat voor algoritme is dit...?)
-    #
-    # schedule = switch.switch_session(schedule, 5)
-    # # Onthou dit rooster
-    # save_schedule = schedule
-    # save_schedule2 = schedule
-    #
-    # while Constraint.lecture_first(schedule, plan.courses)[1] < 11:
-    #     save_schedule = schedule
-    #     plan.points.append(Constraint.lecture_first(schedule, plan.courses)[1])
-    #     # Maak nieuw rooster en kijk of deze beter is
-    #     schedule_test = switch.switch_session(save_schedule, 100)
-    #     plan.schedule_counter += 1
-    #
-    #     # Check of het nieuwe rooster meer punten heeft dan het vorige rooster
-    #     if Constraint.lecture_first(schedule_test, plan.courses)[1] >= Constraint.lecture_first(save_schedule, plan.courses)[1]:
-    #         # Als het aantal punten groter is, accepteer dit rooster en ga hiermee door.
-    #         schedule = schedule_test
-    #
-    #     else:
-    #         schedule = save_schedule
-    #         plan.points.append(Constraint.lecture_first(schedule, plan.courses)[1])
-    #
-    #     # Als het algoritme vast zit, ga dan weer naar een random rooster
-    #     if plan.schedule_counter % 1000 == 0:
-    #         # plan.makeplot(plan.points)
-    #         schedule = save_schedule2
-
-
-    # --------------------------------------------------------------------------------
     # Begin met een rooster
     save_schedule = schedule
-    # Ga door tot de punten van schedule groter zijn dan 11 ofzo
-    while Constraint.lecture_first(schedule, plan.courses)[1] < 39:
+    # Ga door totdat alle hoorcolleges voor de andere sessies zijn ingeroosterd,
+    # Dus totdat de lecture_first functie True is.
+    while Constraint.lecture_first(schedule, plan.courses)[0] == False:
         plan.points.append(Constraint.lecture_first(schedule, plan.courses)[1])
         plan.schedule_counter += 1
         # Bewaar het eerste rooster
         schedule1 = schedule
         # Maak een nieuw roosters
-        # 5 dingen per keer switchen gaat iets sneller
-        schedule2 = switch.switch_session(schedule, 5)
+        # 5 dingen per keer switchen gaat iets sneller dan 1 per keer
+        schedule2 = switch.switch_session(schedule, 6)
         # Als deze hetzelfde aantal of meer punten heeft, accepteer dit rooster dan.
         if Constraint.lecture_first(schedule2, plan.courses)[1] >= Constraint.lecture_first(schedule1, plan.courses)[1]:
             # Accepteer dit rooster
@@ -411,28 +332,16 @@ if __name__ == "__main__":
         if Constraint.lecture_first(schedule, plan.courses)[1] % 10 == 0:
             schedule_10_points = schedule
         # Als het rooster vast blijft zitten, ga dan terug naar het originele rooster of naar het bewaarde rooster.
-        if plan.schedule_counter % 1500 == 0:
+        if plan.schedule_counter % 700 == 0:
             if Constraint.lecture_first(schedule, plan.courses)[1] % 10 == 0:
                 if schedule_10_points:
                     schedule = schedule_10_points
                 else:
                     schedule = save_schedule
 
-
-
-
-
-
-    print(Constraint.lecture_first(schedule, plan.courses)[1])
-    # R: Komt nooit hoger dan 180 !??? HoeE KAN DAT? Super raar
-    # while Constraint.lecture_first(schedule, plan.courses) == False:
-    #     # Switch sessions: input is a schedule and number of sessions to be swapped
-    #     schedule = switch.switch_session(schedule, 30)
-    #     plan.schedule_counter += 1
-
     # Constraint.mutual_courses_check(schedule, plan.courses)
     # Constraint.own_sessions_check(schedule, plan.courses)
-    Constraint.all_constraints(schedule, plan.courses)
+    # Constraint.all_constraints(schedule, plan.courses)
     # Constraint.session_spread_check(schedule, plan.courses)
 
 
