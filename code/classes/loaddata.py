@@ -2,43 +2,77 @@
 # November 5
 from pathlib import Path
 import csv
+from course import Course
 
-if __name__ == "__main__":
+
+def load_courses():
     """
-    Get a csv input file (and print every row).
-    Choose csv files saved in the same folder as loaddata.py.
+    Loads all the courses from a csv file.
     """
-    course = 'vakken.csv'
-    room = 'zalen.csv'
-    individual = 'studentenenvakken.csv'
-    mutual = 'tegelijkvolgbaar.csv'
+    course = 'data/vakken.csv'
 
     with open(course) as courses:
         courses = csv.reader(courses, delimiter=';')
+        # Skip file header
+        next(courses)
 
-        # Optional code to visualize data
+        # Keep track of course_id with a counter
+        id_counter = 0
+        # Make a list of all the course objects
+        courses_list = []
+
+        # Define every item of the course; each row is a different course
         for row in courses:
-            print(row)
+            name = row[0]
+            lecture = int(row[1])
+            tutorial = int(row[2])
+            practical = int(row[4])
+            course_id = id_counter
+            expected_students = int(row[6])
+
+            if row[3].isdigit():
+                max_students_tutorial = int(row[3])
+            else:
+                max_students_tutorial = 'nvt'
+            if row[5].isdigit():
+                max_students_practical = int(row[5])
+            else:
+                max_students_practical = 'nvt'
+            max_students_lecture = int(row[6])
+
+            # Use Course class to create objects for every course
+            course = Course(name, course_id, lecture, tutorial, practical, max_students_lecture, max_students_tutorial, max_students_practical, expected_students)
+            courses_list.append(course)
+            # Count id_course
+            id_counter += 1
+
+        return courses_list
+
+def load_rooms():
+    """
+    loads all the rooms from a csv file.
+    """
+    room = 'data/zalen.csv'
 
     with open(room) as rooms:
         rooms = csv.reader(rooms, delimiter=';')
-
-        # Optional code to visualize data
+        next(rooms)
+        roomnumbers = []
         for row in rooms:
-            print(row)
+            string = f'{row[0]} (max: {row[1]})'
+            roomnumbers.append(string)
 
+    return roomnumbers
+
+
+def load_individual():
+    """
+    Loads individual student courses.
+    """
     # Use encoding='iso-8859-1' to ensure that content is accessible as bytes
-    with open(individual, encoding='iso-8859-1') as wishes:
+    with open('data/studentenenvakken.csv', encoding='iso-8859-1') as wishes:
         wishes = csv.reader(wishes, delimiter=';')
 
         # Optional code to visualize data
         for row in wishes:
-            print(row)
-
-    # Use encoding='iso-8859-1' to ensure that content is accessible as bytes
-    with open(mutual) as mutual:
-        mutual = csv.reader(mutual, delimiter=';')
-
-        # Optional code to visualize data
-        for row in mutual:
             print(row)

@@ -35,11 +35,12 @@ class Constraint():
             for i in range(DAYS):
                 for j in range(TIME_SLOTS):
                     for k in range(ROOMS):
-                        if course.name == schedule[i][j][k].name:
-                            course_schedule["day"].append(i)
-                            course_schedule["slot"].append(j)
-                            course_schedule["room"].append(k)
-                            course_schedule["type"].append(schedule[i][j][k].type)
+                        if schedule[i][j][k] is not None:
+                            if course.name == schedule[i][j][k].name:
+                                course_schedule["day"].append(i)
+                                course_schedule["slot"].append(j)
+                                course_schedule["room"].append(k)
+                                course_schedule["type"].append(schedule[i][j][k].type)
             courses_schedule.append(course_schedule)
 
         return courses_schedule
@@ -57,6 +58,7 @@ class Constraint():
         handigs bedenken met dat we hele getallen hebben)
         """
         courses_schedule = Constraint.all_constraints(schedule, courses)
+        print(courses_schedule)
         bonuspoints = 0
 
         for course in courses:
@@ -95,7 +97,7 @@ class Constraint():
         Returns true if the lectures are before the tutorials and or
         practicals, otherwise returns false.
         """
-        
+
         lecture_points = 0
         courses_schedule = Constraint.all_constraints(schedule, courses)
         for course in courses:

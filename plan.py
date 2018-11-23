@@ -10,6 +10,7 @@ sys.path.append(os.path.join(directory, "code", "algoritmes"))
 
 from constraint import Constraint
 import switch
+import loaddata
 from course import Course
 from session import Session
 from schedule import Schedule
@@ -30,70 +31,8 @@ MAXSCHEDULEPOINTS = 39
 
 class Plan():
     """
-    Main scripts to make a schedule.
+    Main script to make a schedule.
     """
-
-    def __init__(self):
-        pass
-
-    def load_courses(self):
-        """
-        Loads all the courses from a csv file.
-        """
-        course = 'data/vakken.csv'
-
-        with open(course) as courses:
-            courses = csv.reader(courses, delimiter=';')
-            # Skip file header
-            next(courses)
-
-            # Keep track of course_id with a counter
-            id_counter = 0
-            # Make a list of all the course objects
-            courses_list = []
-
-            # Define every item of the course; each row is a different course
-            for row in courses:
-                name = row[0]
-                lecture = int(row[1])
-                tutorial = int(row[2])
-                practical = int(row[4])
-                course_id = id_counter
-                expected_students = int(row[6])
-
-                if row[3].isdigit():
-                    max_students_tutorial = int(row[3])
-                else:
-                    max_students_tutorial = 'nvt'
-                if row[5].isdigit():
-                    max_students_practical = int(row[5])
-                else:
-                    max_students_practical = 'nvt'
-                max_students_lecture = int(row[6])
-
-                # Use Course class to create objects for every course
-                course = Course(name, course_id, lecture, tutorial, practical, max_students_lecture, max_students_tutorial, max_students_practical, expected_students)
-                courses_list.append(course)
-                # Count id_course
-                id_counter += 1
-
-            return courses_list
-
-    def load_rooms(self):
-        """
-        loads all the rooms from a csv file.
-        """
-        room = 'data/zalen.csv'
-
-        with open(room) as rooms:
-            rooms = csv.reader(rooms, delimiter=';')
-            next(rooms)
-            roomnumbers = []
-            for row in rooms:
-                string = f'{row[0]} (max: {row[1]})'
-                roomnumbers.append(string)
-
-        return roomnumbers
 
     def initialize_schedule(self, courses):
         """
@@ -157,21 +96,22 @@ class Plan():
             # session = Session(name, type, room, timeslot, day)
             empty_sessions.append(session)
 
-
+        # De lijst met totale sessies bestaat dus uit een lijst met eerst
+        # Hoorcolleges, daarna de andere sessies en is opgevuld tot 140 met lege sessies
         total = []
         total = lectures + other_sessions + empty_sessions
 
-        schedule = [[[['None'] for i in range(ROOMS)] for i in range(TIME_SLOTS)] for i in range(DAYS)]
+        schedule = [[[[None] for i in range(ROOMS)] for i in range(TIME_SLOTS)] for i in range(DAYS)]
+
 
         # Je geeft dus aan deze functie een leeg schedule mee en de sessions waarmee
         # schedule gevuld moet worden. Doordat lectures en other_sessions nu gescheieden
         # zijn kunnen eerst de lectures gevuld worden en daarna pas de rest
 
-
-
-
         # plan.fill_schedule(schedule, total, other_sessions, empty_sessions, courses)
 
+
+        # VOOR NU: Even een random rooster
         schedule = plan.random_schedule(schedule, total)
         plan.schedule_counter += 1
 
@@ -337,45 +277,10 @@ class Plan():
 
         return schedule
 
-    def get_session(self, sessions):
-        """
-        Generates a random schedule. Assigns every session to a random timeslot.
-        # Hou bij welke random nummers al geweest zijn. De while loop
-        # Zorgt ervoor dat er een random nummer wordt gemaakt die nog
-        # niet is geweest.
-        """
-
-        for i in range(len(sessions)):
-            rand = random.randint(0, (len(sessions)) - 1)
-            while rand in plan.random_numbers:
-                rand = random.randint(0, len(sessions) - 1)
-                plan.random_numbers.append(rand)
-
-        return sessions[rand]
-
-    def load_individual(self):
-        """
-        Loads individual student courses.
-        """
-        # Use encoding='iso-8859-1' to ensure that content is accessible as bytes
-        with open('data/studentenenvakken.csv', encoding='iso-8859-1') as wishes:
-            wishes = csv.reader(wishes, delimiter=';')
-
-            # Optional code to visualize data
-            for row in wishes:
-                print(row)
-
     def save_html(self, schedule, rooms):
         """
         Print into html to visualize schedule.
         """
-
-        print("It took:", round(time.time() - plan.then, 3), "seconds.")
-        print("Succesfully made", plan.schedule_counter, "schedule(s) until the 'right' was found.")
-
-        # Test get_day en get_slot
-        # print("Bonus points:", Constraint.session_spread_check(schedule, plan.courses), "out of 400.")
-
 
         df = pd.DataFrame(schedule)
         pd.set_option('display.max_colwidth', 350)
@@ -420,6 +325,17 @@ class Plan():
             f.write("Friday")
             f.write(html_string.format(table=friday.to_html(classes='style')))
 
+    def end(self):
+        """
+        Prints text to tell user how many schedules were made and how long it took to make
+        """
+
+        print("It took:", round(time.time() - plan.then, 3), "seconds.")
+        print("Succesfully made", plan.schedule_counter, "schedule(s) until the 'right' was found.")
+
+        # Test get_day en get_slot
+        # print("Bonus points:", Constraint.session_spread_check(schedule, plan.courses), "out of 400.")
+
 
 if __name__ == "__main__":
 
@@ -429,9 +345,9 @@ if __name__ == "__main__":
     print("Loading...")
     plan.random_numbers = []
     plan.schedule_counter = 0
-    plan.courses = plan.load_courses()
+    plan.courses = loaddata.load_courses()
     schedule, lectures, other_sessions, empty_sessions = plan.initialize_schedule(plan.courses)
-    rooms = plan.load_rooms()
+    rooms = loaddata.load_rooms()
 
     # -----------------------------------------------------------------------------------
     #### SORRY JONGENS DIT MOET IN ALGORITMEN STAAN, (maar wat voor algoritme is dit...?)
@@ -463,6 +379,9 @@ if __name__ == "__main__":
 
     # Constraint.mutual_courses_check(schedule, plan.courses)
     # Constraint.own_sessions_check(schedule, plan.courses)
+
+    # Print the end-text
+    plan.end()
 
     # Make a html file for the schedule
     plan.save_html(schedule, rooms)
