@@ -79,8 +79,8 @@ class Plan():
         # Make copy of sessions and shuffle
         lectures = lecture_sessions[:]
         others = other_sessions[:]
-        # random.shuffle(lectures)
-        # random.shuffle(other_sessions)
+        random.shuffle(lectures)
+        random.shuffle(other_sessions)
 
         # TODO: lijst maken met eerst grote vakken!!
 

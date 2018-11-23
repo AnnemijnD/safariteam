@@ -80,7 +80,7 @@ class Course(object):
             session = Session(self.name, type, max_students, group_id)
             sessions.append(session)
 
-        return sessions
+        return sessions_with_groups
 
         #  DIT IS EEN TEST OM TE KIJKEN OF JE ZO DINGEN VAN EEN COURSE KAN AANROEPEN
     # def __str__(self):
