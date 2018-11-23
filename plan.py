@@ -377,7 +377,7 @@ if __name__ == "__main__":
     #     schedule = switch.switch_session(schedule, 30)
     #     plan.schedule_counter += 1
 
-    # Constraint.mutual_courses_check(schedule, plan.courses)
+    Constraint.mutual_courses_check(schedule, plan.courses)
     # Constraint.own_sessions_check(schedule, plan.courses)
 
     # Print the end-text

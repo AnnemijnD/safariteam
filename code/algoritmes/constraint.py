@@ -51,6 +51,7 @@ class Constraint():
         courses over the week. Where a course with 2 sessions should be on
         either monday and thursday or tuesday and friday. See the rest of the
         constrains in the comments bellow.
+
         -----
         TODO:
         - nu kijkjen we nog niet voor werkgroepen maar als we dat wel gaan doen
@@ -58,7 +59,6 @@ class Constraint():
         handigs bedenken met dat we hele getallen hebben)
         """
         courses_schedule = Constraint.all_constraints(schedule, courses)
-        print(courses_schedule)
         bonuspoints = 0
 
         for course in courses:
@@ -97,7 +97,6 @@ class Constraint():
         Returns true if the lectures are before the tutorials and or
         practicals, otherwise returns false.
         """
-
         lecture_points = 0
         courses_schedule = Constraint.all_constraints(schedule, courses)
         for course in courses:
@@ -166,6 +165,9 @@ class Constraint():
                 return False
 
         return True
+
+    def students_fit(schedule, course):
+        pass
 
     def get_day(schedule, day):
         """
