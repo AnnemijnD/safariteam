@@ -18,6 +18,7 @@ import random
 import time
 import pandas as pd
 from IPython.display import HTML
+import numpy as np
 
 SLOTS = 140
 TIME_SLOTS = 4
@@ -144,14 +145,10 @@ class Plan():
 
         # TODO: lijst maken met eerst grote vakken!!
 
-        total = []
-        total = lectures + other_sessions
-
-
         # Maak lege sessies aan om lege cellen mee op te vullen
         # Dit stukje wordt gebruikt in de nested for loop waarbij aan elke cel
         # een sessie wordt meegegeven.
-        for i in range(SLOTS):
+        for i in range(140-129):
             name = ' '
             type = ' '
             max_students = ' '
@@ -161,12 +158,21 @@ class Plan():
             empty_sessions.append(session)
 
 
+        total = []
+        total = lectures + other_sessions + empty_sessions
+
         schedule = [[[['None'] for i in range(ROOMS)] for i in range(TIME_SLOTS)] for i in range(DAYS)]
 
         # Je geeft dus aan deze functie een leeg schedule mee en de sessions waarmee
         # schedule gevuld moet worden. Doordat lectures en other_sessions nu gescheieden
         # zijn kunnen eerst de lectures gevuld worden en daarna pas de rest
-        plan.fill_schedule(schedule, total, other_sessions, empty_sessions, courses)
+
+
+
+
+        # plan.fill_schedule(schedule, total, other_sessions, empty_sessions, courses)
+
+        schedule = plan.random_schedule(schedule, total)
         plan.schedule_counter += 1
 
         return schedule, total, other_sessions, empty_sessions
@@ -308,16 +314,28 @@ class Plan():
         # niet is geweest.
         """
 
+        # Maak een 1D lijst van schedule
+        flatten = np.array(schedule, dtype=object).flatten()
+
+
+        random_numbers = []
+
         for i in range(SLOTS):
             rand = random.randint(0, SLOTS - 1)
             while rand in random_numbers:
                 rand = random.randint(0, SLOTS - 1)
-            # Hier wordt de session in dat timeslot gezet met een random nummer
-            schedule[rand] = sessions[i]
-            plan.random_numbers.append(rand)
+                random_numbers.append(rand)
+
+            flatten[rand] = sessions[i]
+
+        # Convert back to 3D list
+        schedule = flatten.reshape(DAYS, TIME_SLOTS, ROOMS).tolist()
+
 
         # Keep track of how many schedules were made
         plan.schedule_counter += 1
+
+        return schedule
 
     def get_session(self, sessions):
         """
@@ -436,7 +454,7 @@ if __name__ == "__main__":
     # --------------------------------------------------------------------------------
 
 
-    print(Constraint.lecture_first(schedule, plan.courses)[1])
+    # print(Constraint.lecture_first(schedule, plan.courses)[1])
     # R: Komt nooit hoger dan 180 !??? HoeE KAN DAT? Super raar
     # while Constraint.lecture_first(schedule, plan.courses) == False:
     #     # Switch sessions: input is a schedule and number of sessions to be swapped
@@ -444,7 +462,7 @@ if __name__ == "__main__":
     #     plan.schedule_counter += 1
 
     # Constraint.mutual_courses_check(schedule, plan.courses)
-    Constraint.own_sessions_check(schedule, plan.courses)
+    # Constraint.own_sessions_check(schedule, plan.courses)
 
     # Make a html file for the schedule
     plan.save_html(schedule, rooms)
