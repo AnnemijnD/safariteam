@@ -285,7 +285,7 @@ class Plan():
         on the x-axis.
         """
         plt.plot(points)
-        plt.ylabel("Points (out of 39)")
+        plt.ylabel("Points (max = 68)")
         plt.show()
 
     def end(self):
@@ -293,9 +293,10 @@ class Plan():
         Prints text to tell user how many schedules were made and how long it took to make
         """
         print("SUCCES!!")
-        print("It took:", round(time.time() - plan.then, 3), "seconds.")
+        print("It took:", round(time.time() - plan.then, 3), "seconds, = ", round((time.time() - plan.then) / 60, 3), "minutes.")
         print("Made", plan.schedule_counter, "schedule(s) until the 'right' was found.")
-        print(Constraint.lecture_first(schedule, plan.courses)[1], "correctly places lectures.")
+        print(Constraint.lecture_first(schedule, plan.courses)[1], "correctly placed lectures.")
+        print(plan.own_session_points, "out of 72 sessions were placed in a different timeslot")
         print("Spread points:", Constraint.session_spread_check(schedule, plan.courses), "out of 400.")
 
 
@@ -311,10 +312,8 @@ if __name__ == "__main__":
     schedule, lectures, other_sessions, empty_sessions = plan.initialize_schedule(plan.courses)
     rooms = loaddata.load_rooms()
 
+    schedule, points, plan.schedule_counter, plan.own_session_points = firstalgorithm.algorithm(schedule, plan.courses, plan.schedule_counter)
 
-    schedule, points, plan.schedule_counter, own_session_points = firstalgorithm.algorithm(schedule, plan.courses, plan.schedule_counter)
-
-    print(own_session_points)
     # Constraint.mutual_courses_check(schedule, plan.courses)
     # Constraint.own_sessions_check(schedule, plan.courses)
     # Constraint.all_constraints(schedule, plan.courses)
