@@ -39,6 +39,12 @@ class Course(object):
         """
         Loads all the session types for every course.
 
+        -----
+        session_id is per vak, dus vak A heeft sessie 0, sessie 1 etc maar vak
+        B heeft ook sessie 0, sessie 1 etc
+        group_id is per sessie
+        -----
+
         # Pseudocode to create all the sessions:
         #
         # For every course:
@@ -54,6 +60,13 @@ class Course(object):
         sessions_with_groups = []
         group_id = 0
 
+        if type == 'lecture':
+            session_id = 0
+        elif type == 'tutorial':
+            session_id = self.lecture
+        else:
+            session_id = self.lecture + self.tutorial
+
         # Make session for each lecture, tutorial and practical.
 
         for i in range(int_session):
@@ -68,17 +81,18 @@ class Course(object):
                 group_id = 0
                 # make a session for every group
                 for j in range(group_count):
-                    session = Session(self.name, type, max_students, group_id)
+                    session = Session(self.name, type, max_students, session_id, group_id)
                     sessions_with_groups.append(session)
                     group_id += 1
             else:
                 group_id = 0
-                session = Session(self.name, type, max_students, group_id)
+                session = Session(self.name, type, max_students, session_id, group_id)
                 sessions_with_groups.append(session)
 
 
-            session = Session(self.name, type, max_students, group_id)
+            session = Session(self.name, type, max_students, session_id, group_id)
             sessions.append(session)
+            session_id += 1
 
         # Als je de sessies wilt mét de 'groepen' erbij, return dan sessions_with_groups
         return sessions
