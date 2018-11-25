@@ -108,11 +108,11 @@ class Plan():
         # schedule gevuld moet worden. Doordat lectures en other_sessions nu gescheieden
         # zijn kunnen eerst de lectures gevuld worden en daarna pas de rest
 
-        plan.fill_schedule(schedule, total, other_sessions, empty_sessions, courses)
+        # plan.fill_schedule(schedule, total, other_sessions, empty_sessions, courses)
 
 
         # VOOR NU: Even een random rooster
-        # schedule = plan.random_schedule(schedule, total)
+        schedule = plan.random_schedule(schedule, total)
         plan.schedule_counter += 1
 
         return schedule, total, other_sessions, empty_sessions
@@ -264,8 +264,7 @@ class Plan():
             rand = random.randint(0, SLOTS - 1)
             while rand in random_numbers:
                 rand = random.randint(0, SLOTS - 1)
-                random_numbers.append(rand)
-
+            random_numbers.append(rand)
             flatten[rand] = sessions[i]
 
         # Convert back to 3D list
