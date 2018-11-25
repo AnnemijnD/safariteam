@@ -3,6 +3,7 @@
 from pathlib import Path
 import csv
 from course import Course
+from room import Room
 
 
 def load_courses():
@@ -48,6 +49,7 @@ def load_courses():
 
         return courses_list
 
+
 def load_rooms():
     """
     loads all the rooms from a csv file.
@@ -58,9 +60,14 @@ def load_rooms():
         rooms = csv.reader(rooms, delimiter=';')
         next(rooms)
         roomnumbers = []
+        room_id = 0
         for row in rooms:
-            string = f'{row[0]} (max: {row[1]})'
-            roomnumbers.append(string)
+            room = Room(row[0], room_id, int(row[1]))
+            roomnumbers.append(room)
+            room_id += 1
+            #
+            # string = f'{row[0]} (max: {row[1]})'
+            # roomnumbers.append(string)
 
     return roomnumbers
 

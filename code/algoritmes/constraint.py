@@ -1,3 +1,5 @@
+import loaddata
+
 SLOTS = 140
 TIME_SLOTS = 4
 DAYS = 5
@@ -8,7 +10,12 @@ SESSION_LEN = 72
 
 class Constraint():
     """
-    A class with all the constraint functions
+    A class with all the constraint functions.
+    ------
+    ALS WE ECHT DIE HARD ALGORITMEN GAAN SCHRIJVEN MOETEN WE DE FUNCTIES NET
+    IETS ANDERS NEERZETTEN. NU ROEPEN WE IN IEDERE FUNCTIE ALL_CONSTRAINTS AAN
+    MAAR HET IS LOGISCHER OM IN ALL_CONSTRAINTS DE ANDERE FUNCTIES AAN TE
+    ROEPEN EN DAN DE FUNCTIES DIE WE WILLEN GEBRUIKEN DAARIN ZETTEN.
     """
 
 # Hier even een lijst met alle constraints:
@@ -179,8 +186,40 @@ class Constraint():
 
         return True, own_session_points
 
-    def students_fit(schedule, course):
-        pass
+    def students_fit(schedule, courses):
+        """
+        Returns the number of maluspoints that are given for the number of
+        students that don't fit in the room of the session
+        """
+        courses_schedule = Constraint.all_constraints(schedule, courses)
+        rooms = loaddata.load_rooms()
+
+        maluspoints = 0
+        for course in courses:
+
+            #  saves the room and type of the checked_course sessions
+            checked_course = courses_schedule[course.course_id]
+            room_ids = checked_course["room"]
+            types = checked_course["type"]
+
+            for i in range(len(room_ids)):
+
+                # saves the max amount of students for the session type
+                if types[i] is "lecture":
+                    students = course.max_students_lecture
+                elif types[i] is "tutorial":
+                    students = course.max_students_tutorial
+                else:
+                    students = course.max_students_practical
+
+                # calculates how many empty seats there are
+                empty_seats = rooms[room_ids[i]].capacity - students
+
+                # increases maluspoints with the nmbr of students that don't have a seat
+                if empty_seats < 0:
+                    maluspoints += abs(empty_seats)
+
+        return maluspoints
 
     def get_day(schedule, day):
         """

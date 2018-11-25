@@ -69,8 +69,9 @@ class Plan():
                 max_students = 'nvt'
 
             group_id = 'nvt'
+            session_id = 'nvt'
 
-            session = Session(name, type, max_students, group_id)
+            session = Session(name, type, max_students, session_id, group_id)
 
             # Get all the lectures
             if session.type == "lecture":
@@ -95,8 +96,9 @@ class Plan():
             name = ' '
             type = ' '
             max_students = ' '
+            session_id = 'nvt2'
             group_id = 'nvt2'
-            session = Session(name, type, max_students, group_id)
+            session = Session(name, type, max_students, session_id, group_id)
             # session = Session(name, type, room, timeslot, day)
             empty_sessions.append(session)
 
@@ -312,19 +314,20 @@ if __name__ == "__main__":
     schedule, lectures, other_sessions, empty_sessions = plan.initialize_schedule(plan.courses)
     rooms = loaddata.load_rooms()
 
-    schedule, points, plan.schedule_counter, plan.own_session_points = firstalgorithm.algorithm(schedule, plan.courses, plan.schedule_counter)
+    # schedule, points, plan.schedule_counter, plan.own_session_points = firstalgorithm.algorithm(schedule, plan.courses, plan.schedule_counter)
 
     # Constraint.mutual_courses_check(schedule, plan.courses)
     # Constraint.own_sessions_check(schedule, plan.courses)
     # Constraint.all_constraints(schedule, plan.courses)
     # Constraint.session_spread_check(schedule, plan.courses)
+    Constraint.students_fit(schedule, plan.courses)
 
     # Print the end-text
-    plan.end()
+    # plan.end()
     # Make a plot of the points
-    try:
-        plan.makeplot(points)
-    except:
-        print("No points to plot for now.")
+    # try:
+    #     plan.makeplot(points)
+    # except:
+    #     print("No points to plot for now.")
     # Make a html file for the schedule
     plan.save_html(schedule, rooms)
