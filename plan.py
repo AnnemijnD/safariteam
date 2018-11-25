@@ -297,8 +297,8 @@ class Plan():
         print("SUCCES!!")
         print("It took:", round(time.time() - plan.then, 3), "seconds, = ", round((time.time() - plan.then) / 60, 3), "minutes.")
         print("Made", plan.schedule_counter, "schedule(s) until the 'right' was found.")
-        print(Constraint.lecture_first(schedule, plan.courses)[1], "correctly placed lectures.")
-        print(plan.own_session_points, "out of 72 sessions were placed in a different timeslot.")
+        print(Constraint.lecture_first(schedule, plan.courses)[1], "out of 39 correctly placed lectures.")
+        print(plan.own_session_points, "out of 29 courses were placed in a different timeslot.")
         print("Spread points:", Constraint.session_spread_check(schedule, plan.courses), "out of 400.")
 
 
@@ -315,20 +315,21 @@ if __name__ == "__main__":
     rooms = loaddata.load_rooms()
     plan.own_session_points = 0
 
-    # schedule, points, plan.schedule_counter, plan.own_session_points = firstalgorithm.algorithm(schedule, plan.courses, plan.schedule_counter)
+    # Maak van een random rooster een rooster met eerst de hoorcolleges en geen overlappende vakken.
+    schedule, points, plan.schedule_counter, plan.own_session_points = firstalgorithm.hard_constraints(schedule, plan.courses, plan.schedule_counter)
 
     # Constraint.mutual_courses_check(schedule, plan.courses)
-    # print(Constraint.own_sessions_check(schedule, plan.courses))
+    print(Constraint.own_sessions_check(schedule, plan.courses))
     # Constraint.all_constraints(schedule, plan.courses)
     # Constraint.session_spread_check(schedule, plan.courses)
-    Constraint.students_fit(schedule, plan.courses)
+    # Constraint.students_fit(schedule, plan.courses)
 
     # Print the end-text
-    # plan.end()
+    plan.end()
     # Make a plot of the points
-    # try:
-    #     plan.makeplot(points)
-    # except:
-    #     print("No points to plot for now.")
+    try:
+        plan.makeplot(points)
+    except:
+        print("No points to plot for now.")
     # Make a html file for the schedule
     plan.save_html(schedule, rooms)

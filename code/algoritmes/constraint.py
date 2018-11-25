@@ -161,28 +161,26 @@ class Constraint():
     def own_sessions_check(schedule, courses):
         """
         Returns true if the sessions of a course aren't planned in the same
-        slot, otherwise returns false.
+        slot; counts amount of points for each course that is placed in a different
+        timeslot. Max points = 29.
         """
         own_session_points = 0
+        test = 0
 
         courses_schedule = Constraint.all_constraints(schedule, courses)
 
         for course in courses:
             checked_course = courses_schedule[course.course_id]
-            # print(checked_course)
 
             # adds (day, slot) of every session to course_sessions
             course_sessions = []
             for i in range(len(checked_course["day"])):
                 course_sessions.append((checked_course["day"][i], checked_course["slot"][i]))
             # return False if there are sessions planned at the same time
-            # Ik heb voor nu even het groter-dan teken omgedraaid
-            if len(set(course_sessions)) < len(checked_course):
+            # Als de gefilterde lijst even groot is als de niet-gefilterde lijst,
+            # dan is er geen overlappend vak (dus + 1 punt)
+            if len(set(course_sessions)) == len(course_sessions):
                 own_session_points += 1
-                # return False
-                # print(own_session_malus)
-            # else:
-            #     own_session_malus -= 1
 
         return True, own_session_points
 
