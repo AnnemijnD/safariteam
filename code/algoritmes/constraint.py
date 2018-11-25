@@ -1,4 +1,5 @@
 import loaddata
+import numpy as np
 
 SLOTS = 140
 TIME_SLOTS = 4
@@ -16,6 +17,11 @@ class Constraint():
     IETS ANDERS NEERZETTEN. NU ROEPEN WE IN IEDERE FUNCTIE ALL_CONSTRAINTS AAN
     MAAR HET IS LOGISCHER OM IN ALL_CONSTRAINTS DE ANDERE FUNCTIES AAN TE
     ROEPEN EN DAN DE FUNCTIES DIE WE WILLEN GEBRUIKEN DAARIN ZETTEN.
+    Ja.
+    Mee eens.
+    Kunnen we gewoon lekker in de input geven van de functie , right?
+    Oh nee. even geprobeerd en het moet natuurlijk voor elk rooster opnieuw aangemaakt worden aaah.
+    Dus dan misschien deze functie in plan.py zetten en dan meegeven aan Constraint()
     """
 
 # Hier even een lijst met alle constraints:
@@ -35,7 +41,9 @@ class Constraint():
         order of their course_id.
         -----
         Dit is het begin voor het preprocessen. Een hele slechte naam maar
-        weet even niets beters JOE
+        weet even niets beters JOE.
+
+        Ik denk dat het sneller is om numpy array hiervoor te gebruiken x R
         """
 
         courses_schedule = []
@@ -69,6 +77,7 @@ class Constraint():
         - nu kijkjen we nog niet voor werkgroepen maar als we dat wel gaan doen
         mag het maar 20/(aantal werkgroepen) punten krijgen (en dan nog iets
         handigs bedenken met dat we hele getallen hebben)
+        Dat bedenken mag jij lekker doen Sanne jij BENT WISKUNDE. xoxoxox
         """
         courses_schedule = Constraint.all_constraints(schedule, courses)
         bonuspoints = 0
@@ -131,10 +140,23 @@ class Constraint():
         ZIJN NOG MEERDERE PROBLEMEN!!
         1 course.mutual_courses bevat alleen maar de naam vd courses
         Als we dat hebben veranderd kunnen we het gecommente stuk checken
+
+        Rebecca: Kan misschien gecombineerd worden met own_sessions_check, aangezien
+        je hier ook gewoon loopt door course in courses. Gewoon own_sessions_check
+        iets meer uitbreiden met deze functie zodat er uiteindelijk minder geloopt wordt
         """
         courses_schedule = Constraint.all_constraints(schedule, courses)
 
+        # flatten = np.array(schedule).flatten()
+        #
+        # for i in range(len(flatten)):
+        #     if i % 7 == 0:
+        #         print('new timeslot _______________________')
+        #     print(flatten[i])
+
         for course in courses:
+            # print(course.name)
+            # print(course.mutual_courses)
 
             # adds (day, slot) of every session of course to course_sessions
             checked_course = courses_schedule[course.course_id]
@@ -161,10 +183,10 @@ class Constraint():
     def own_sessions_check(schedule, courses):
         """
         Returns true if the sessions of a course aren't planned in the same
-        slot, otherwise returns false.
+        slot; counts amount of points for each course that is placed in a different
+        timeslot. Max points = 29.
         """
         own_session_points = 0
-
         courses_schedule = Constraint.all_constraints(schedule, courses)
 
         for course in courses:
@@ -174,15 +196,11 @@ class Constraint():
             course_sessions = []
             for i in range(len(checked_course["day"])):
                 course_sessions.append((checked_course["day"][i], checked_course["slot"][i]))
-
             # return False if there are sessions planned at the same time
-            # Ik heb voor nu even het groter-dan teken omgedraaid
-            if len(set(course_sessions)) < len(checked_course):
+            # Als de gefilterde lijst even groot is als de niet-gefilterde lijst,
+            # dan is er geen overlappend vak (dus + 1 punt)
+            if len(set(course_sessions)) == len(course_sessions):
                 own_session_points += 1
-                # return False
-                # print(own_session_malus)
-            # else:
-            #     own_session_malus -= 1
 
         return True, own_session_points
 
