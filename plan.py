@@ -318,8 +318,8 @@ if __name__ == "__main__":
     # Maak van een random rooster een rooster met eerst de hoorcolleges en geen overlappende vakken.
     schedule, points, plan.schedule_counter, plan.own_session_points = firstalgorithm.hard_constraints(schedule, plan.courses, plan.schedule_counter)
 
-    # Constraint.mutual_courses_check(schedule, plan.courses)
-    print(Constraint.own_sessions_check(schedule, plan.courses))
+    # print(Constraint.mutual_courses_check(schedule, plan.courses))
+    # print(Constraint.own_sessions_check(schedule, plan.courses))
     # Constraint.all_constraints(schedule, plan.courses)
     # Constraint.session_spread_check(schedule, plan.courses)
     # Constraint.students_fit(schedule, plan.courses)
@@ -331,5 +331,6 @@ if __name__ == "__main__":
         plan.makeplot(points)
     except:
         print("No points to plot for now.")
+
     # Make a html file for the schedule
     plan.save_html(schedule, rooms)

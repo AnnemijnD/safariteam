@@ -60,7 +60,7 @@ def hard_constraints(schedule, courses, schedule_counter):
         # Als het rooster vast blijft zitten, ga dan terug naar het originele
         # rooster of naar het bewaarde rooster.
         if schedule_counter % LIMIT == 0:
-            makeplot(points)
+            # makeplot(points)
             if Constraint.lecture_first(schedule, courses)[1] % 10 == 0:
                 if schedule_10_points:
                     schedule = schedule_10_points
