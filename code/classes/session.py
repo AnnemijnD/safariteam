@@ -13,6 +13,8 @@ class Session(object):
         self.max_students = max_students
         self.session_id = session_id
         self.group_id = group_id
+        self.course_object = None
+
 
     def __iter__(self):
         """
