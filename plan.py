@@ -9,17 +9,21 @@ sys.path.append(os.path.join(directory, "code", "classes"))
 sys.path.append(os.path.join(directory, "code", "algoritmes"))
 
 from constraint import Constraint
-import switch
 import loaddata
 from course import Course
 from session import Session
 from schedule import Schedule
+import switch
+import firstalgorithm
 import csv
 import random
 import time
 import pandas as pd
 from IPython.display import HTML
 import numpy as np
+import matplotlib
+matplotlib.use('TkAgg')
+import matplotlib.pyplot as plt
 
 SLOTS = 140
 TIME_SLOTS = 4
@@ -99,7 +103,7 @@ class Plan():
         # De lijst met totale sessies bestaat dus uit een lijst met eerst
         # Hoorcolleges, daarna de andere sessies en is opgevuld tot 140 met lege sessies
         total = []
-        total = lectures + other_sessions + empty_sessions
+        total = lectures + other_sessions
 
         schedule = [[[[None] for i in range(ROOMS)] for i in range(TIME_SLOTS)] for i in range(DAYS)]
 
@@ -139,6 +143,7 @@ class Plan():
         for e in range(len(lectures)):
             for course in courses:
                 if lectures[e].name == course.name:
+                    # Lijst van elke lecture die er op dat moment is
                     mutual_courses_session = course.mutual_courses
             found = False
             for b in range(DAYS):
@@ -198,54 +203,6 @@ class Plan():
             plan.initialize_schedule(plan.courses)
 
 
-
-        # lecture_counter = 0
-        # counter = 0
-        # day_counter = 0
-        # timeslot_counter = 0
-        # for b in range(DAYS):
-        #     for c in range(TIME_SLOTS):
-        #         for d in range(ROOMS):
-        #
-        #             # if the slot in the schedule is empty
-        #             if schedule[b][c][d].name == ' ':
-        #
-        #                 #  loop through the rooms
-        #                 for e in schedule[b][c]:
-        #
-        #                     # check if the same course is already in that slot
-        #                     if lectures[lecture_counter].name in e.name:
-        #                         print(lectures[lecture_counter].name in e.name)
-        #                         c += 1
-        #                         timeslot_counter += 1
-        #                         if c > 3:
-        #                             b += 1
-        #                             day_counter += 1
-        #                             c = 0
-        #
-        #                         # makes a new schedule if it failed
-        #                         if b > 4:
-        #                             plan.initialize_schedule(plan.courses)
-        #
-        #                 # set the session in the schedule
-        #                 schedule[b][c][d] = lectures[lecture_counter]
-        #                 lecture_counter += 1
-        #                 # QUINTEN!: is dit sneller in een if statement?
-        #                 d += 1
-        #                 d %= 7
-        #
-        #                 #  returns to the previous timeslot/day in the loop if it skipped one
-        #                 if timeslot_counter > 0:
-        #                     c -= timeslot_counter
-        #                     timeslot_counter = 0
-        #                 if day_counter > 0:
-        #                     b -= day_counter
-        #                     day_counter = 0
-        #
-        #                 # if all the sessions are scheduled return schedule
-        #                 if lecture_counter is len(lectures):
-        #                     return schedule
-
     def random_schedule(self, schedule, sessions):
         """
         Generates a random schedule. Assigns every session to a random timeslot.
@@ -256,7 +213,6 @@ class Plan():
 
         # Maak een 1D lijst van schedule
         flatten = np.array(schedule, dtype=object).flatten()
-
 
         random_numbers = []
 
@@ -269,7 +225,6 @@ class Plan():
 
         # Convert back to 3D list
         schedule = flatten.reshape(DAYS, TIME_SLOTS, ROOMS).tolist()
-
 
         # Keep track of how many schedules were made
         plan.schedule_counter += 1
@@ -324,16 +279,25 @@ class Plan():
             f.write("Friday")
             f.write(html_string.format(table=friday.to_html(classes='style')))
 
+    def makeplot(self, points):
+        """
+        Plots a graph of all the points on the y-axis and number of schedules
+        on the x-axis.
+        """
+        plt.plot(points)
+        plt.ylabel("Points (max = 68)")
+        plt.show()
+
     def end(self):
         """
         Prints text to tell user how many schedules were made and how long it took to make
         """
-
-        print("It took:", round(time.time() - plan.then, 3), "seconds.")
-        print("Succesfully made", plan.schedule_counter, "schedule(s) until the 'right' was found.")
-
-        # Test get_day en get_slot
-        print("Bonus points:", Constraint.session_spread_check(schedule, plan.courses), "out of 400.")
+        print("SUCCES!!")
+        print("It took:", round(time.time() - plan.then, 3), "seconds, = ", round((time.time() - plan.then) / 60, 3), "minutes.")
+        print("Made", plan.schedule_counter, "schedule(s) until the 'right' was found.")
+        print(Constraint.lecture_first(schedule, plan.courses)[1], "correctly placed lectures.")
+        print(plan.own_session_points, "out of 72 sessions were placed in a different timeslot")
+        print("Spread points:", Constraint.session_spread_check(schedule, plan.courses), "out of 400.")
 
 
 if __name__ == "__main__":
@@ -348,40 +312,19 @@ if __name__ == "__main__":
     schedule, lectures, other_sessions, empty_sessions = plan.initialize_schedule(plan.courses)
     rooms = loaddata.load_rooms()
 
-    # -----------------------------------------------------------------------------------
-    #### SORRY JONGENS DIT MOET IN ALGORITMEN STAAN, (maar wat voor algoritme is dit...?)
-    #
-    # schedule = switch.switch_session(schedule, 5)
-    # # Onthou dit rooster
-    # save_schedule = schedule
-    #
-    # # Oplossing wordt snel gevonden of wordt helemaal niet gevonden.
-    # while Constraint.lecture_first(schedule, plan.courses)[1] < MAXSCHEDULEPOINTS:
-    #     # Maak nieuw rooster en kijk of deze beter is
-    #     schedule_test = switch.switch_session(save_schedule, 1)
-    #     plan.schedule_counter += 1
-    #     if Constraint.lecture_first(schedule_test, plan.courses)[1] > Constraint.lecture_first(save_schedule, plan.courses)[1]:
-    #         # Als het aantal punten groter is, accepteer dit rooster en ga hiermee door.
-    #         schedule = schedule_test
-    #     else:
-    #         schedule = save_schedule
-
-    # --------------------------------------------------------------------------------
-
-
-    # print(Constraint.lecture_first(schedule, plan.courses)[1])
-    # R: Komt nooit hoger dan 180 !??? HoeE KAN DAT? Super raar
-    # while Constraint.lecture_first(schedule, plan.courses) == False:
-    #     # Switch sessions: input is a schedule and number of sessions to be swapped
-    #     schedule = switch.switch_session(schedule, 30)
-    #     plan.schedule_counter += 1
+    schedule, points, plan.schedule_counter, plan.own_session_points = firstalgorithm.algorithm(schedule, plan.courses, plan.schedule_counter)
 
     # Constraint.mutual_courses_check(schedule, plan.courses)
     # Constraint.own_sessions_check(schedule, plan.courses)
+    # Constraint.all_constraints(schedule, plan.courses)
     # Constraint.session_spread_check(schedule, plan.courses)
 
     # Print the end-text
     plan.end()
-
+    # Make a plot of the points
+    try:
+        plan.makeplot(points)
+    except:
+        print("No points to plot for now.")
     # Make a html file for the schedule
     plan.save_html(schedule, rooms)

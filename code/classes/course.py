@@ -80,6 +80,7 @@ class Course(object):
             session = Session(self.name, type, max_students, group_id)
             sessions.append(session)
 
+        # Als je de sessies wilt mét de 'groepen' erbij, return dan sessions_with_groups
         return sessions
 
         #  DIT IS EEN TEST OM TE KIJKEN OF JE ZO DINGEN VAN EEN COURSE KAN AANROEPEN

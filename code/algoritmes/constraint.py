@@ -3,6 +3,7 @@ TIME_SLOTS = 4
 DAYS = 5
 ROOMS = 7
 SPREAD_BONUS = 20
+SESSION_LEN = 72
 
 
 class Constraint():
@@ -29,13 +30,17 @@ class Constraint():
         Dit is het begin voor het preprocessen. Een hele slechte naam maar
         weet even niets beters JOE
         """
+
         courses_schedule = []
         for course in courses:
             course_schedule = {"day": [], "slot": [], "room": [], "type": []}
             for i in range(DAYS):
                 for j in range(TIME_SLOTS):
                     for k in range(ROOMS):
+                        # print(schedule[i][j][k] is None)
+                        # print(schedule[i][j][k])
                         if schedule[i][j][k] is not None:
+                            # print("??????")
                             if course.name == schedule[i][j][k].name:
                                 course_schedule["day"].append(i)
                                 course_schedule["slot"].append(j)
@@ -63,6 +68,7 @@ class Constraint():
 
         for course in courses:
             if course.sessions == 2:
+                # print(courses_schedule[course.course_id]["day"][0])
                 # checks if the courses are on monday and thursday
                 if (courses_schedule[course.course_id]["day"][0] == 0) and \
                    (courses_schedule[course.course_id]["day"][1] == 3):
@@ -150,6 +156,8 @@ class Constraint():
         Returns true if the sessions of a course aren't planned in the same
         slot, otherwise returns false.
         """
+        own_session_points = 0
+
         courses_schedule = Constraint.all_constraints(schedule, courses)
 
         for course in courses:
@@ -161,10 +169,15 @@ class Constraint():
                 course_sessions.append((checked_course["day"][i], checked_course["slot"][i]))
 
             # return False if there are sessions planned at the same time
+            # Ik heb voor nu even het groter-dan teken omgedraaid
             if len(set(course_sessions)) < len(checked_course):
-                return False
+                own_session_points += 1
+                # return False
+                # print(own_session_malus)
+            # else:
+            #     own_session_malus -= 1
 
-        return True
+        return True, own_session_points
 
     def students_fit(schedule, course):
         pass
