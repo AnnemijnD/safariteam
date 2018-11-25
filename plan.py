@@ -296,7 +296,7 @@ class Plan():
         print("It took:", round(time.time() - plan.then, 3), "seconds, = ", round((time.time() - plan.then) / 60, 3), "minutes.")
         print("Made", plan.schedule_counter, "schedule(s) until the 'right' was found.")
         print(Constraint.lecture_first(schedule, plan.courses)[1], "correctly placed lectures.")
-        print(plan.own_session_points, "out of 72 sessions were placed in a different timeslot")
+        print(plan.own_session_points, "out of 72 sessions were placed in a different timeslot.")
         print("Spread points:", Constraint.session_spread_check(schedule, plan.courses), "out of 400.")
 
 
@@ -311,11 +311,12 @@ if __name__ == "__main__":
     plan.courses = loaddata.load_courses()
     schedule, lectures, other_sessions, empty_sessions = plan.initialize_schedule(plan.courses)
     rooms = loaddata.load_rooms()
+    plan.own_session_points = 0
 
-    schedule, points, plan.schedule_counter, plan.own_session_points = firstalgorithm.algorithm(schedule, plan.courses, plan.schedule_counter)
+    # schedule, points, plan.schedule_counter, plan.own_session_points = firstalgorithm.algorithm(schedule, plan.courses, plan.schedule_counter)
 
     # Constraint.mutual_courses_check(schedule, plan.courses)
-    # Constraint.own_sessions_check(schedule, plan.courses)
+    # print(Constraint.own_sessions_check(schedule, plan.courses))
     # Constraint.all_constraints(schedule, plan.courses)
     # Constraint.session_spread_check(schedule, plan.courses)
 
