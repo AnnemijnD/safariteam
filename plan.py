@@ -10,9 +10,7 @@ sys.path.append(os.path.join(directory, "code", "algoritmes"))
 
 from constraint import Constraint
 import loaddata
-from course import Course
 from session import Session
-from schedule import Schedule
 import switch
 import firstalgorithm
 import csv
@@ -67,7 +65,6 @@ class Plan():
                 max_students = session_list[i].max_students
             except IndexError:
                 max_students = 'nvt'
-
             group_id = 'nvt'
             session_id = 'nvt'
 
@@ -350,7 +347,7 @@ if __name__ == "__main__":
     # Maak van een random rooster een rooster met eerst de hoorcolleges en geen overlappende vakken.
     schedule, points, plan.schedule_counter, plan.own_session_points = firstalgorithm.hard_constraints(schedule, plan.courses, plan.schedule_counter)
 
-    # print(Constraint.mutual_courses_check(schedule, plan.courses))
+    # print(Constraint.mutual_courses_check(schedule, plan.courses)[1])
     # print(Constraint.own_sessions_check(schedule, plan.courses))
     # Constraint.all_constraints(schedule, plan.courses)
     # Constraint.session_spread_check(schedule, plan.courses)
