@@ -53,9 +53,9 @@ class Constraint():
                 for j in range(TIME_SLOTS):
                     for k in range(ROOMS):
                         # print(schedule[i][j][k] is None)
-                        # print(schedule[i][j][k])
+                        
                         if schedule[i][j][k] is not None:
-                            # print("??????")
+                            # print("schedule[i][j][k]")
                             if course.name == schedule[i][j][k].name:
                                 course_schedule["day"].append(i)
                                 course_schedule["slot"].append(j)
@@ -124,6 +124,7 @@ class Constraint():
         for course in courses:
 
             # checks for the amount of lectures if the lectures are planned first
+
             for i in range(course.lecture):
                 if courses_schedule[course.course_id]["type"][i] != "lecture":
                     return [False, lecture_points]

@@ -50,35 +50,41 @@ class Plan():
         other_sessions = []
         empty_sessions = []
 
+
+        # random.shuffle(courses)
         for course in courses:
+            print(session_list)
             session_list = session_list + course.sessions_total
 
-        # Put every session into schedule
-        for i in range(SLOTS):
-            try:
-                name = session_list[i].name
-            except IndexError:
-                name = ' '
-            try:
-                type = session_list[i].type
-            except IndexError:
-                type = ' '
-            try:
-                max_students = session_list[i].max_students
-            except IndexError:
-                max_students = 'nvt'
+        print(len(session_list))
 
-            group_id = 'nvt'
-            session_id = 'nvt'
+        # # Put every session into schedule
+        # for i in range(SLOTS):
+        #     try:
+        #         name = session_list[i].name
+        #     except IndexError:
+        #         name = ' '
+        #     try:
+        #         type = session_list[i].type
+        #     except IndexError:
+        #         type = ' '
+        #     try:
+        #         max_students = session_list[i].max_students
+        #     except IndexError:
+        #         max_students = 'nvt'
+        #
+        #     group_id = 'nvt'
+        #     session_id = 'nvt'
+        #
+        #     session = Session(name, type, max_students, session_id, group_id)
 
-            session = Session(name, type, max_students, session_id, group_id)
-
+        for i in range(len(session_list)):
             # Get all the lectures
-            if session.type == "lecture":
-                lecture_sessions.append(session)
-            elif session.type == "tutorial" or session.type == "practical":
-                other_sessions.append(session)
-            sessions.append(session)
+            if session_list[i].type == "lecture":
+                lecture_sessions.append(session_list[i])
+            elif session_list[i].type == "tutorial" or session_list[i].type == "practical":
+                other_sessions.append(session_list[i])
+
 
         # shuffle de lectures zodat ze random zijn
         # Make copy of sessions and shuffle
@@ -117,17 +123,18 @@ class Plan():
 
 
         # plan.fill_schedule(schedule, total, other_sessions, empty_sessions, courses)
-        counter_sc = 0
-        while True:
-            # new_schedz = plan.fill_schedule(schedule, total, lecture_sessions, empty_sessions, courses)
-            new_schedz = plan.fill_schedule(schedule, sessions, lecture_sessions, empty_sessions, courses)
-            break
-            counter_sc += 1
-            if bool(new_schedz) and Constraint.session_spread_check(schedule, plan.courses) >= 20:
-                print(counter_sc)
+        # print(session_list)
+        # print(len(session_list))
+        new_sched = False
+        while new_sched == False:
+            new_sched = plan.fill_schedule(schedule, session_list, lecture_sessions, empty_sessions, courses)
+            plan.schedule_counter +=1
+            # if plan.schedule_counter % 100 == 0:
+            #     print(plan.schedule_counter)
+            if not new_sched == False:
                 break
 
-        plan.schedule_counter +=1
+
         # VOOR NU: Even een random rooster
         # schedule = plan.random_schedule(schedule, total)
 
@@ -139,6 +146,8 @@ class Plan():
         """
         Fill empty schedule with sessions. Function will begin to fill all the lectures
         and will go on to fill other sessions.
+
+        Lectures = een lijst met alle sessies
         """
 
         # Gebruik nested for loop om elke cel een session te gegen.
@@ -162,7 +171,10 @@ class Plan():
         # vertelt hoeveelste lecture van dit vak dit is
         passed_lectures = 0
 
+        # found = False
         for e in range(len(lectures)):
+            # print(lectures[e].name)
+
             lectures_first = False
             tut_or_prac = False
             location = []
@@ -181,21 +193,56 @@ class Plan():
                 tut_or_prac = True
 
             for b in range(DAYS):
+
                 for c in range(TIME_SLOTS):
+
                     rooms_allowed = True
                     # availibility = True
                     for d in range(ROOMS):
 
-                        if tut_or_prac:
-                            if lectures[e].name == schedule[b][c][d].name and schedule[b][c][d].type == "lecture":
-                                location.clear()
+                        # als het een tutorial of pracitcal is
+                        if not lectures_first:
 
-                        if lectures[e].name == schedule[b][c][d].name or schedule[b][c][d].name in mutual_courses_session:
+
+                            if lectures[e].name == schedule[b][c][d].name:
+                                if schedule[b][c][d].type == "lecture":
+
+                                    # alle eerdere locaties mogen weg want er mag niets voor een lecture
+                                    location.clear()
+                                    # print(location)
+                                    break
+                                elif not lectures[e].session_id == schedule[b][c][d].session_id:
+                                    if lectures[e].group_id == schedule[b][c][d].group_id:
+                                        for k in range(len(location) - 1, -1, -1):
+                                            if location[k][1] == c and location[k][0] == b:
+                                                del location[k]
+                                        break
+
+
+                            elif schedule[b][c][d].name in mutual_courses_session:
+                                rooms_allowed = False
+                                for k in range(len(location) - 1, -1, -1):
+                                    if location[k][1] == c and location[k][0] == b:
+                                        del location[k]
+
+                                break
+
+
+
+                        # als het een lecture is
+                        elif lectures[e].name == schedule[b][c][d].name or schedule[b][c][d].name in mutual_courses_session:
+
+                            # achteruit itereren anders gaat het verwijderen niet goed
+                            for k in range(len(location) - 1, -1, -1):
+                                if location[k][1] == c and location[k][0] == b:
+                                    del location[k]
                             rooms_allowed = False
+
+                            # print(location)
                             break
 
                         # if the slot in the schedule is empty
-                        elif schedule[b][c][d].name == ' ':
+                        if schedule[b][c][d].name == ' ':
                             location.append((b,c,d))
 
             if bool(location):
@@ -204,37 +251,48 @@ class Plan():
                 # als het een lecture was, verwijder het aantal potentiele locaties aan het einde van het rooster gelijk
                 # aan de hoeveelheid vakken die er nog moeten worden ingedeeld
                 if lectures_first:
-                    prohibited_timeslots = len(lectures[e].course_object.sessions_total) - 1 - passed_lectures
+
+                    amount_sessions = lectures[e].course_object.lecture + lectures[e].course_object.tutorial + lectures[e].course_object.practical
+                    prohibited_timeslots = amount_sessions - 1 - passed_lectures
+
+                    # probleem: er moeten nu teveel plekken open worden gehouden
                     passed_lectures += 1
+
+
                     while not counter == prohibited_timeslots:
-                        if not location[-1][1] == location[-2][1]:
+                        if not bool(location) or prohibited_timeslots >= len(location):
+
+                            return False
+
+                        elif not location[-1][1] == location[-2][1]:
+                            # print(location)
                             counter +=1
                         location.remove(location[-1])
 
-
-
                 random_location = random.choice(location)
+                # print(random_location)
                 schedule[random_location[0]][random_location[1]][random_location[2]] = lectures[e]
-
+                found = True
                 # als dit het laatste lecture van het vak was of als er geen andere sessies meer zijn van dit vak:
                 if not e == len(lectures) - 1 and (not lectures[e + 1].type == "lecture" or not lectures[e].course_object == lectures[e + 1].course_object):
                     passed_lectures = 0
-
-                found = True
 
 
             else:
 
                 # plan.schedule_counter += 1
+
                 return False
                 # return schedule
                 #plan.initialize_schedule(plan.courses)
                 # break
         if found:
+
             return schedule
 
         else:
             # plan.schedule_counter += 1
+
             return False
 
     def random_schedule(self, schedule, sessions):
@@ -271,6 +329,7 @@ class Plan():
         """
 
         df = pd.DataFrame(schedule)
+        print(df)
         pd.set_option('display.max_colwidth', 350)
         df.columns = ['9:00 - 11:00', '11:00 - 13:00', '13:00 - 15:00', '15:00 - 17:00']
         df.index = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"]
@@ -348,7 +407,7 @@ if __name__ == "__main__":
     plan.own_session_points = 0
 
     # Maak van een random rooster een rooster met eerst de hoorcolleges en geen overlappende vakken.
-    schedule, points, plan.schedule_counter, plan.own_session_points = firstalgorithm.hard_constraints(schedule, plan.courses, plan.schedule_counter)
+    # schedule, points, plan.schedule_counter, plan.own_session_points = firstalgorithm.hard_constraints(schedule, plan.courses, plan.schedule_counter)
 
     # print(Constraint.mutual_courses_check(schedule, plan.courses))
     # print(Constraint.own_sessions_check(schedule, plan.courses))

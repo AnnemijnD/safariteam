@@ -94,7 +94,7 @@ class Course(object):
             session_id += 1
 
         # Als je de sessies wilt mét de 'groepen' erbij, return dan sessions_with_groups
-        return sessions
+        return sessions_with_groups
 
         #  DIT IS EEN TEST OM TE KIJKEN OF JE ZO DINGEN VAN EEN COURSE KAN AANROEPEN
     # def __str__(self):
