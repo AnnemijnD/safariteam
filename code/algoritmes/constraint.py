@@ -145,25 +145,38 @@ class Constraint():
         Rebecca: Kan misschien gecombineerd worden met own_sessions_check, aangezien
         je hier ook gewoon loopt door course in courses. Gewoon own_sessions_check
         iets meer uitbreiden met deze functie zodat er uiteindelijk minder geloopt wordt
+
+        MAXIMUM PUNTEN VOOR MUTUAL COURSES BEREKENEN
+
         """
         courses_schedule = Constraint.all_constraints(schedule, courses)
+        malus_points = 0
 
-        # flatten = np.array(schedule).flatten()
+         # check voor elk slot in het rooster
+        for i in range(DAYS):
+            for j in range(TIME_SLOTS):
+                for k in range(ROOMS):
+                    # check of het slot ook echt gevuld is (dus geen 'None')
+                    if schedule[i][j][k].course_object:
+                        # elk gevuld slot heeft een naam van de course met zijn mutual courses
+                        mutual_courses = schedule[i][j][k].course_object.mutual_courses
+                        # Voor elk ding in mutual_courses, check of het in het tijdslot zit van deze course
+                        # DIT MOET ANDERS, DIT KAN IN MINDER LOOPS!!!!!
+                        # Je kan toch zeggen: if 'name' in [name1, name2, name3 ...]???
+                        for i in range(len(mutual_courses)):
+                            for z in range(len(schedule[i][j])):
+                                if mutual_courses[i] in schedule[i][j][z].name:
+                                    malus_points += 1
+
+        # for course in courses:
+        #     # print(course.name)
+        #     # print(course.mutual_courses)
         #
-        # for i in range(len(flatten)):
-        #     if i % 7 == 0:
-        #         print('new timeslot _______________________')
-        #     print(flatten[i])
-
-        for course in courses:
-            # print(course.name)
-            # print(course.mutual_courses)
-
-            # adds (day, slot) of every session of course to course_sessions
-            checked_course = courses_schedule[course.course_id]
-            course_sessions = []
-            for i in range(len(checked_course["day"])):
-                course_sessions.append((checked_course["day"][i], checked_course["slot"][i]))
+        #     # adds (day, slot) of every session of course to course_sessions
+        #     checked_course = courses_schedule[course.course_id]
+        #     course_sessions = []
+        #     for i in range(len(checked_course["day"])):
+        #         course_sessions.append((checked_course["day"][i], checked_course["slot"][i]))
 
             # # checks for all the mutual courses if they are at the same time
             # for mutual in course.mutual_courses:
@@ -179,7 +192,7 @@ class Constraint():
             #     if len(set(checked_sessions)) < len(checked_sessions):
             #         return False
 
-        return True
+        return True, malus_points
 
     def own_sessions_check(schedule, courses):
         """
@@ -209,6 +222,7 @@ class Constraint():
         """
         Returns the number of maluspoints that are given for the number of
         students that don't fit in the room of the session
+        max aantal malus punten voor deze functie = 1332
         """
         courses_schedule = Constraint.all_constraints(schedule, courses)
         rooms = loaddata.load_rooms()

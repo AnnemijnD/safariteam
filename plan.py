@@ -10,9 +10,7 @@ sys.path.append(os.path.join(directory, "code", "algoritmes"))
 
 from constraint import Constraint
 import loaddata
-from course import Course
 from session import Session
-from schedule import Schedule
 import switch
 import firstalgorithm
 import csv
@@ -56,6 +54,7 @@ class Plan():
             print(session_list)
             session_list = session_list + course.sessions_total
 
+<<<<<<< HEAD
         print(len(session_list))
 
         # # Put every session into schedule
@@ -79,6 +78,27 @@ class Plan():
         #     session = Session(name, type, max_students, session_id, group_id)
 
         for i in range(len(session_list)):
+=======
+        # Put every session into schedule
+        for i in range(SLOTS):
+            try:
+                name = session_list[i].name
+            except IndexError:
+                name = ' '
+            try:
+                type = session_list[i].type
+            except IndexError:
+                type = ' '
+            try:
+                max_students = session_list[i].max_students
+            except IndexError:
+                max_students = 'nvt'
+            group_id = 'nvt'
+            session_id = 'nvt'
+
+            session = Session(name, type, max_students, session_id, group_id)
+
+>>>>>>> 83bc303f17b96682a21c9e836fc04ae87769e6a0
             # Get all the lectures
             if session_list[i].type == "lecture":
                 lecture_sessions.append(session_list[i])
@@ -407,13 +427,18 @@ if __name__ == "__main__":
     plan.own_session_points = 0
 
     # Maak van een random rooster een rooster met eerst de hoorcolleges en geen overlappende vakken.
+<<<<<<< HEAD
     # schedule, points, plan.schedule_counter, plan.own_session_points = firstalgorithm.hard_constraints(schedule, plan.courses, plan.schedule_counter)
+=======
+    schedule, points, plan.schedule_counter, plan.own_session_points = firstalgorithm.hard_constraints(schedule, plan.courses, plan.schedule_counter)
+    # schedule, points, plan.schedule_counter, plan.own_session_points = firstalgorithm.soft_constraint(schedule, plan.courses, plan.schedule_counter)
+>>>>>>> 83bc303f17b96682a21c9e836fc04ae87769e6a0
 
-    # print(Constraint.mutual_courses_check(schedule, plan.courses))
+    # print(Constraint.mutual_courses_check(schedule, plan.courses)[1])
     # print(Constraint.own_sessions_check(schedule, plan.courses))
     # Constraint.all_constraints(schedule, plan.courses)
     # Constraint.session_spread_check(schedule, plan.courses)
-    # Constraint.students_fit(schedule, plan.courses)
+    # print(Constraint.students_fit(schedule, plan.courses))
 
     # Print the end-text
     plan.end()
