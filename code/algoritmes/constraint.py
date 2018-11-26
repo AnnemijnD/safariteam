@@ -167,7 +167,6 @@ class Constraint():
                                 if mutual_courses[i] in schedule[i][j][z].name:
                                     malus_points += 1
 
-
         # for course in courses:
         #     # print(course.name)
         #     # print(course.mutual_courses)
@@ -222,6 +221,7 @@ class Constraint():
         """
         Returns the number of maluspoints that are given for the number of
         students that don't fit in the room of the session
+        max aantal malus punten voor deze functie = 1332
         """
         courses_schedule = Constraint.all_constraints(schedule, courses)
         rooms = loaddata.load_rooms()

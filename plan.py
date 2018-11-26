@@ -346,12 +346,13 @@ if __name__ == "__main__":
 
     # Maak van een random rooster een rooster met eerst de hoorcolleges en geen overlappende vakken.
     schedule, points, plan.schedule_counter, plan.own_session_points = firstalgorithm.hard_constraints(schedule, plan.courses, plan.schedule_counter)
+    # schedule, points, plan.schedule_counter, plan.own_session_points = firstalgorithm.soft_constraint(schedule, plan.courses, plan.schedule_counter)
 
     # print(Constraint.mutual_courses_check(schedule, plan.courses)[1])
     # print(Constraint.own_sessions_check(schedule, plan.courses))
     # Constraint.all_constraints(schedule, plan.courses)
     # Constraint.session_spread_check(schedule, plan.courses)
-    # Constraint.students_fit(schedule, plan.courses)
+    # print(Constraint.students_fit(schedule, plan.courses))
 
     # Print the end-text
     plan.end()
