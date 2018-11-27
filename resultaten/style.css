@@ -1,11 +1,21 @@
+body {
+  padding: 20px;
+  background-color: #1E90FF;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  color: black;
+  font-size: 1.6rem;
+  font-family: 'Lato', sans-serif;
+}
+
 .style {
     font-size: 10pt;
     font-family: Arial;
     border-collapse: collapse;
     border: 1px solid silver;
     width: 90%;
-    margin: 0px auto;
-
+    margin: 10px auto;
+    box-shadow: 10px 10px 5px #808080;
 }
 
 .style td, th {
@@ -26,6 +36,17 @@
 
 .style th{
   background: silver;
+}
+
+.points {
+  font-size: 10pt;
+  font-family: Arial;
+  border-collapse: collapse;
+  border: 1px solid silver;
+  width: 20%;
+  margin: 20px auto;
+  background-color: #90a4db;
+  box-shadow: 10px 10px 5px #808080;
 }
 
 .text {

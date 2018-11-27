@@ -321,13 +321,19 @@ class Plan():
 
         return schedule
 
-    def save_html(self, schedule, rooms):
+    def save_html(self, schedule, rooms, spread_points, capacity_points):
         """
         Print into html to visualize schedule.
         MOET NOG EEN TABEL KOMEN MET HOEVEEL PUNTEN DIT ROOSTER IS EN WAAROP GEBASEERD.
         """
         # Bewaar dit schedule voor andere visualisatie van het rooster
         schedule1 = copy.copy(schedule)
+
+        # Maak een grafiek van alle punten
+        d = pd.Series([spread_points,capacity_points,spread_points+capacity_points])
+        d = pd.DataFrame(d)
+        d.columns = ["Points"]
+        d.index = ["Spread points (out of 400)", "Capacity points (out of ...?)", "Total"]
 
         flatten = np.array(schedule).flatten()
         counter = 0
@@ -339,6 +345,7 @@ class Plan():
         # Zet terug naar een 3D lijst
         schedule = flatten.reshape(DAYS, TIME_SLOTS, ROOMS).tolist()
 
+        # Dit is voor het eerste rooster van de hele week
         df = pd.DataFrame(schedule1)
         pd.set_option('display.max_colwidth', 400)
         df.columns = ['9:00 - 11:00', '11:00 - 13:00', '13:00 - 15:00', '15:00 - 17:00']
@@ -346,6 +353,7 @@ class Plan():
         # Transpose rows and columns
         df = df.T
 
+        # Dit is voor de kleinere roosters
         test = pd.DataFrame(schedule)
         pd.set_option('display.max_colwidth', 400)
         test.columns = ['9:00 - 11:00', '11:00 - 13:00', '13:00 - 15:00', '15:00 - 17:00']
@@ -370,7 +378,7 @@ class Plan():
         <html>
           <head><title>Schedule</title></head>
           <link rel="stylesheet" type="text/css" href="style.css" href="https://www.w3schools.com/w3css/4/w3.css"/>
-          <body bgcolor="#660000">
+          <body class="body bgcolor="#660000">
             <h1 class="h1" align="center"></h>
             {table}
           </body>
@@ -378,8 +386,9 @@ class Plan():
         '''
 
         with open('resultaten/schedule.html', 'w') as f:
+            f.write(html_string.format(table=d.to_html(classes='points')))
             f.write(html_string.format(table=test.to_html(classes='style')))
-            f.write("Monday:")
+            f.write("Monday")
             f.write(html_string.format(table=tags.to_html(classes='style')))
             f.write("Tuesday")
             f.write(html_string.format(table=tuesday.to_html(classes='style')))
@@ -435,8 +444,8 @@ if __name__ == "__main__":
     # print(Constraint.mutual_courses_check(schedule, plan.courses)[1])
     # print(Constraint.own_sessions_check(schedule, plan.courses))
     # Constraint.all_constraints(schedule, plan.courses)
-    # Constraint.session_spread_check(schedule, plan.courses)
-    # print(Constraint.students_fit(schedule, plan.courses))
+    spread_points = Constraint.session_spread_check(schedule, plan.courses)
+    capacity_points = (Constraint.students_fit(schedule, plan.courses))
 
     # Print the end-text
     plan.end()
@@ -447,4 +456,4 @@ if __name__ == "__main__":
         print("No points to plot for now.")
 
     # Make a html file for the schedule
-    plan.save_html(schedule, rooms)
+    plan.save_html(schedule, rooms, spread_points, capacity_points)
