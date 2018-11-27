@@ -7,6 +7,7 @@ DAYS = 5
 ROOMS = 7
 SPREAD_BONUS = 20
 SESSION_LEN = 72
+LECTURECOUNT = 39
 
 
 class Constraint():
@@ -53,7 +54,7 @@ class Constraint():
                 for j in range(TIME_SLOTS):
                     for k in range(ROOMS):
                         # print(schedule[i][j][k] is None)
-                        
+
                         if schedule[i][j][k] is not None:
                             # print("schedule[i][j][k]")
                             if course.name == schedule[i][j][k].name:
@@ -267,7 +268,8 @@ class Constraint():
 
     def hard_constraints(schedule, courses):
         """
-        Een functie die alle hard constraints checkt in een keer.
+        Een functie die alle hard constraints checkt.
+        Return True als het rooster aan alle constraints voldoet.
         """
         # LECTURES CHECK
         lecture_points = 0
@@ -276,9 +278,12 @@ class Constraint():
 
             # checks for the amount of lectures if the lectures are planned first
             for i in range(course.lecture):
-                # als een van de
+                # DE IF KAN OMGEDRAAID WORDEN EN ALLEEN FALSE ERBIJ ZETTEN ALS DE PUNTEN NIET MEER NODIG ZIJN
                 if courses_schedule[course.course_id]["type"][i] != "lecture":
                     lecture_points += 1
+                # IK WEET NIET HELEMAAL OF DIT KLOPT!!!!!!!!!! ?? Best wel heel belangrijk
+                if lecture_points > LECTURECOUNT:
+                    return False
 
         # MUTUAL COURSES CHECK
         mutual_malus = 0
@@ -295,8 +300,11 @@ class Constraint():
                         # Je kan toch zeggen: if 'name' in [name1, name2, name3 ...]???
                         for i in range(len(mutual_courses)):
                             for z in range(len(schedule[i][j])):
+                                # Als de mutual course er in zit, return False
                                 if mutual_courses[i] in schedule[i][j][z].name:
                                     mutual_malus += 1
+                                if mutual_malus > 0:
+                                    return False
 
         # OWN SESSION CHECK
         own_session_points = 0
@@ -311,7 +319,10 @@ class Constraint():
             # return False if there are sessions planned at the same time
             # Als de gefilterde lijst even groot is als de niet-gefilterde lijst,
             # dan is er geen overlappend vak (dus + 1 punt)
+            # Ook hier kan weer de if omgedraaid worden en alleen 'false' (<- even aantekening voor mezelf x R)
             if len(set(course_sessions)) == len(course_sessions):
                 own_session_points += 1
+            else:
+                return False
 
-        return lecture_points, mutual_malus, own_session_points
+        return True

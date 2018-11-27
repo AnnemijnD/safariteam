@@ -84,6 +84,12 @@ def hard_constraints(schedule, courses, schedule_counter):
 def soft_constraint(schedule, courses, schedule_counter):
     pass
 
+
+
+    # Deze verandering mag alleen gemaakt worden als er dan nog aan de hard constraints voldaan wordt.
+    # if Constraint.hard_constraints(schedule, plan.courses) == True:
+
+
 def makeplot(points):
     """
     Plots a graph of all the points on the y-axis and number of schedules
