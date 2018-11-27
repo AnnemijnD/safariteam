@@ -125,7 +125,6 @@ class Constraint():
             # elif course.sessions > 5:
             #     JA WAT DAN
 
-
         return bonuspoints
 
     def lecture_first(schedule, courses):
