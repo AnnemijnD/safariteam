@@ -86,7 +86,6 @@ def soft_constraint(schedule, courses, schedule_counter):
 
     points = []
 
-    # Optimaal is dit 400!
     while Constraint.session_spread_check(schedule, courses) < SPREADPOINTS:
         # Hou de punten bij zodat deze geplot kunnen worden.
         points.append(Constraint.session_spread_check(schedule, courses))

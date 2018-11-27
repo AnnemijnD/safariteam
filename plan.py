@@ -40,7 +40,6 @@ class Plan():
     def initialize_schedule(self, courses):
         """
         Initialize schedule using Session().
-        Willen we eigenlijk in Schedule class zelf hebben
         """
 
         sessions = []
@@ -83,16 +82,12 @@ class Plan():
             elif session_list[i].type == "tutorial" or session_list[i].type == "practical":
                 other_sessions.append(session_list[i])
 
-
         # shuffle de lectures zodat ze random zijn
         # Make copy of sessions and shuffle
         lectures = lecture_sessions[:]
         others = other_sessions[:]
         # random.shuffle(lectures)
         # random.shuffle(other_sessions)
-
-
-        # TODO: lijst maken met eerst grote vakken!!
 
         # Maak lege sessies aan om lege cellen mee op te vullen
         # Dit stukje wordt gebruikt in de nested for loop waarbij aan elke cel
@@ -419,21 +414,19 @@ class Plan():
         print(plan.own_session_points, "sessions were placed in a different timeslot.")
         print("Spread points:", Constraint.session_spread_check(schedule, plan.courses), "out of 440.")
 
-
 if __name__ == "__main__":
 
-    # Load all the courses and sessions
     plan = Plan()
     plan.then = time.time()
     print("Loading...")
     plan.random_numbers = []
     plan.schedule_counter = 0
+
+    # Load all the courses, rooms and sessions
     plan.courses = loaddata.load_courses()
     schedule, lectures, other_sessions, empty_sessions = plan.initialize_schedule(plan.courses)
     rooms = loaddata.load_rooms()
     plan.own_session_points = 0
-
-    # Maak van een random rooster een rooster met eerst de hoorcolleges en geen overlappende vakken.
 
     # Haal met het eerste algoritme een rooster er uit dat aan de hard constraints voldoet
     # schedule, points, plan.schedule_counter, plan.own_session_points = firstalgorithm.hard_constraints(schedule, plan.courses, plan.schedule_counter)
