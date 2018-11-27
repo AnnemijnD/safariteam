@@ -385,7 +385,7 @@ class Plan():
         print("It took:", round(time.time() - plan.then, 3), "seconds, = ", round((time.time() - plan.then) / 60, 3), "minutes.")
         print("Made", plan.schedule_counter, "schedule(s) until the 'right' was found.")
         print(Constraint.lecture_first(schedule, plan.courses)[1], "out of 39 correctly placed lectures.")
-        print(plan.own_session_points, "out of 29 courses were placed in a different timeslot.")
+        print(plan.own_session_points, "sessions were placed in a different timeslot.")
         print("Spread points:", Constraint.session_spread_check(schedule, plan.courses), "out of 400.")
 
 
@@ -403,9 +403,14 @@ if __name__ == "__main__":
     plan.own_session_points = 0
 
     # Maak van een random rooster een rooster met eerst de hoorcolleges en geen overlappende vakken.
-    schedule, points, plan.schedule_counter, plan.own_session_points = firstalgorithm.hard_constraints(schedule, plan.courses, plan.schedule_counter)
+
+    # Haal met het eerste algoritme een rooster er uit dat aan de hard constraints voldoet
+    # schedule, points, plan.schedule_counter, plan.own_session_points = firstalgorithm.hard_constraints(schedule, plan.courses, plan.schedule_counter)
+
+    # Geef dit rooster mee aan de soft constraints
     # schedule, points, plan.schedule_counter, plan.own_session_points = firstalgorithm.soft_constraint(schedule, plan.courses, plan.schedule_counter)
-    
+
+
     # print(Constraint.mutual_courses_check(schedule, plan.courses)[1])
     # print(Constraint.own_sessions_check(schedule, plan.courses))
     # Constraint.all_constraints(schedule, plan.courses)

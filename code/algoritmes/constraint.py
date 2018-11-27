@@ -113,6 +113,8 @@ class Constraint():
                    (courses_schedule[course.course_id]["day"][3] == 4):
                     bonuspoints += SPREAD_BONUS
 
+        # HIER MOET OOK NOG KOMEN TE STAAN ALS ER MEER dan 5 sessies zijn!!!!!!
+
         return bonuspoints
 
     def lecture_first(schedule, courses):
@@ -276,14 +278,12 @@ class Constraint():
         courses_schedule = Constraint.all_constraints(schedule, courses)
         for course in courses:
 
-            # checks for the amount of lectures if the lectures are planned first
+            # checks for the number of lectures if the lectures are planned first
             for i in range(course.lecture):
-                # DE IF KAN OMGEDRAAID WORDEN EN ALLEEN FALSE ERBIJ ZETTEN ALS DE PUNTEN NIET MEER NODIG ZIJN
                 if courses_schedule[course.course_id]["type"][i] != "lecture":
-                    lecture_points += 1
-                # IK WEET NIET HELEMAAL OF DIT KLOPT!!!!!!!!!! ?? Best wel heel belangrijk
-                if lecture_points > LECTURECOUNT:
                     return False
+                else:
+                    lecture_points += 1
 
         # MUTUAL COURSES CHECK
         mutual_malus = 0
