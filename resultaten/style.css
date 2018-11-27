@@ -1,10 +1,10 @@
-/* includes alternating gray and white with on-hover color */
-
 .style {
-    font-size: 9pt;
+    font-size: 10pt;
     font-family: Arial;
     border-collapse: collapse;
     border: 1px solid silver;
+    width: 90%;
+    margin: 0px auto;
 
 }
 
@@ -16,10 +16,24 @@
     background: #E0E0E0;
 }
 
-.style tr:hover {
+.style tr:nth-child(odd) {
     background: silver;
 }
 
+.style tr:hover {
+    background: #808080;
+}
+
 .style th{
-  background: silver
+  background: silver;
+}
+
+.text {
+  font-size: 10pt;
+  font-family: Arial;
+}
+
+.h1 {
+  font-size: 14pt;
+  font-family: Arial;
 }

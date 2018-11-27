@@ -15,6 +15,7 @@ import switch
 import firstalgorithm
 import csv
 import random
+import copy
 import time
 import pandas as pd
 from IPython.display import HTML
@@ -323,14 +324,34 @@ class Plan():
     def save_html(self, schedule, rooms):
         """
         Print into html to visualize schedule.
+        MOET NOG EEN TABEL KOMEN MET HOEVEEL PUNTEN DIT ROOSTER IS EN WAAROP GEBASEERD.
         """
+        # Bewaar dit schedule voor andere visualisatie van het rooster
+        schedule1 = copy.copy(schedule)
 
-        df = pd.DataFrame(schedule)
-        pd.set_option('display.max_colwidth', 350)
+        flatten = np.array(schedule).flatten()
+        counter = 0
+        for i in range(len(flatten)):
+            if flatten[i].name is not ' ':
+                flatten[i] = str(flatten[i]) + " : " + str(rooms[counter])
+            counter += 1
+            counter = counter % 7
+        # Zet terug naar een 3D lijst
+        schedule = flatten.reshape(DAYS, TIME_SLOTS, ROOMS).tolist()
+
+        df = pd.DataFrame(schedule1)
+        pd.set_option('display.max_colwidth', 400)
         df.columns = ['9:00 - 11:00', '11:00 - 13:00', '13:00 - 15:00', '15:00 - 17:00']
         df.index = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"]
         # Transpose rows and columns
         df = df.T
+
+        test = pd.DataFrame(schedule)
+        pd.set_option('display.max_colwidth', 400)
+        test.columns = ['9:00 - 11:00', '11:00 - 13:00', '13:00 - 15:00', '15:00 - 17:00']
+        test.index = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"]
+        # Transpose rows and columns
+        test = test.T
 
         # Stel de column namen vast
         i = 0
@@ -349,14 +370,15 @@ class Plan():
         <html>
           <head><title>Schedule</title></head>
           <link rel="stylesheet" type="text/css" href="style.css" href="https://www.w3schools.com/w3css/4/w3.css"/>
-          <body>
+          <body bgcolor="#660000">
+            <h1 class="h1" align="center"></h>
             {table}
           </body>
         </html>.
         '''
 
         with open('resultaten/schedule.html', 'w') as f:
-            f.write(html_string.format(table=df.to_html(classes='style')))
+            f.write(html_string.format(table=test.to_html(classes='style')))
             f.write("Monday:")
             f.write(html_string.format(table=tags.to_html(classes='style')))
             f.write("Tuesday")
@@ -374,7 +396,7 @@ class Plan():
         on the x-axis.
         """
         plt.plot(points)
-        plt.ylabel("Points (max = 68)")
+        plt.ylabel("Points")
         plt.show()
 
     def end(self):
@@ -409,7 +431,6 @@ if __name__ == "__main__":
 
     # Geef dit rooster mee aan de soft constraints
     # schedule, points, plan.schedule_counter, plan.own_session_points = firstalgorithm.soft_constraint(schedule, plan.courses, plan.schedule_counter)
-
 
     # print(Constraint.mutual_courses_check(schedule, plan.courses)[1])
     # print(Constraint.own_sessions_check(schedule, plan.courses))
