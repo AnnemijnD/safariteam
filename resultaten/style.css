@@ -9,33 +9,33 @@ body {
 }
 
 .style {
-    font-size: 10pt;
-    font-family: Arial;
-    border-collapse: collapse;
-    border: 1px solid silver;
-    width: 90%;
-    margin: 10px auto;
-    box-shadow: 10px 10px 5px #808080;
+  font-size: 10pt;
+  font-family: Arial;
+  border-collapse: collapse;
+  border: 1px solid silver;
+  width: 90%;
+  margin: 10px auto;
+  box-shadow: 18px 12px 5px #808080;
 }
 
 .style td, th {
-    padding: 5px;
+  padding: 5px;
 }
 
 .style tr:nth-child(even) {
-    background: #E0E0E0;
+  background: #E0E0E0;
 }
 
 .style tr:nth-child(odd) {
-    background: silver;
+  background: silver;
 }
 
 .style tr:hover {
-    background: #808080;
+  background: #808080;
 }
 
 .style th{
-  background: silver;
+  background: #A9B9A9;
 }
 
 .points {

@@ -14,7 +14,7 @@ SESSION_LEN = 72
 LIMIT = 700
 COURSECOUNT = 29
 LECTURECOUNT = 39
-SPREADPOINTS = 400
+SPREADPOINTS = 440
 
 
 def hard_constraints(schedule, courses, schedule_counter):
@@ -87,7 +87,7 @@ def soft_constraint(schedule, courses, schedule_counter):
     points = []
 
     # Optimaal is dit 400!
-    while Constraint.session_spread_check(schedule, courses) < 400:
+    while Constraint.session_spread_check(schedule, courses) < SPREADPOINTS:
         # Hou de punten bij zodat deze geplot kunnen worden.
         points.append(Constraint.session_spread_check(schedule, courses))
         # Hou een teller bij van het aantal roosters die gemaakt zijn

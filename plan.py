@@ -333,7 +333,7 @@ class Plan():
         d = pd.Series([spread_points,capacity_points,spread_points+capacity_points])
         d = pd.DataFrame(d)
         d.columns = ["Points"]
-        d.index = ["Spread points (out of 400)", "Capacity points (out of ...?)", "Total"]
+        d.index = ["Spread points (out of 440)", "Capacity points (out of ...?)", "Total"]
 
         flatten = np.array(schedule).flatten()
         counter = 0
@@ -417,7 +417,7 @@ class Plan():
         print("Made", plan.schedule_counter, "schedule(s) until the 'right' was found.")
         print(Constraint.lecture_first(schedule, plan.courses)[1], "out of 39 correctly placed lectures.")
         print(plan.own_session_points, "sessions were placed in a different timeslot.")
-        print("Spread points:", Constraint.session_spread_check(schedule, plan.courses), "out of 400.")
+        print("Spread points:", Constraint.session_spread_check(schedule, plan.courses), "out of 440.")
 
 
 if __name__ == "__main__":

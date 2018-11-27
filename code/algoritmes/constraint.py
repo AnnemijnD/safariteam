@@ -113,7 +113,18 @@ class Constraint():
                    (courses_schedule[course.course_id]["day"][3] == 4):
                     bonuspoints += SPREAD_BONUS
 
-        # HIER MOET OOK NOG KOMEN TE STAAN ALS ER MEER dan 5 sessies zijn!!!!!!
+            elif course.sessions == 5:
+                # checks if the courses are spread out on the whole week (every day)
+                if (courses_schedule[course.course_id]["day"][0] == 0) and \
+                   (courses_schedule[course.course_id]["day"][1] == 1) and \
+                   (courses_schedule[course.course_id]["day"][2] == 2) and \
+                   (courses_schedule[course.course_id]["day"][3] == 3) and \
+                   (courses_schedule[course.course_id]["day"][4] == 4):
+                    bonuspoints += SPREAD_BONUS
+
+            # elif course.sessions > 5:
+            #     JA WAT DAN
+
 
         return bonuspoints
 
