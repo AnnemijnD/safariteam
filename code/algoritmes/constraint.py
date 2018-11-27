@@ -263,3 +263,54 @@ class Constraint():
                 for k in range(ROOMS):
                     all_days.append(schedule[i][j][k].name)
         return all_days[TIME_SLOTS * ROOMS * day:TIME_SLOTS * ROOMS * (day + 1)]
+
+    def hard_constraints(schedule, courses):
+        """
+        Een functie die alle hard constraints checkt in een keer.
+        """
+        # LECTURES CHECK
+        lecture_points = 0
+        courses_schedule = Constraint.all_constraints(schedule, courses)
+        for course in courses:
+
+            # checks for the amount of lectures if the lectures are planned first
+            for i in range(course.lecture):
+                # als een van de
+                if courses_schedule[course.course_id]["type"][i] != "lecture":
+                    lecture_points += 1
+
+        # MUTUAL COURSES CHECK
+        mutual_malus = 0
+         # check voor elk slot in het rooster
+        for i in range(DAYS):
+            for j in range(TIME_SLOTS):
+                for k in range(ROOMS):
+                    # check of het slot ook echt gevuld is (dus geen 'None')
+                    if schedule[i][j][k].course_object:
+                        # elk gevuld slot heeft een naam van de course met zijn mutual courses
+                        mutual_courses = schedule[i][j][k].course_object.mutual_courses
+                        # Voor elk ding in mutual_courses, check of het in het tijdslot zit van deze course
+                        # DIT MOET ANDERS, DIT KAN IN MINDER LOOPS!!!!!
+                        # Je kan toch zeggen: if 'name' in [name1, name2, name3 ...]???
+                        for i in range(len(mutual_courses)):
+                            for z in range(len(schedule[i][j])):
+                                if mutual_courses[i] in schedule[i][j][z].name:
+                                    mutual_malus += 1
+
+        # OWN SESSION CHECK
+        own_session_points = 0
+
+        for course in courses:
+            checked_course = courses_schedule[course.course_id]
+
+            # adds (day, slot) of every session to course_sessions
+            course_sessions = []
+            for i in range(len(checked_course["day"])):
+                course_sessions.append((checked_course["day"][i], checked_course["slot"][i]))
+            # return False if there are sessions planned at the same time
+            # Als de gefilterde lijst even groot is als de niet-gefilterde lijst,
+            # dan is er geen overlappend vak (dus + 1 punt)
+            if len(set(course_sessions)) == len(course_sessions):
+                own_session_points += 1
+
+        return lecture_points, mutual_malus, own_session_points

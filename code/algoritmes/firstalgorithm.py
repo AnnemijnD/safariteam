@@ -13,6 +13,7 @@ import matplotlib.pyplot as plt
 SESSION_LEN = 72
 LIMIT = 700
 COURSECOUNT = 29
+LECTURECOUNT = 39
 SPREADPOINTS = 400
 
 
@@ -30,6 +31,7 @@ def hard_constraints(schedule, courses, schedule_counter):
     while Constraint.lecture_first(schedule, courses)[0] is False or \
             Constraint.own_sessions_check(schedule, courses)[1] < COURSECOUNT or \
             Constraint.mutual_courses_check(schedule, courses)[1] > 0:
+
         points.append(Constraint.lecture_first(schedule, courses)[1] + \
                       Constraint.own_sessions_check(schedule, courses)[1] - \
                       Constraint.mutual_courses_check(schedule, courses)[1])
@@ -37,7 +39,7 @@ def hard_constraints(schedule, courses, schedule_counter):
         # Bewaar het eerste rooster
         schedule1 = schedule
         lecture_points1 = Constraint.lecture_first(schedule1, courses)[1]
-        own_session_points1 = + Constraint.own_sessions_check(schedule1, courses)[1]
+        own_session_points1 = Constraint.own_sessions_check(schedule1, courses)[1]
         mutual_points1 = Constraint.mutual_courses_check(schedule1, courses)[1]
         # Maak een nieuw roosters
         # 5 dingen per keer switchen gaat iets sneller dan 1 per keer
@@ -79,87 +81,8 @@ def hard_constraints(schedule, courses, schedule_counter):
 
     return schedule, points, schedule_counter, Constraint.own_sessions_check(schedule, courses)[1]
 
-
-
 def soft_constraint(schedule, courses, schedule_counter):
-    """
-    add soft constraints....
-    """
-    points = []
-
-    # Zolang er zijn voldaan aan alle hard constraints:
-    while hard_constraints(schedule, courses, schedule_counter)[0] is not schedule:
-
-        while Constraint.students_fit(schedule, courses) > 800:
-            points.append(Constraint.students_fit(schedule, courses))
-            schedule_counter += 1
-            # Bewaar het eerste rooster
-            schedule1 = schedule
-            lecture_points1 = Constraint.students_fit(schedule, courses)
-            # Maak een nieuw roosters
-            # 5 dingen per keer switchen gaat iets sneller dan 1 per keer
-            schedule2 = switch.switch_session(schedule, 6)
-            # Bereken de punten van het nieuwe rooster
-            lecture_points2 = Constraint.students_fit(schedule, courses)
-            # Als deze hetzelfde aantal of meer punten heeft, accepteer dit rooster dan.
-            if lecture_points2 <= lecture_points1:
-                # Accepteer dit rooster
-                schedule = schedule2
-            # Als deze minder punten heeft, ga dan terug naar het vorige rooster
-            else:
-                schedule = schedule1
-            if schedule_counter % 10 == 0:
-                makeplot(points)
-
-
-    return schedule, points, schedule_counter, Constraint.own_sessions_check(schedule, courses)[1]
-
-
-# def soft_constraint(schedule, courses, schedule_counter):
-#     """
-#     DOET HET NOG NIET!!!!!! Ik weet niet hoe de onderscheid tussen hard en soft
-#     constraints gemaakt moet worden!!!
-#     """
-#
-#     points = []
-#
-#     # Begin met een rooster
-#     save_schedule = schedule
-#     # Ga door totdat alle hoorcolleges voor de andere sessies zijn ingeroosterd,
-#     # Dus totdat de lecture_first functie True is.
-#     # Om de code te met dit algoritme helemaal te runnen dan zet je hier
-#     # de bovenste regel weer 'aan'! (even ont-commenten)
-#
-#     while Constraint.lecture_first(schedule, courses)[0] is False or \
-#             Constraint.own_sessions_check(schedule, courses)[1] < COURSECOUNT or \
-#             Constraint.session_spread_check(schedule, courses) < 200:
-#         points.append(Constraint.lecture_first(schedule, courses)[1] + \
-#                       Constraint.own_sessions_check(schedule, courses)[1] + \
-#                       Constraint.session_spread_check(schedule, courses)/20)
-#         schedule_counter += 1
-#         # Bewaar het eerste rooster
-#         schedule1 = schedule
-#         lecture_points1 = Constraint.lecture_first(schedule1, courses)[1]
-#         own_session_points1 = + Constraint.own_sessions_check(schedule1, courses)[1]
-#         spread_points1 = Constraint.session_spread_check(schedule1, courses)
-#         # Maak een nieuw roosters
-#         # 5 dingen per keer switchen gaat iets sneller dan 1 per keer
-#         schedule2 = switch.switch_session(schedule, 6)
-#         # Bereken de punten van het nieuwe rooster
-#         lecture_points2 = Constraint.lecture_first(schedule2, courses)[1]
-#         own_session_points2 = + Constraint.own_sessions_check(schedule2, courses)[1]
-#         spread_points2 = Constraint.session_spread_check(schedule2, courses)
-#         # Als deze hetzelfde aantal of meer punten heeft, accepteer dit rooster dan.
-#         if lecture_points2 >= lecture_points1 and own_session_points2 >= own_session_points1 and \
-#                 spread_points2 >= spread_points1:
-#             # Accepteer dit rooster
-#             schedule = schedule2
-#         # Als deze minder punten heeft, ga dan terug naar het vorige rooster
-#         else:
-#             schedule = schedule1
-#
-#         if schedule_counter % LIMIT == 0:
-#             makeplot(points)
+    pass
 
 def makeplot(points):
     """
