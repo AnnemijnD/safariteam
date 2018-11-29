@@ -431,7 +431,9 @@ if __name__ == "__main__":
     rooms = loaddata.load_rooms()
     plan.own_session_points = 0
     spread_points = 0
+    lecture_points = 0
     capacity_points = 0
+    mutual_course_malus = 0
 
     # Haal met het eerste algoritme een rooster er uit dat aan de hard constraints voldoet
     schedule, points, plan.schedule_counter, plan.own_session_points = firstalgorithm.hard_constraints(schedule, plan.courses, plan.schedule_counter)
@@ -439,14 +441,18 @@ if __name__ == "__main__":
     # Geef dit rooster mee aan de soft constraints
     # schedule, points, plan.schedule_counter, plan.own_session_points = firstalgorithm.soft_constraint(schedule, plan.courses, plan.schedule_counter)
 
+<<<<<<< HEAD
     Constraint.mutual_courses_check(schedule, plan.courses)
     mutual_course_malus = Constraint.mutual_courses_check(schedule, plan.courses)[1]
     print(mutual_course_malus)
+=======
+    # mutual_course_malus = Constraint.mutual_courses_check(schedule, plan.courses)[1]
+>>>>>>> 468060469c12ba4ba6c9a855f95ee16ca7f6da99
     # print(Constraint.own_sessions_check(schedule, plan.courses))
     # Constraint.all_constraints(schedule, plan.courses)
     spread_points = Constraint.session_spread_check(schedule, plan.courses)
-    capacity_points = (Constraint.students_fit(schedule, plan.courses))
-    lecture_points = Constraint.lecture_first(schedule, plan.courses)[1]
+    # capacity_points = (Constraint.students_fit(schedule, plan.courses))
+    # lecture_points = Constraint.lecture_first(schedule, plan.courses)[1]
 
     # Print the end-text
     plan.end()

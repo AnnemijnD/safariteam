@@ -7,7 +7,6 @@ DAYS = 5
 ROOMS = 7
 SPREAD_BONUS = 20
 SESSION_LEN = 72
-LECTURECOUNT = 39
 
 
 class Constraint():
@@ -54,9 +53,9 @@ class Constraint():
                 for j in range(TIME_SLOTS):
                     for k in range(ROOMS):
                         # print(schedule[i][j][k] is None)
-
+                        # print(schedule[i][j][k])
                         if schedule[i][j][k] is not None:
-                            # print("schedule[i][j][k]")
+                            # print("??????")
                             if course.name == schedule[i][j][k].name:
                                 course_schedule["day"].append(i)
                                 course_schedule["slot"].append(j)
@@ -76,58 +75,89 @@ class Constraint():
         either monday and thursday or tuesday and friday. See the rest of the
         constrains in the comments bellow.
 
-        -----
-        TODO:
-        - nu kijkjen we nog niet voor werkgroepen maar als we dat wel gaan doen
-        mag het maar 20/(aantal werkgroepen) punten krijgen (en dan nog iets
-        handigs bedenken met dat we hele getallen hebben)
-        Dat bedenken mag jij lekker doen Sanne jij BENT WISKUNDE. xoxoxox
+        A course can maximally get 20 points, this amount is spreaded over the
+        number of groups a course has.
+
+        Maxium amount of bonuspoints is 440
         """
         courses_schedule = Constraint.all_constraints(schedule, courses)
         bonuspoints = 0
 
         for course in courses:
-            if course.sessions == 2:
-                # print(courses_schedule[course.course_id]["day"][0])
-                # checks if the courses are on monday and thursday
-                if (courses_schedule[course.course_id]["day"][0] == 0) and \
-                   (courses_schedule[course.course_id]["day"][1] == 3):
-                    bonuspoints += SPREAD_BONUS
+            id = course.course_id
 
-                # checks if the courses are on tuesday an friday
-                elif (courses_schedule[course.course_id]["day"][0] == 1) and \
-                     (courses_schedule[course.course_id]["day"][1] == 4):
-                    bonuspoints += SPREAD_BONUS
+            lectures = []
+            sessions = []
+
+            # gets indices of lectures in courses_schedule
+            for i in range(len(courses_schedule[id]["type"])):
+                if courses_schedule[id]["type"][i] == "lecture":
+                    lectures.append(i)
+
+            # checks if a course has groups
+            groups = max(courses_schedule[id]["group_id"])
+            if groups > 0:
+
+                # saves indices of groups in courses_schedule together with lectures
+                for i in range(groups):
+                    same_group = [j for j, e in enumerate(courses_schedule[id]["group_id"]) if e == i + 1]
+                    sessions.append(lectures + same_group)
+            else:
+                sessions = [lectures]
+
+            # calculates the spread_bonus per group
+            spread_bonus = SPREAD_BONUS / len(sessions)
+
+            if course.sessions == 2:
+
+                #  loops over the amount of groups
+                for i in range(len(sessions)):
+
+                    # checks if the courses are on monday and thursday
+                    if (courses_schedule[id]["day"][sessions[i][0]] == 0) and \
+                       (courses_schedule[id]["day"][sessions[i][1]] == 3):
+                        bonuspoints += spread_bonus
+
+                    # checks if the courses are on tuesday an friday
+                    elif (courses_schedule[id]["day"][sessions[i][0]] == 1) and \
+                         (courses_schedule[id]["day"][sessions[i][1]] == 4):
+                        bonuspoints += spread_bonus
 
             elif course.sessions == 3:
 
-                # checks if the courses are on monday, wednesday and friday
-                if (courses_schedule[course.course_id]["day"][0] == 0) and \
-                   (courses_schedule[course.course_id]["day"][1] == 2) and \
-                   (courses_schedule[course.course_id]["day"][2] == 4):
-                    bonuspoints += SPREAD_BONUS
+                for i in range(len(sessions)):
+
+                    # checks if the courses are on monday, wednesday and friday
+                    if (courses_schedule[id]["day"][sessions[i][0]] == 0) and \
+                       (courses_schedule[id]["day"][sessions[i][1]] == 2) and \
+                       (courses_schedule[id]["day"][sessions[i][2]] == 4):
+                        bonuspoints += spread_bonus
 
             elif course.sessions == 4:
 
-                # checks if the courses are on monday, tuesday, thursday and friday
-                if (courses_schedule[course.course_id]["day"][0] == 0) and \
-                   (courses_schedule[course.course_id]["day"][1] == 1) and \
-                   (courses_schedule[course.course_id]["day"][2] == 3) and \
-                   (courses_schedule[course.course_id]["day"][3] == 4):
-                    bonuspoints += SPREAD_BONUS
+                for i in range(len(sessions)):
+
+                    # checks if the courses are on monday, tuesday, thursday and friday
+                    if (courses_schedule[id]["day"][sessions[i][0]] == 0) and \
+                       (courses_schedule[id]["day"][sessions[i][1]] == 1) and \
+                       (courses_schedule[id]["day"][sessions[i][2]] == 3) and \
+                       (courses_schedule[id]["day"][sessions[i][3]] == 4):
+                        bonuspoints += spread_bonus
 
             elif course.sessions == 5:
-                # checks if the courses are spread out on the whole week (every day)
-                if (courses_schedule[course.course_id]["day"][0] == 0) and \
-                   (courses_schedule[course.course_id]["day"][1] == 1) and \
-                   (courses_schedule[course.course_id]["day"][2] == 2) and \
-                   (courses_schedule[course.course_id]["day"][3] == 3) and \
-                   (courses_schedule[course.course_id]["day"][4] == 4):
-                    bonuspoints += SPREAD_BONUS
 
-            # elif course.sessions > 5:
-            #     JA WAT DAN
+                for i in range(len(sessions)):
 
+                    # checks if the courses are spread out on the whole week (every day)
+                    if (courses_schedule[id]["day"][sessions[i][0]] == 0) and \
+                       (courses_schedule[id]["day"][sessions[i][1]] == 1) and \
+                       (courses_schedule[id]["day"][sessions[i][2]] == 2) and \
+                       (courses_schedule[id]["day"][sessions[i][3]] == 3) and \
+                       (courses_schedule[id]["day"][sessions[i][4]] == 4):
+                        bonuspoints += spread_bonus
+
+        bonuspoints = round(bonuspoints)
+        print(bonuspoints)
         return bonuspoints
 
     def lecture_first(schedule, courses):
@@ -140,7 +170,6 @@ class Constraint():
         for course in courses:
 
             # checks for the amount of lectures if the lectures are planned first
-
             for i in range(course.lecture):
                 if courses_schedule[course.course_id]["type"][i] != "lecture":
                     return [False, lecture_points]
@@ -302,62 +331,3 @@ class Constraint():
                 for k in range(ROOMS):
                     all_days.append(schedule[i][j][k].name)
         return all_days[TIME_SLOTS * ROOMS * day:TIME_SLOTS * ROOMS * (day + 1)]
-
-    def hard_constraints(schedule, courses):
-        """
-        Een functie die alle hard constraints checkt.
-        Return True als het rooster aan alle constraints voldoet.
-        """
-        # LECTURES CHECK
-        lecture_points = 0
-        courses_schedule = Constraint.all_constraints(schedule, courses)
-        for course in courses:
-
-            # checks for the number of lectures if the lectures are planned first
-            for i in range(course.lecture):
-                if courses_schedule[course.course_id]["type"][i] != "lecture":
-                    return False
-                else:
-                    lecture_points += 1
-
-        # MUTUAL COURSES CHECK
-        mutual_malus = 0
-         # check voor elk slot in het rooster
-        for i in range(DAYS):
-            for j in range(TIME_SLOTS):
-                for k in range(ROOMS):
-                    # check of het slot ook echt gevuld is (dus geen 'None')
-                    if schedule[i][j][k].course_object:
-                        # elk gevuld slot heeft een naam van de course met zijn mutual courses
-                        mutual_courses = schedule[i][j][k].course_object.mutual_courses
-                        # Voor elk ding in mutual_courses, check of het in het tijdslot zit van deze course
-                        # DIT MOET ANDERS, DIT KAN IN MINDER LOOPS!!!!!
-                        # Je kan toch zeggen: if 'name' in [name1, name2, name3 ...]???
-                        for i in range(len(mutual_courses)):
-                            for z in range(len(schedule[i][j])):
-                                # Als de mutual course er in zit, return False
-                                if mutual_courses[i] in schedule[i][j][z].name:
-                                    mutual_malus += 1
-                                if mutual_malus > 0:
-                                    return False
-
-        # OWN SESSION CHECK
-        own_session_points = 0
-
-        for course in courses:
-            checked_course = courses_schedule[course.course_id]
-
-            # adds (day, slot) of every session to course_sessions
-            course_sessions = []
-            for i in range(len(checked_course["day"])):
-                course_sessions.append((checked_course["day"][i], checked_course["slot"][i]))
-            # return False if there are sessions planned at the same time
-            # Als de gefilterde lijst even groot is als de niet-gefilterde lijst,
-            # dan is er geen overlappend vak (dus + 1 punt)
-            # Ook hier kan weer de if omgedraaid worden en alleen 'false' (<- even aantekening voor mezelf x R)
-            if len(set(course_sessions)) == len(course_sessions):
-                own_session_points += 1
-            else:
-                return False
-
-        return True
