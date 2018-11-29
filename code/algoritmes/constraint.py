@@ -75,46 +75,89 @@ class Constraint():
         either monday and thursday or tuesday and friday. See the rest of the
         constrains in the comments bellow.
 
-        -----
-        TODO:
-        - nu kijkjen we nog niet voor werkgroepen maar als we dat wel gaan doen
-        mag het maar 20/(aantal werkgroepen) punten krijgen (en dan nog iets
-        handigs bedenken met dat we hele getallen hebben)
-        Dat bedenken mag jij lekker doen Sanne jij BENT WISKUNDE. xoxoxox
+        A course can maximally get 20 points, this amount is spreaded over the
+        number of groups a course has.
+
+        Maxium amount of bonuspoints is 440
         """
         courses_schedule = Constraint.all_constraints(schedule, courses)
         bonuspoints = 0
 
         for course in courses:
-            if course.sessions == 2:
-                # print(courses_schedule[course.course_id]["day"][0])
-                # checks if the courses are on monday and thursday
-                if (courses_schedule[course.course_id]["day"][0] == 0) and \
-                   (courses_schedule[course.course_id]["day"][1] == 3):
-                    bonuspoints += SPREAD_BONUS
+            id = course.course_id
 
-                # checks if the courses are on tuesday an friday
-                elif (courses_schedule[course.course_id]["day"][0] == 1) and \
-                     (courses_schedule[course.course_id]["day"][1] == 4):
-                    bonuspoints += SPREAD_BONUS
+            lectures = []
+            sessions = []
+
+            # gets indices of lectures in courses_schedule
+            for i in range(len(courses_schedule[id]["type"])):
+                if courses_schedule[id]["type"][i] == "lecture":
+                    lectures.append(i)
+
+            # checks if a course has groups
+            groups = max(courses_schedule[id]["group_id"])
+            if groups > 0:
+
+                # saves indices of groups in courses_schedule together with lectures
+                for i in range(groups):
+                    same_group = [j for j, e in enumerate(courses_schedule[id]["group_id"]) if e == i + 1]
+                    sessions.append(lectures + same_group)
+            else:
+                sessions = [lectures]
+
+            # calculates the spread_bonus per group
+            spread_bonus = SPREAD_BONUS / len(sessions)
+
+            if course.sessions == 2:
+
+                #  loops over the amount of groups
+                for i in range(len(sessions)):
+
+                    # checks if the courses are on monday and thursday
+                    if (courses_schedule[id]["day"][sessions[i][0]] == 0) and \
+                       (courses_schedule[id]["day"][sessions[i][1]] == 3):
+                        bonuspoints += spread_bonus
+
+                    # checks if the courses are on tuesday an friday
+                    elif (courses_schedule[id]["day"][sessions[i][0]] == 1) and \
+                         (courses_schedule[id]["day"][sessions[i][1]] == 4):
+                        bonuspoints += spread_bonus
 
             elif course.sessions == 3:
 
-                # checks if the courses are on monday, wednesday and friday
-                if (courses_schedule[course.course_id]["day"][0] == 0) and \
-                   (courses_schedule[course.course_id]["day"][1] == 2) and \
-                   (courses_schedule[course.course_id]["day"][2] == 4):
-                    bonuspoints += SPREAD_BONUS
+                for i in range(len(sessions)):
+
+                    # checks if the courses are on monday, wednesday and friday
+                    if (courses_schedule[id]["day"][sessions[i][0]] == 0) and \
+                       (courses_schedule[id]["day"][sessions[i][1]] == 2) and \
+                       (courses_schedule[id]["day"][sessions[i][2]] == 4):
+                        bonuspoints += spread_bonus
 
             elif course.sessions == 4:
 
-                # checks if the courses are on monday, tuesday, thursday and friday
-                if (courses_schedule[course.course_id]["day"][0] == 0) and \
-                   (courses_schedule[course.course_id]["day"][1] == 1) and \
-                   (courses_schedule[course.course_id]["day"][2] == 3) and \
-                   (courses_schedule[course.course_id]["day"][3] == 4):
-                    bonuspoints += SPREAD_BONUS
+                for i in range(len(sessions)):
 
+                    # checks if the courses are on monday, tuesday, thursday and friday
+                    if (courses_schedule[id]["day"][sessions[i][0]] == 0) and \
+                       (courses_schedule[id]["day"][sessions[i][1]] == 1) and \
+                       (courses_schedule[id]["day"][sessions[i][2]] == 3) and \
+                       (courses_schedule[id]["day"][sessions[i][3]] == 4):
+                        bonuspoints += spread_bonus
+
+            elif course.sessions == 5:
+
+                for i in range(len(sessions)):
+                
+                    # checks if the courses are spread out on the whole week (every day)
+                    if (courses_schedule[id]["day"][sessions[i][0]] == 0) and \
+                       (courses_schedule[id]["day"][sessions[i][1]] == 1) and \
+                       (courses_schedule[id]["day"][sessions[i][2]] == 2) and \
+                       (courses_schedule[id]["day"][sessions[i][3]] == 3) and \
+                       (courses_schedule[id]["day"][sessions[i][4]] == 4):
+                        bonuspoints += spread_bonus
+
+        bonuspoints = round(bonuspoints)
+        print(bonuspoints)
         return bonuspoints
 
     def lecture_first(schedule, courses):
@@ -219,7 +262,6 @@ class Constraint():
             # dan is er geen overlappend vak (dus + 1 punt)
             if len(set(course_sessions)) == len(course_sessions):
                 own_session_points += 1
-            print(course.name)
             # print(checked_course["session_id"], checked_course["group_id"])
             # Maak een uitzondering op de groepen.
             # alle group_id's met dezelfde session_id mogen wél bij elkaar.
@@ -229,10 +271,6 @@ class Constraint():
             # Maar: Bioinformatica heeft ook practica (die dezelfde group_id's kunnen
             # hebben als die van de werkgroepen. Deze hebben een andere session_id,
             # Dus mogen niet bij elkaar.
-            # alle group_ids met een andere session_id mogen dus niet bij elkaar.
-            for i in range(len(checked_course["group_id"])): # of in range (session_id), maakt niet uit, zijn even lang.
-                if checked_course["group_id"][i] > 0:
-                    print("dit is een groep met group_id: ", checked_course["group_id"][i], "en session id: ", checked_course["session_id"][i])
 
 
         return True, own_session_points
