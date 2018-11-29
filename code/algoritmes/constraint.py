@@ -258,6 +258,7 @@ class Constraint():
             # return False if there are sessions planned at the same time
             # Als de gefilterde lijst even groot is als de niet-gefilterde lijst,
             # dan is er geen overlappend vak (dus + 1 punt)
+            # Dit kunnen er maximaal 29 zijn, want er zijn 29 vakken. 
             if len(set(course_sessions)) == len(course_sessions):
                 own_session_points += 1
             # Als er wel een overlappend vak is, check dan of dit een groep is.
@@ -323,7 +324,7 @@ class Constraint():
         Een functie die alle hard constraints checkt.
         Return True als het rooster aan alle constraints voldoet.
 
-        KLOPT DUS NIET MEER WANT die check voor mutual courses is aangepast naar groepen. 
+        KLOPT DUS NIET MEER WANT die check voor mutual courses is aangepast naar groepen.
         """
         # LECTURES CHECK
         lecture_points = 0

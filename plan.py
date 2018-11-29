@@ -414,7 +414,7 @@ class Plan():
         print("It took:", round(time.time() - plan.then, 3), "seconds, = ", round((time.time() - plan.then) / 60, 3), "minutes.")
         print("Made", plan.schedule_counter, "schedule(s) until the 'right' was found.")
         print(Constraint.lecture_first(schedule, plan.courses)[1], "out of 39 correctly placed lectures.")
-        print(plan.own_session_points, "sessions were placed in the same timeslot.")
+        print(plan.own_session_points, "points for not placing own sessions in the same timeslot.")
         print("Spread bonus points:", Constraint.session_spread_check(schedule, plan.courses), "out of 440.")
 
 if __name__ == "__main__":
@@ -440,7 +440,7 @@ if __name__ == "__main__":
     # Geef dit rooster mee aan de soft constraints
     # schedule, points, plan.schedule_counter, plan.own_session_points = hillclimber.soft(schedule, plan.courses, plan.schedule_counter)
 
-    Constraint.mutual_courses_check(schedule, plan.courses)
+    print(Constraint.own_sessions_check(schedule, plan.courses)[1])
     mutual_course_malus = Constraint.mutual_courses_check(schedule, plan.courses)[1]
     # print(Constraint.own_sessions_check(schedule, plan.courses))
     # Constraint.all_constraints(schedule, plan.courses)

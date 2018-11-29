@@ -35,4 +35,4 @@ class Session(object):
         if self.max_students == " ":
             return f'{self.name} {self.type}'
         else:
-            return f'{self.name} {self.type}, group: {self.group_id}, ({self.max_students} students)'
+            return f'{self.name} {self.type}, group: {(chr(self.group_id + 65))}, ({self.max_students} students)'

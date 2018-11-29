@@ -11,7 +11,8 @@ matplotlib.use('TkAgg')
 import matplotlib.pyplot as plt
 
 SESSION_LEN = 72
-LIMIT = 900
+LIMIT = 3000
+OPTIMUM = 10000
 COURSECOUNT = 29
 MUTUALCOURSES = 33
 LECTURECOUNT = 39
@@ -128,27 +129,23 @@ def soft_constraint(schedule, courses, schedule_counter):
 
 def soft(schedule, courses, schedule_counter):
 
-
     switcher = 3
     points = []
 
-    # Begin met een rooster
-    save_schedule = schedule
-
     while Constraint.lecture_first(schedule, courses)[0] is False or \
             Constraint.own_sessions_check(schedule, courses)[1] < COURSECOUNT or \
-            Constraint.mutual_courses_check(schedule, courses)[1] > 0 or \
-            Constraint.session_spread_check(schedule, courses) < 200 or \
-            Constraint.students_fit(schedule, courses) > 400:
-
+            Constraint.mutual_courses_check(schedule, courses)[1] > 0:
+            # Constraint.session_spread_check(schedule, courses) < 440 or \
+            # Constraint.students_fit(schedule, courses) > 0:
+        # Append points to show in a graph when the schedule is made
         points.append(get_points(schedule, courses))
-
+        # Count the number of schedules made
         schedule_counter += 1
-        # Bewaar het eerste rooster
+        # Save the first schedule
         schedule1 = schedule
+        # Get points of the first schedule
         schedule1_points = get_points(schedule1, courses)
-        # Maak een nieuw roosters
-        # 5 dingen per keer switchen gaat iets sneller dan 1 per keer
+        # Make a new schedule by switching
         schedule2 = switch.switch_session(schedule, switcher)
         # Bereken de punten van het nieuwe rooster
         schedule2_points = get_points(schedule2, courses)
@@ -168,12 +165,12 @@ def soft(schedule, courses, schedule_counter):
         # Lower the heat, by changing switcher to 1.
         if schedule_counter % LIMIT == 0:
             switcher = 1
-        # Reheating; change switcher back to 3
-        # if schedule_counter % (LIMIT + 100) == 0:
-        #     switcher = 3
 
-        # if schedule_counter % SAVELIMIT == 0:
-        #     return schedule, points, schedule_counter, Constraint.own_sessions_check(schedule, courses)[1]
+        # Force a change in the schedule at a local optimum
+        if schedule_counter % OPTIMUM == 0:
+            schedule = switch.switch_session(schedule, switcher)
+
+
 
     points.append(get_points(schedule, courses))
 
@@ -181,12 +178,15 @@ def soft(schedule, courses, schedule_counter):
 
 
 def get_points(schedule, courses):
+    """
+    Returns the points of a given schedule.
+    """
 
     points = Constraint.lecture_first(schedule, courses)[1] + \
-                  Constraint.own_sessions_check(schedule, courses)[1] - \
-                  Constraint.mutual_courses_check(schedule, courses)[1] + \
-                  Constraint.session_spread_check(schedule, courses) - \
-                  Constraint.students_fit(schedule, courses)
+            Constraint.own_sessions_check(schedule, courses)[1] - \
+            Constraint.mutual_courses_check(schedule, courses)[1] + \
+            Constraint.session_spread_check(schedule, courses) - \
+            Constraint.students_fit(schedule, courses)
 
     return points
 
