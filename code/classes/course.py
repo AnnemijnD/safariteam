@@ -43,15 +43,6 @@ class Course(object):
         B heeft ook sessie 0, sessie 1 etc
         group_id is per sessie
         -----
-
-        # Pseudocode to create all the sessions:
-        #
-        # For every course:
-        #   For every session type (lectures, tutorials, practicals)
-        #       Make a Session(). input of Session = (self, name, class_id, type, mutual_courses, group):
-        #
-        # IK DENK DAT MUTUAL_COURSES AL BIJ LOAD_COURSES IN DE COURSE GEZET WORDEN! denk ik ook x A
-        # Nog geen idee hoe we group moeten definiëren... <-- group hoeft nog niet :))) <<-- Oke thanks Sanne :)
         """
 
         mutual_courses = []
@@ -96,7 +87,7 @@ class Course(object):
                 session_id += 1
 
 
-            session = Session(self.name, type, max_students, session_id, group_id)
+            # session = Session(self.name, type, max_students, session_id, group_id)
             sessions.append(session)
             # session_id += 1
 

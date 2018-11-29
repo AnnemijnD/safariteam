@@ -50,6 +50,9 @@ class Plan():
 
 
         # random.shuffle(courses)
+
+        # ANNEMIJN KAN JE HIER NOG EEN COMMENT BIJ ZETTEN, SNap niet wat je hier hebt gedaan
+
         for course in courses:
             session_list = session_list + course.sessions_total
 
@@ -437,7 +440,7 @@ if __name__ == "__main__":
     # schedule, points, plan.schedule_counter, plan.own_session_points = firstalgorithm.soft_constraint(schedule, plan.courses, plan.schedule_counter)
 
     mutual_course_malus = Constraint.mutual_courses_check(schedule, plan.courses)[1]
-    # print(Constraint.own_sessions_check(schedule, plan.courses))
+    print(Constraint.own_sessions_check(schedule, plan.courses))
     # Constraint.all_constraints(schedule, plan.courses)
     spread_points = Constraint.session_spread_check(schedule, plan.courses)
     capacity_points = (Constraint.students_fit(schedule, plan.courses))

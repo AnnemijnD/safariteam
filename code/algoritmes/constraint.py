@@ -234,7 +234,7 @@ class Constraint():
             if len(set(course_sessions)) == len(course_sessions):
                 own_session_points += 1
             print(course.name)
-            print(checked_course["session_id"], checked_course["group_id"])
+            # print(checked_course["session_id"], checked_course["group_id"])
             # Maak een uitzondering op de groepen.
             # alle group_id's met dezelfde session_id mogen wél bij elkaar.
             # Bijvoorbeeld: Bioinformatica heeft een 2 werkgroepen. Allebei de werkrgroepen
@@ -244,6 +244,9 @@ class Constraint():
             # hebben als die van de werkgroepen. Deze hebben een andere session_id,
             # Dus mogen niet bij elkaar.
             # alle group_ids met een andere session_id mogen dus niet bij elkaar.
+            for i in range(len(checked_course["group_id"])): # of in range (session_id), maakt niet uit, zijn even lang.
+                if checked_course["group_id"][i] > 0:
+                    print("dit is een groep met group_id: ", checked_course["group_id"][i], "en session id: ", checked_course["session_id"][i])
 
 
         return True, own_session_points
