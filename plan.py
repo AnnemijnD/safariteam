@@ -50,6 +50,9 @@ class Plan():
 
 
         # random.shuffle(courses)
+
+        # ANNEMIJN KAN JE HIER NOG EEN COMMENT BIJ ZETTEN, SNap niet wat je hier hebt gedaan
+
         for course in courses:
             session_list = session_list + course.sessions_total
 
@@ -316,7 +319,7 @@ class Plan():
 
         return schedule
 
-    def save_html(self, schedule, rooms, spread_points, capacity_points):
+    def save_html(self, schedule, rooms, spread_points, capacity_points, lecture_points, mutual_course_malus):
         """
         Print into html to visualize schedule.
         MOET NOG EEN TABEL KOMEN MET HOEVEEL PUNTEN DIT ROOSTER IS EN WAAROP GEBASEERD.
@@ -325,10 +328,10 @@ class Plan():
         schedule1 = copy.copy(schedule)
 
         # Maak een grafiek van alle punten
-        d = pd.Series([spread_points,capacity_points,spread_points+capacity_points])
+        d = pd.Series([lecture_points, -mutual_course_malus,"", spread_points,capacity_points,spread_points - capacity_points ])
         d = pd.DataFrame(d)
         d.columns = ["Points"]
-        d.index = ["Spread points (out of 440)", "Capacity points (out of ...?)", "Total"]
+        d.index = ["Correctly placed lectures (out of 39)", "Malus points for placing courses with specific 'mutual' courses", "", "Spread bonus points (out of 440)", "Capacity malus points (out of 1332)", "Total points"]
 
         flatten = np.array(schedule).flatten()
         counter = 0
@@ -412,7 +415,7 @@ class Plan():
         print("Made", plan.schedule_counter, "schedule(s) until the 'right' was found.")
         print(Constraint.lecture_first(schedule, plan.courses)[1], "out of 39 correctly placed lectures.")
         print(plan.own_session_points, "sessions were placed in a different timeslot.")
-        print("Spread points:", Constraint.session_spread_check(schedule, plan.courses), "out of 440.")
+        print("Spread bonus points:", Constraint.session_spread_check(schedule, plan.courses), "out of 440.")
 
 if __name__ == "__main__":
 
@@ -427,6 +430,8 @@ if __name__ == "__main__":
     schedule, lectures, other_sessions, empty_sessions = plan.initialize_schedule(plan.courses)
     rooms = loaddata.load_rooms()
     plan.own_session_points = 0
+    spread_points = 0
+    capacity_points = 0
 
     # Haal met het eerste algoritme een rooster er uit dat aan de hard constraints voldoet
     # schedule, points, plan.schedule_counter, plan.own_session_points = firstalgorithm.hard_constraints(schedule, plan.courses, plan.schedule_counter)
@@ -434,19 +439,20 @@ if __name__ == "__main__":
     # Geef dit rooster mee aan de soft constraints
     # schedule, points, plan.schedule_counter, plan.own_session_points = firstalgorithm.soft_constraint(schedule, plan.courses, plan.schedule_counter)
 
-    # print(Constraint.mutual_courses_check(schedule, plan.courses)[1])
-    # print(Constraint.own_sessions_check(schedule, plan.courses))
+    mutual_course_malus = Constraint.mutual_courses_check(schedule, plan.courses)[1]
+    print(Constraint.own_sessions_check(schedule, plan.courses))
     # Constraint.all_constraints(schedule, plan.courses)
     spread_points = Constraint.session_spread_check(schedule, plan.courses)
     capacity_points = (Constraint.students_fit(schedule, plan.courses))
+    lecture_points = Constraint.lecture_first(schedule, plan.courses)[1]
 
-    # Print the end-text
-    plan.end()
-    # Make a plot of the points
-    try:
-        plan.makeplot(points)
-    except:
-        print("No points to plot for now.")
+    # # Print the end-text
+    # plan.end()
+    # # Make a plot of the points
+    # try:
+    #     plan.makeplot(points)
+    # except:
+    #     print("No points to plot for now.")
 
     # Make a html file for the schedule
-    plan.save_html(schedule, rooms, spread_points, capacity_points)
+    plan.save_html(schedule, rooms, spread_points, capacity_points, lecture_points, mutual_course_malus)

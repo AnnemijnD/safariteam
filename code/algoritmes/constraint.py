@@ -48,7 +48,7 @@ class Constraint():
 
         courses_schedule = []
         for course in courses:
-            course_schedule = {"day": [], "slot": [], "room": [], "type": []}
+            course_schedule = {"day": [], "slot": [], "room": [], "type": [], "session_id": [], "group_id": []}
             for i in range(DAYS):
                 for j in range(TIME_SLOTS):
                     for k in range(ROOMS):
@@ -61,6 +61,9 @@ class Constraint():
                                 course_schedule["slot"].append(j)
                                 course_schedule["room"].append(k)
                                 course_schedule["type"].append(schedule[i][j][k].type)
+                                course_schedule["session_id"].append(schedule[i][j][k].session_id)
+                                course_schedule["group_id"].append(schedule[i][j][k].group_id)
+
             courses_schedule.append(course_schedule)
 
         return courses_schedule
@@ -159,6 +162,8 @@ class Constraint():
                     if schedule[i][j][k].course_object:
                         # elk gevuld slot heeft een naam van de course met zijn mutual courses
                         mutual_courses = schedule[i][j][k].course_object.mutual_courses
+                        # print(schedule[i][j][k].name)
+                        # print(schedule[i][j][k].group_id)
                         # Voor elk ding in mutual_courses, check of het in het tijdslot zit van deze course
                         # DIT MOET ANDERS, DIT KAN IN MINDER LOOPS!!!!!
                         # Je kan toch zeggen: if 'name' in [name1, name2, name3 ...]???
@@ -214,6 +219,21 @@ class Constraint():
             # dan is er geen overlappend vak (dus + 1 punt)
             if len(set(course_sessions)) == len(course_sessions):
                 own_session_points += 1
+            print(course.name)
+            # print(checked_course["session_id"], checked_course["group_id"])
+            # Maak een uitzondering op de groepen.
+            # alle group_id's met dezelfde session_id mogen wél bij elkaar.
+            # Bijvoorbeeld: Bioinformatica heeft een 2 werkgroepen. Allebei de werkrgroepen
+            # hebben dezelfde session_id (want komen van dezelfde session). Beide groepen hebben
+            # een andere group_id (namelijk 1 en 2).
+            # Maar: Bioinformatica heeft ook practica (die dezelfde group_id's kunnen
+            # hebben als die van de werkgroepen. Deze hebben een andere session_id,
+            # Dus mogen niet bij elkaar.
+            # alle group_ids met een andere session_id mogen dus niet bij elkaar.
+            for i in range(len(checked_course["group_id"])): # of in range (session_id), maakt niet uit, zijn even lang.
+                if checked_course["group_id"][i] > 0:
+                    print("dit is een groep met group_id: ", checked_course["group_id"][i], "en session id: ", checked_course["session_id"][i])
+
 
         return True, own_session_points
 
