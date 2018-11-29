@@ -30,6 +30,9 @@ def genetic_algortim(schedule1, schedule2):
     PSEUDO:
     - maak lineaire lijst van beide roosters
     -
+
+    PROBLEEM:
+    HET GAAT FOUT MET EMPTY SESSIES EN DAAR WORDT IK VERDRIETIG VAN
     """
     flatten1 = np.array(schedule1).flatten().tolist()
     flatten2 = np.array(schedule2).flatten().tolist()
@@ -48,7 +51,6 @@ def genetic_algortim(schedule1, schedule2):
             counter += 1
             temp = flatten2[index]
             cycle_i.append(temp)
-            print(type(temp))
             index = flatten1.index(temp)
             in_cycle.append(index)
 

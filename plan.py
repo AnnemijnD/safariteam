@@ -433,7 +433,7 @@ if __name__ == "__main__":
 
     # Load all the courses, rooms and sessions
     plan.courses = loaddata.load_courses()
-    # schedule, lectures, other_sessions, empty_sessions = plan.initialize_schedule(plan.courses)
+    schedule, lectures, other_sessions, empty_sessions = plan.initialize_schedule(plan.courses)
     rooms = loaddata.load_rooms()
     plan.own_session_points = 0
     spread_points = 0
@@ -448,15 +448,15 @@ if __name__ == "__main__":
     # schedule, points, plan.schedule_counter, plan.own_session_points = firstalgorithm.soft_constraint(schedule, plan.courses, plan.schedule_counter)
 
     # test genetic Algorithm
-    schedule1, lectures, other_sessions, empty_sessions = plan.initialize_schedule(plan.courses)
-    schedule2, lectures, other_sessions, empty_sessions = plan.initialize_schedule(plan.courses)
+    # schedule1, lectures, other_sessions, empty_sessions = plan.initialize_schedule(plan.courses)
+    # schedule2, lectures, other_sessions, empty_sessions = plan.initialize_schedule(plan.courses)
 
-    firstalgorithm.genetic_algortim(schedule1, schedule2)
+    # firstalgorithm.genetic_algortim(schedule1, schedule2)
 
     # mutual_course_malus = Constraint.mutual_courses_check(schedule, plan.courses)[1]
     # print(Constraint.own_sessions_check(schedule, plan.courses))
     # Constraint.all_constraints(schedule, plan.courses)
-    # spread_points = Constraint.session_spread_check(schedule, plan.courses)
+    spread_points = Constraint.session_spread_check(schedule, plan.courses)
     # capacity_points = (Constraint.students_fit(schedule, plan.courses))
     # lecture_points = Constraint.lecture_first(schedule, plan.courses)[1]
 
@@ -469,4 +469,4 @@ if __name__ == "__main__":
     #     print("No points to plot for now.")
 
     # Make a html file for the schedule
-    plan.save_html(schedule1, rooms, spread_points, capacity_points, lecture_points, mutual_course_malus)
+    plan.save_html(schedule, rooms, spread_points, capacity_points, lecture_points, mutual_course_malus)
