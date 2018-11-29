@@ -434,25 +434,27 @@ if __name__ == "__main__":
     capacity_points = 0
 
     # Haal met het eerste algoritme een rooster er uit dat aan de hard constraints voldoet
-    # schedule, points, plan.schedule_counter, plan.own_session_points = firstalgorithm.hard_constraints(schedule, plan.courses, plan.schedule_counter)
+    schedule, points, plan.schedule_counter, plan.own_session_points = firstalgorithm.hard_constraints(schedule, plan.courses, plan.schedule_counter)
 
     # Geef dit rooster mee aan de soft constraints
     # schedule, points, plan.schedule_counter, plan.own_session_points = firstalgorithm.soft_constraint(schedule, plan.courses, plan.schedule_counter)
 
+    Constraint.mutual_courses_check(schedule, plan.courses)
     mutual_course_malus = Constraint.mutual_courses_check(schedule, plan.courses)[1]
-    print(Constraint.own_sessions_check(schedule, plan.courses))
+    print(mutual_course_malus)
+    # print(Constraint.own_sessions_check(schedule, plan.courses))
     # Constraint.all_constraints(schedule, plan.courses)
     spread_points = Constraint.session_spread_check(schedule, plan.courses)
     capacity_points = (Constraint.students_fit(schedule, plan.courses))
     lecture_points = Constraint.lecture_first(schedule, plan.courses)[1]
 
-    # # Print the end-text
-    # plan.end()
-    # # Make a plot of the points
-    # try:
-    #     plan.makeplot(points)
-    # except:
-    #     print("No points to plot for now.")
+    # Print the end-text
+    plan.end()
+    # Make a plot of the points
+    try:
+        plan.makeplot(points)
+    except:
+        print("No points to plot for now.")
 
     # Make a html file for the schedule
     plan.save_html(schedule, rooms, spread_points, capacity_points, lecture_points, mutual_course_malus)
