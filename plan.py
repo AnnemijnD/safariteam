@@ -56,6 +56,10 @@ class Plan():
         for course in courses:
             session_list = session_list + course.sessions_total
 
+        session_counter = 0
+        for i in range(len(session_list)):
+            session_list[i].id = session_counter
+            session_counter += 1
 
         # # Put every session into schedule
         # for i in range(SLOTS):
@@ -95,13 +99,15 @@ class Plan():
         # Maak lege sessies aan om lege cellen mee op te vullen
         # Dit stukje wordt gebruikt in de nested for loop waarbij aan elke cel
         # een sessie wordt meegegeven.
+        # TODO: WE MOETEN NOG DE RANGE AANPASSEN
         for i in range(140-72):
             name = ' '
             type = ' '
             max_students = ' '
+            id = 'nvt2'
             session_id = 'nvt2'
             group_id = 'nvt2'
-            session = Session(name, type, max_students, session_id, group_id)
+            session = Session(id, name, type, max_students, session_id, group_id)
             # session = Session(name, type, room, timeslot, day)
             empty_sessions.append(session)
 
@@ -427,7 +433,7 @@ if __name__ == "__main__":
 
     # Load all the courses, rooms and sessions
     plan.courses = loaddata.load_courses()
-    schedule, lectures, other_sessions, empty_sessions = plan.initialize_schedule(plan.courses)
+    # schedule, lectures, other_sessions, empty_sessions = plan.initialize_schedule(plan.courses)
     rooms = loaddata.load_rooms()
     plan.own_session_points = 0
     spread_points = 0
@@ -441,10 +447,16 @@ if __name__ == "__main__":
     # Geef dit rooster mee aan de soft constraints
     # schedule, points, plan.schedule_counter, plan.own_session_points = firstalgorithm.soft_constraint(schedule, plan.courses, plan.schedule_counter)
 
+    # test genetic Algorithm
+    schedule1, lectures, other_sessions, empty_sessions = plan.initialize_schedule(plan.courses)
+    schedule2, lectures, other_sessions, empty_sessions = plan.initialize_schedule(plan.courses)
+
+    firstalgorithm.genetic_algortim(schedule1, schedule2)
+
     # mutual_course_malus = Constraint.mutual_courses_check(schedule, plan.courses)[1]
     # print(Constraint.own_sessions_check(schedule, plan.courses))
     # Constraint.all_constraints(schedule, plan.courses)
-    spread_points = Constraint.session_spread_check(schedule, plan.courses)
+    # spread_points = Constraint.session_spread_check(schedule, plan.courses)
     # capacity_points = (Constraint.students_fit(schedule, plan.courses))
     # lecture_points = Constraint.lecture_first(schedule, plan.courses)[1]
 
@@ -457,4 +469,4 @@ if __name__ == "__main__":
     #     print("No points to plot for now.")
 
     # Make a html file for the schedule
-    plan.save_html(schedule, rooms, spread_points, capacity_points, lecture_points, mutual_course_malus)
+    plan.save_html(schedule1, rooms, spread_points, capacity_points, lecture_points, mutual_course_malus)
