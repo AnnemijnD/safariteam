@@ -37,7 +37,7 @@ class Plan():
     Main script to make a schedule.
     """
 
-    def initialize_schedule(self, courses):
+    def initialize_schedule(self, courses, rooms_list):
         """
         Initialize schedule using Session().
         """
@@ -78,10 +78,7 @@ class Plan():
         #     session = Session(name, type, max_students, session_id, group_id)
 
         for i in range(len(session_list)):
-<<<<<<< HEAD
-=======
 
->>>>>>> refs/remotes/origin/master
             # Get all the lectures
             if session_list[i].type == "lecture":
                 lecture_sessions.append(session_list[i])
@@ -125,7 +122,7 @@ class Plan():
 
         new_sched = False
         while new_sched == False:
-            new_sched = plan.fill_schedule(schedule, session_list, lecture_sessions, empty_sessions, courses)
+            new_sched = plan.fill_schedule(schedule, session_list, lecture_sessions, empty_sessions, courses, rooms_list)
             plan.schedule_counter +=1
 
             if not new_sched == False:
@@ -139,20 +136,20 @@ class Plan():
         return schedule, total, other_sessions, empty_sessions
 
 
-    def fill_schedule(self, schedule, lectures, other_sessions, empty_sessions, courses):
+    def fill_schedule(self, schedule, lectures, other_sessions, empty_sessions, courses, rooms_list):
         """
         Fill empty schedule with sessions. Function will begin to fill all the lectures
         and will go on to fill other sessions.
 
         Lectures = een lijst met alle sessies
         """
-
         # Gebruik nested for loop om elke cel een session te gegen.
         # Je geeft hierbij een lijst met sessies mee aan de functie get_session
         # De lijst met sessies is al gemaakt in initialize_schedule()
 
         # Vul eerst met lege sessions
         # counter = 0
+
         for empty_session in empty_sessions:
             for b in range(DAYS):
                 for c in range(TIME_SLOTS):
@@ -200,9 +197,9 @@ class Plan():
                         # als het een tutorial of pracitcal is
                         if not lectures_first:
 
-
                             if lectures[e].name == schedule[b][c][d].name:
                                 if schedule[b][c][d].type == "lecture":
+                                    #print("hee")
 
                                     # alle eerdere locaties mogen weg want er mag niets voor een lecture
                                     location.clear()
@@ -213,10 +210,12 @@ class Plan():
                                         for k in range(len(location) - 1, -1, -1):
                                             if location[k][1] == c and location[k][0] == b:
                                                 del location[k]
+                                        # print("lala")
                                         break
 
 
                             elif schedule[b][c][d].name in mutual_courses_session:
+                                # print("heh")
                                 rooms_allowed = False
                                 for k in range(len(location) - 1, -1, -1):
                                     if location[k][1] == c and location[k][0] == b:
@@ -238,11 +237,19 @@ class Plan():
                             # print(location)
                             break
 
+                        # # als de capaciteit van de ruimte niet voldoende is
+                        # if rooms_list[d].capacity < lectures[e].max_students:
+                        #     # print("hoi")
+                        #     if e < 108:
+                        #         continue
+
                         # if the slot in the schedule is empty
                         if schedule[b][c][d].name == ' ':
+                            # print("hmm")
                             location.append((b,c,d))
 
             if bool(location):
+                # print("bijna?")
                 counter = 0
 
                 # als het een lecture was, verwijder het aantal potentiele locaties aan het einde van het rooster gelijk
@@ -278,7 +285,7 @@ class Plan():
             else:
 
                 # plan.schedule_counter += 1
-
+                print(e)
                 return False
                 # return schedule
                 #plan.initialize_schedule(plan.courses)
@@ -288,7 +295,7 @@ class Plan():
             return schedule
 
         else:
-            # plan.schedule_counter += 1
+            # plan.sch edule_counter += 1
 
             return False
 
@@ -414,7 +421,7 @@ class Plan():
         print("SUCCES!!")
         print("It took:", round(time.time() - plan.then, 3), "seconds, = ", round((time.time() - plan.then) / 60, 3), "minutes.")
         print("Made", plan.schedule_counter, "schedule(s) until the 'right' was found.")
-        print(Constraint.lecture_first(schedule, plan.courses)[1], "out of 39 correctly placed lectures.")
+        # print(Constraint.lecture_first(schedule, plan.courses)[1], "out of 39 correctly placed lectures.")
         print(plan.own_session_points, "sessions were placed in a different timeslot.")
         print("Spread bonus points:", Constraint.session_spread_check(schedule, plan.courses), "out of 440.")
 
@@ -428,22 +435,23 @@ if __name__ == "__main__":
 
     # Load all the courses, rooms and sessions
     plan.courses = loaddata.load_courses()
-    schedule, lectures, other_sessions, empty_sessions = plan.initialize_schedule(plan.courses)
-    rooms = loaddata.load_rooms()
+    rooms_list = loaddata.load_rooms()
+    schedule, lectures, other_sessions, empty_sessions = plan.initialize_schedule(plan.courses, rooms_list)
+
     plan.own_session_points = 0
     spread_points = 0
     capacity_points = 0
 
-<<<<<<< HEAD
+
     # Maak van een random rooster een rooster met eerst de hoorcolleges en geen overlappende vakken.
     # schedule, points, plan.schedule_counter, plan.own_session_points = firstalgorithm.hard_constraints(schedule, plan.courses, plan.schedule_counter)
-=======
+
     # Haal met het eerste algoritme een rooster er uit dat aan de hard constraints voldoet
     # schedule, points, plan.schedule_counter, plan.own_session_points = firstalgorithm.hard_constraints(schedule, plan.courses, plan.schedule_counter)
 
     # Geef dit rooster mee aan de soft constraints
     # schedule, points, plan.schedule_counter, plan.own_session_points = firstalgorithm.soft_constraint(schedule, plan.courses, plan.schedule_counter)
->>>>>>> refs/remotes/origin/master
+
 
     mutual_course_malus = Constraint.mutual_courses_check(schedule, plan.courses)[1]
     print(Constraint.own_sessions_check(schedule, plan.courses))
@@ -451,6 +459,7 @@ if __name__ == "__main__":
     spread_points = Constraint.session_spread_check(schedule, plan.courses)
     capacity_points = (Constraint.students_fit(schedule, plan.courses))
     lecture_points = Constraint.lecture_first(schedule, plan.courses)[1]
+
 
     # # Print the end-text
     # plan.end()
@@ -461,4 +470,4 @@ if __name__ == "__main__":
     #     print("No points to plot for now.")
 
     # Make a html file for the schedule
-    plan.save_html(schedule, rooms, spread_points, capacity_points, lecture_points, mutual_course_malus)
+    plan.save_html(schedule, rooms_list, spread_points, capacity_points, lecture_points, mutual_course_malus)
