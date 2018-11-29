@@ -7,6 +7,7 @@ DAYS = 5
 ROOMS = 7
 SPREAD_BONUS = 20
 SESSION_LEN = 72
+LECTURECOUNT = 39
 
 
 class Constraint():
@@ -48,12 +49,12 @@ class Constraint():
 
         courses_schedule = []
         for course in courses:
-            course_schedule = {"day": [], "slot": [], "room": [], "type": []}
+            course_schedule = {"day": [], "slot": [], "room": [], "type": [], "session_id": [], "group_id": []}
             for i in range(DAYS):
                 for j in range(TIME_SLOTS):
                     for k in range(ROOMS):
                         # print(schedule[i][j][k] is None)
-                        
+
                         if schedule[i][j][k] is not None:
                             # print("schedule[i][j][k]")
                             if course.name == schedule[i][j][k].name:
@@ -61,6 +62,9 @@ class Constraint():
                                 course_schedule["slot"].append(j)
                                 course_schedule["room"].append(k)
                                 course_schedule["type"].append(schedule[i][j][k].type)
+                                course_schedule["session_id"].append(schedule[i][j][k].session_id)
+                                course_schedule["group_id"].append(schedule[i][j][k].group_id)
+
             courses_schedule.append(course_schedule)
 
         return courses_schedule
@@ -112,6 +116,18 @@ class Constraint():
                    (courses_schedule[course.course_id]["day"][3] == 4):
                     bonuspoints += SPREAD_BONUS
 
+            elif course.sessions == 5:
+                # checks if the courses are spread out on the whole week (every day)
+                if (courses_schedule[course.course_id]["day"][0] == 0) and \
+                   (courses_schedule[course.course_id]["day"][1] == 1) and \
+                   (courses_schedule[course.course_id]["day"][2] == 2) and \
+                   (courses_schedule[course.course_id]["day"][3] == 3) and \
+                   (courses_schedule[course.course_id]["day"][4] == 4):
+                    bonuspoints += SPREAD_BONUS
+
+            # elif course.sessions > 5:
+            #     JA WAT DAN
+
         return bonuspoints
 
     def lecture_first(schedule, courses):
@@ -160,6 +176,8 @@ class Constraint():
                     if schedule[i][j][k].course_object:
                         # elk gevuld slot heeft een naam van de course met zijn mutual courses
                         mutual_courses = schedule[i][j][k].course_object.mutual_courses
+                        # print(schedule[i][j][k].name)
+                        # print(schedule[i][j][k].group_id)
                         # Voor elk ding in mutual_courses, check of het in het tijdslot zit van deze course
                         # DIT MOET ANDERS, DIT KAN IN MINDER LOOPS!!!!!
                         # Je kan toch zeggen: if 'name' in [name1, name2, name3 ...]???
@@ -215,6 +233,21 @@ class Constraint():
             # dan is er geen overlappend vak (dus + 1 punt)
             if len(set(course_sessions)) == len(course_sessions):
                 own_session_points += 1
+            print(course.name)
+            # print(checked_course["session_id"], checked_course["group_id"])
+            # Maak een uitzondering op de groepen.
+            # alle group_id's met dezelfde session_id mogen wél bij elkaar.
+            # Bijvoorbeeld: Bioinformatica heeft een 2 werkgroepen. Allebei de werkrgroepen
+            # hebben dezelfde session_id (want komen van dezelfde session). Beide groepen hebben
+            # een andere group_id (namelijk 1 en 2).
+            # Maar: Bioinformatica heeft ook practica (die dezelfde group_id's kunnen
+            # hebben als die van de werkgroepen. Deze hebben een andere session_id,
+            # Dus mogen niet bij elkaar.
+            # alle group_ids met een andere session_id mogen dus niet bij elkaar.
+            for i in range(len(checked_course["group_id"])): # of in range (session_id), maakt niet uit, zijn even lang.
+                if checked_course["group_id"][i] > 0:
+                    print("dit is een groep met group_id: ", checked_course["group_id"][i], "en session id: ", checked_course["session_id"][i])
+
 
         return True, own_session_points
 
@@ -264,3 +297,62 @@ class Constraint():
                 for k in range(ROOMS):
                     all_days.append(schedule[i][j][k].name)
         return all_days[TIME_SLOTS * ROOMS * day:TIME_SLOTS * ROOMS * (day + 1)]
+
+    def hard_constraints(schedule, courses):
+        """
+        Een functie die alle hard constraints checkt.
+        Return True als het rooster aan alle constraints voldoet.
+        """
+        # LECTURES CHECK
+        lecture_points = 0
+        courses_schedule = Constraint.all_constraints(schedule, courses)
+        for course in courses:
+
+            # checks for the number of lectures if the lectures are planned first
+            for i in range(course.lecture):
+                if courses_schedule[course.course_id]["type"][i] != "lecture":
+                    return False
+                else:
+                    lecture_points += 1
+
+        # MUTUAL COURSES CHECK
+        mutual_malus = 0
+         # check voor elk slot in het rooster
+        for i in range(DAYS):
+            for j in range(TIME_SLOTS):
+                for k in range(ROOMS):
+                    # check of het slot ook echt gevuld is (dus geen 'None')
+                    if schedule[i][j][k].course_object:
+                        # elk gevuld slot heeft een naam van de course met zijn mutual courses
+                        mutual_courses = schedule[i][j][k].course_object.mutual_courses
+                        # Voor elk ding in mutual_courses, check of het in het tijdslot zit van deze course
+                        # DIT MOET ANDERS, DIT KAN IN MINDER LOOPS!!!!!
+                        # Je kan toch zeggen: if 'name' in [name1, name2, name3 ...]???
+                        for i in range(len(mutual_courses)):
+                            for z in range(len(schedule[i][j])):
+                                # Als de mutual course er in zit, return False
+                                if mutual_courses[i] in schedule[i][j][z].name:
+                                    mutual_malus += 1
+                                if mutual_malus > 0:
+                                    return False
+
+        # OWN SESSION CHECK
+        own_session_points = 0
+
+        for course in courses:
+            checked_course = courses_schedule[course.course_id]
+
+            # adds (day, slot) of every session to course_sessions
+            course_sessions = []
+            for i in range(len(checked_course["day"])):
+                course_sessions.append((checked_course["day"][i], checked_course["slot"][i]))
+            # return False if there are sessions planned at the same time
+            # Als de gefilterde lijst even groot is als de niet-gefilterde lijst,
+            # dan is er geen overlappend vak (dus + 1 punt)
+            # Ook hier kan weer de if omgedraaid worden en alleen 'false' (<- even aantekening voor mezelf x R)
+            if len(set(course_sessions)) == len(course_sessions):
+                own_session_points += 1
+            else:
+                return False
+
+        return True

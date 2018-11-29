@@ -15,6 +15,7 @@ import switch
 import firstalgorithm
 import csv
 import random
+import copy
 import time
 import pandas as pd
 from IPython.display import HTML
@@ -39,7 +40,6 @@ class Plan():
     def initialize_schedule(self, courses):
         """
         Initialize schedule using Session().
-        Willen we eigenlijk in Schedule class zelf hebben
         """
 
         sessions = []
@@ -50,10 +50,11 @@ class Plan():
 
 
         # random.shuffle(courses)
+
+        # ANNEMIJN KAN JE HIER NOG EEN COMMENT BIJ ZETTEN, SNap niet wat je hier hebt gedaan
+
         for course in courses:
-
             session_list = session_list + course.sessions_total
-
 
 
         # # Put every session into schedule
@@ -77,12 +78,15 @@ class Plan():
         #     session = Session(name, type, max_students, session_id, group_id)
 
         for i in range(len(session_list)):
+<<<<<<< HEAD
+=======
+
+>>>>>>> refs/remotes/origin/master
             # Get all the lectures
             if session_list[i].type == "lecture":
                 lecture_sessions.append(session_list[i])
             elif session_list[i].type == "tutorial" or session_list[i].type == "practical":
                 other_sessions.append(session_list[i])
-
 
         # shuffle de lectures zodat ze random zijn
         # Make copy of sessions and shuffle
@@ -90,9 +94,6 @@ class Plan():
         others = other_sessions[:]
         # random.shuffle(lectures)
         # random.shuffle(other_sessions)
-
-
-        # TODO: lijst maken met eerst grote vakken!!
 
         # Maak lege sessies aan om lege cellen mee op te vullen
         # Dit stukje wordt gebruikt in de nested for loop waarbij aan elke cel
@@ -319,18 +320,45 @@ class Plan():
 
         return schedule
 
-    def save_html(self, schedule, rooms):
+    def save_html(self, schedule, rooms, spread_points, capacity_points, lecture_points, mutual_course_malus):
         """
         Print into html to visualize schedule.
+        MOET NOG EEN TABEL KOMEN MET HOEVEEL PUNTEN DIT ROOSTER IS EN WAAROP GEBASEERD.
         """
+        # Bewaar dit schedule voor andere visualisatie van het rooster
+        schedule1 = copy.copy(schedule)
 
-        df = pd.DataFrame(schedule)
-        print(df)
-        pd.set_option('display.max_colwidth', 350)
+        # Maak een grafiek van alle punten
+        d = pd.Series([lecture_points, -mutual_course_malus,"", spread_points,capacity_points,spread_points - capacity_points ])
+        d = pd.DataFrame(d)
+        d.columns = ["Points"]
+        d.index = ["Correctly placed lectures (out of 39)", "Malus points for placing courses with specific 'mutual' courses", "", "Spread bonus points (out of 440)", "Capacity malus points (out of 1332)", "Total points"]
+
+        flatten = np.array(schedule).flatten()
+        counter = 0
+        for i in range(len(flatten)):
+            if flatten[i].name is not ' ':
+                flatten[i] = str(flatten[i]) + " : " + str(rooms[counter])
+            counter += 1
+            counter = counter % 7
+        # Zet terug naar een 3D lijst
+        schedule = flatten.reshape(DAYS, TIME_SLOTS, ROOMS).tolist()
+
+        # Dit is voor het eerste rooster van de hele week
+        df = pd.DataFrame(schedule1)
+        pd.set_option('display.max_colwidth', 400)
         df.columns = ['9:00 - 11:00', '11:00 - 13:00', '13:00 - 15:00', '15:00 - 17:00']
         df.index = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"]
         # Transpose rows and columns
         df = df.T
+
+        # Dit is voor de kleinere roosters
+        test = pd.DataFrame(schedule)
+        pd.set_option('display.max_colwidth', 400)
+        test.columns = ['9:00 - 11:00', '11:00 - 13:00', '13:00 - 15:00', '15:00 - 17:00']
+        test.index = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"]
+        # Transpose rows and columns
+        test = test.T
 
         # Stel de column namen vast
         i = 0
@@ -349,15 +377,17 @@ class Plan():
         <html>
           <head><title>Schedule</title></head>
           <link rel="stylesheet" type="text/css" href="style.css" href="https://www.w3schools.com/w3css/4/w3.css"/>
-          <body>
+          <body class="body bgcolor="#660000">
+            <h1 class="h1" align="center"></h>
             {table}
           </body>
         </html>.
         '''
 
         with open('resultaten/schedule.html', 'w') as f:
-            f.write(html_string.format(table=df.to_html(classes='style')))
-            f.write("Monday:")
+            f.write(html_string.format(table=d.to_html(classes='points')))
+            f.write(html_string.format(table=test.to_html(classes='style')))
+            f.write("Monday")
             f.write(html_string.format(table=tags.to_html(classes='style')))
             f.write("Tuesday")
             f.write(html_string.format(table=tuesday.to_html(classes='style')))
@@ -374,7 +404,7 @@ class Plan():
         on the x-axis.
         """
         plt.plot(points)
-        plt.ylabel("Points (max = 68)")
+        plt.ylabel("Points")
         plt.show()
 
     def end(self):
@@ -385,39 +415,50 @@ class Plan():
         print("It took:", round(time.time() - plan.then, 3), "seconds, = ", round((time.time() - plan.then) / 60, 3), "minutes.")
         print("Made", plan.schedule_counter, "schedule(s) until the 'right' was found.")
         print(Constraint.lecture_first(schedule, plan.courses)[1], "out of 39 correctly placed lectures.")
-        print(plan.own_session_points, "out of 29 courses were placed in a different timeslot.")
-        print("Spread points:", Constraint.session_spread_check(schedule, plan.courses), "out of 400.")
-
+        print(plan.own_session_points, "sessions were placed in a different timeslot.")
+        print("Spread bonus points:", Constraint.session_spread_check(schedule, plan.courses), "out of 440.")
 
 if __name__ == "__main__":
 
-    # Load all the courses and sessions
     plan = Plan()
     plan.then = time.time()
     print("Loading...")
     plan.random_numbers = []
     plan.schedule_counter = 0
+
+    # Load all the courses, rooms and sessions
     plan.courses = loaddata.load_courses()
     schedule, lectures, other_sessions, empty_sessions = plan.initialize_schedule(plan.courses)
     rooms = loaddata.load_rooms()
     plan.own_session_points = 0
+    spread_points = 0
+    capacity_points = 0
 
+<<<<<<< HEAD
     # Maak van een random rooster een rooster met eerst de hoorcolleges en geen overlappende vakken.
     # schedule, points, plan.schedule_counter, plan.own_session_points = firstalgorithm.hard_constraints(schedule, plan.courses, plan.schedule_counter)
+=======
+    # Haal met het eerste algoritme een rooster er uit dat aan de hard constraints voldoet
+    # schedule, points, plan.schedule_counter, plan.own_session_points = firstalgorithm.hard_constraints(schedule, plan.courses, plan.schedule_counter)
 
-    # print(Constraint.mutual_courses_check(schedule, plan.courses)[1])
-    # print(Constraint.own_sessions_check(schedule, plan.courses))
+    # Geef dit rooster mee aan de soft constraints
+    # schedule, points, plan.schedule_counter, plan.own_session_points = firstalgorithm.soft_constraint(schedule, plan.courses, plan.schedule_counter)
+>>>>>>> refs/remotes/origin/master
+
+    mutual_course_malus = Constraint.mutual_courses_check(schedule, plan.courses)[1]
+    print(Constraint.own_sessions_check(schedule, plan.courses))
     # Constraint.all_constraints(schedule, plan.courses)
-    # Constraint.session_spread_check(schedule, plan.courses)
-    # print(Constraint.students_fit(schedule, plan.courses))
+    spread_points = Constraint.session_spread_check(schedule, plan.courses)
+    capacity_points = (Constraint.students_fit(schedule, plan.courses))
+    lecture_points = Constraint.lecture_first(schedule, plan.courses)[1]
 
-    # Print the end-text
-    plan.end()
-    # Make a plot of the points
-    try:
-        plan.makeplot(points)
-    except:
-        print("No points to plot for now.")
+    # # Print the end-text
+    # plan.end()
+    # # Make a plot of the points
+    # try:
+    #     plan.makeplot(points)
+    # except:
+    #     print("No points to plot for now.")
 
     # Make a html file for the schedule
-    plan.save_html(schedule, rooms)
+    plan.save_html(schedule, rooms, spread_points, capacity_points, lecture_points, mutual_course_malus)

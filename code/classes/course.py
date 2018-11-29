@@ -43,15 +43,6 @@ class Course(object):
         B heeft ook sessie 0, sessie 1 etc
         group_id is per sessie
         -----
-
-        # Pseudocode to create all the sessions:
-        #
-        # For every course:
-        #   For every session type (lectures, tutorials, practicals)
-        #       Make a Session(). input of Session = (self, name, class_id, type, mutual_courses, group):
-        #
-        # IK DENK DAT MUTUAL_COURSES AL BIJ LOAD_COURSES IN DE COURSE GEZET WORDEN! denk ik ook x A
-        # Nog geen idee hoe we group moeten definiëren... <-- group hoeft nog niet :))) <<-- Oke thanks Sanne :)
         """
 
         mutual_courses = []
@@ -66,6 +57,7 @@ class Course(object):
         else:
             session_id = self.lecture + self.tutorial
 
+
         # Make session for each lecture, tutorial and practical.
 
         for i in range(int_session):
@@ -77,21 +69,30 @@ class Course(object):
             if expected_students > max_students:
                 group_count = math.ceil(float(expected_students/max_students))
                 # Set a counter for group_id
-                group_id = 0
+                # VERANDERD!!!!!!!:
+                # Ik laat nu groepen beginnen bij 1, zodat er onderscheid gemaakt kan worden tussen de groepen
+                # en tussen de lectures.
+                group_id = 1
                 # make a session for every group
                 for j in range(group_count):
                     session = Session(self.name, type, max_students, session_id, group_id)
                     sessions_with_groups.append(session)
                     group_id += 1
+                session_id += 1
+
             else:
                 group_id = 0
                 session = Session(self.name, type, max_students, session_id, group_id)
                 sessions_with_groups.append(session)
+                session_id += 1
 
 
-            session = Session(self.name, type, max_students, session_id, group_id)
+            # session = Session(self.name, type, max_students, session_id, group_id)
             sessions.append(session)
-            session_id += 1
+            # session_id += 1
+
+            # print(session.name, session.type, session.group_id)
+
 
         # Als je de sessies wilt mét de 'groepen' erbij, return dan sessions_with_groups
         return sessions_with_groups
