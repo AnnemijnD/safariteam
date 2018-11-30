@@ -157,21 +157,26 @@ class Constraint():
                        (courses_schedule[id]["day"][sessions[i][4]] == 4):
                         bonuspoints += spread_bonus
 
-            # for i in range(len(sessions)):
-            #     days = []
-            #     print(course.name)
-            #     print(groups)
-            #     print(sessions[i])
-            #     print(courses_schedule[id]["day"])
-            #     for j in range(groups - 1):
-            #         days.append(courses_schedule[id]["day"][sessions[i][j]])
-            #     if len(days) - len(set(days)) > 0:
-            #         malusfactor = (course.sessions - len(days) - len(set(days)))
-            #         maluspoints += (malusfactor * 10) / len(sessions)
+            #  check the overall spread per group
+            for i in range(len(sessions)):
+                days = []
+
+                # adds the days sessions are given to list days
+                for j in range(len(sessions[i])):
+                    days.append(courses_schedule[id]["day"][sessions[i][j]])
+
+                # if the sessions aren't spread enough increase maluspoints
+                if len(days) - len(set(days)) > 0:
+                    malusfactor = (course.sessions - len(days) - len(set(days)))
+                    maluspoints += (malusfactor * 10) / len(sessions)
 
         bonuspoints = round(bonuspoints)
+        maluspoints = round(maluspoints)
         print(f"bonuspoints: {bonuspoints}")
         print(f"maluspoints: {maluspoints}")
+
+        # we moeten ook maluspoints returnen maar ik weet nog even niet waar
+        # deze functie overal wordt aangeroepen dus daar wacht ik nog even mee
         return bonuspoints
 
     def lecture_first(schedule, courses):

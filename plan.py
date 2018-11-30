@@ -477,10 +477,10 @@ if __name__ == "__main__":
 
 
     # test genetic Algorithm
-    schedule1, lectures, other_sessions, empty_sessions = plan.initialize_schedule(plan.courses)
-    schedule2, lectures, other_sessions, empty_sessions = plan.initialize_schedule(plan.courses)
-
-    genetic.genetic_algortim(schedule1, schedule2)
+    # schedule1, lectures, other_sessions, empty_sessions = plan.initialize_schedule(plan.courses)
+    # schedule2, lectures, other_sessions, empty_sessions = plan.initialize_schedule(plan.courses)
+    #
+    # genetic.genetic_algortim(schedule1, schedule2)
 
     # mutual_course_malus = Constraint.mutual_courses_check(schedule, plan.courses)[1]
 
@@ -490,8 +490,8 @@ if __name__ == "__main__":
     # print(Constraint.own_sessions_check(schedule, plan.courses))
     # Constraint.all_constraints(schedule, plan.courses)
     spread_points = Constraint.session_spread_check(schedule, plan.courses)
-    capacity_points = (Constraint.students_fit(schedule, plan.courses))
-    lecture_points = Constraint.lecture_first(schedule, plan.courses)[1]
+    # capacity_points = (Constraint.students_fit(schedule, plan.courses))
+    # lecture_points = Constraint.lecture_first(schedule, plan.courses)[1]
 
     # Print the end-text
     plan.end()
@@ -503,4 +503,4 @@ if __name__ == "__main__":
 
     mutual_course_malus = 0
     # Make a html file for the schedule
-    plan.save_html(schedule1, rooms, spread_points, capacity_points, lecture_points, mutual_course_malus)
+    plan.save_html(schedule, rooms, spread_points, capacity_points, lecture_points, mutual_course_malus)
