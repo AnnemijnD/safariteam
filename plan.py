@@ -1,5 +1,8 @@
-# Heuristieken 2018 -- Lesroosters
-# Namen: Annemijn, Sanne & Rebecca
+"""
+Heuristieken 2018 -- Lectures
+Names: Annemijn, Sanne & Rebecca
+This script generates a schedule.
+"""
 
 import os, sys
 
@@ -12,7 +15,7 @@ from constraint import Constraint
 import loaddata
 from session import Session
 import switch
-import firstalgorithm
+import hillclimber
 import csv
 import random
 import copy
@@ -146,10 +149,8 @@ class Plan():
 
     def fill_schedule(self, schedule, lectures, other_sessions, empty_sessions, courses):
         """
-        Fill empty schedule with sessions. Function will begin to fill all the lectures
-        and will go on to fill other sessions.
-
-        Lectures = een lijst met alle sessies
+        Fill empty schedule with sessions. This function will begin to fill all
+        the lectures and will go on to fill other sessions.
         """
 
         # Gebruik nested for loop om elke cel een session te gegen.
@@ -334,10 +335,10 @@ class Plan():
         schedule1 = copy.copy(schedule)
 
         # Maak een grafiek van alle punten
-        d = pd.Series([lecture_points, -mutual_course_malus,"", spread_points,capacity_points,spread_points - capacity_points ])
+        d = pd.Series([lecture_points, -mutual_course_malus, "", spread_points, capacity_points, spread_points - capacity_points])
         d = pd.DataFrame(d)
         d.columns = ["Points"]
-        d.index = ["Correctly placed lectures (out of 39)", "Malus points for placing courses with specific 'mutual' courses", "", "Spread bonus points (out of 440)", "Capacity malus points (out of 1332)", "Total points"]
+        d.index = ["Correctly placed lectures (out of 39)", "Minus points for placing courses with specific 'mutual' courses", "", "Spread bonus points (out of 440)", "Capacity malus points (out of 1332)", "Total points"]
 
         flatten = np.array(schedule).flatten()
         counter = 0
@@ -351,7 +352,7 @@ class Plan():
 
         # Dit is voor het eerste rooster van de hele week
         df = pd.DataFrame(schedule1)
-        pd.set_option('display.max_colwidth', 400)
+        pd.set_option('display.max_colwidth', 600)
         df.columns = ['9:00 - 11:00', '11:00 - 13:00', '13:00 - 15:00', '15:00 - 17:00']
         df.index = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"]
         # Transpose rows and columns
@@ -359,24 +360,23 @@ class Plan():
 
         # Dit is voor de kleinere roosters
         test = pd.DataFrame(schedule)
-        pd.set_option('display.max_colwidth', 400)
+        pd.set_option('display.max_colwidth', 600)
         test.columns = ['9:00 - 11:00', '11:00 - 13:00', '13:00 - 15:00', '15:00 - 17:00']
         test.index = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"]
         # Transpose rows and columns
         test = test.T
 
         # Stel de column namen vast
-        i = 0
         tags = df['Monday'].apply(pd.Series)
-        tags.columns = [rooms[i], rooms[i+1], rooms[i+2], rooms[i+3], rooms[i+4], rooms[i+5], rooms[i+6]]
+        tags.columns = [rooms[0], rooms[1], rooms[2], rooms[3], rooms[4], rooms[5], rooms[6]]
         tuesday = df['Tuesday'].apply(pd.Series)
-        tuesday.columns = [rooms[i], rooms[i+1], rooms[i+2], rooms[i+3], rooms[i+4], rooms[i+5], rooms[i+6]]
+        tuesday.columns = [rooms[0], rooms[1], rooms[2], rooms[3], rooms[4], rooms[5], rooms[6]]
         wednesday = df['Wednesday'].apply(pd.Series)
-        wednesday.columns = [rooms[i], rooms[i+1], rooms[i+2], rooms[i+3], rooms[i+4], rooms[i+5], rooms[i+6]]
+        wednesday.columns = [rooms[0], rooms[1], rooms[2], rooms[3], rooms[4], rooms[5], rooms[6]]
         thursday = df['Thursday'].apply(pd.Series)
-        thursday.columns = [rooms[i], rooms[i+1], rooms[i+2], rooms[i+3], rooms[i+4], rooms[i+5], rooms[i+6]]
+        thursday.columns = [rooms[0], rooms[1], rooms[2], rooms[3], rooms[4], rooms[5], rooms[6]]
         friday = df['Friday'].apply(pd.Series)
-        friday.columns = [rooms[i], rooms[i+1], rooms[i+2], rooms[i+3], rooms[i+4], rooms[i+5], rooms[i+6]]
+        friday.columns = [rooms[0], rooms[1], rooms[2], rooms[3], rooms[4], rooms[5], rooms[6]]
 
         html_string = '''
         <html>
@@ -414,13 +414,13 @@ class Plan():
 
     def end(self):
         """
-        Prints text to tell user how many schedules were made and how long it took to make
+        Prints text to tell user how many schedules were made and how long it took to make.
         """
         print("SUCCES!!")
         print("It took:", round(time.time() - plan.then, 3), "seconds, = ", round((time.time() - plan.then) / 60, 3), "minutes.")
         print("Made", plan.schedule_counter, "schedule(s) until the 'right' was found.")
         print(Constraint.lecture_first(schedule, plan.courses)[1], "out of 39 correctly placed lectures.")
-        print(plan.own_session_points, "sessions were placed in a different timeslot.")
+        print(plan.own_session_points, "points for not placing own sessions in the same timeslot.")
         print("Spread bonus points:", Constraint.session_spread_check(schedule, plan.courses), "out of 440.")
 
 if __name__ == "__main__":
@@ -439,13 +439,13 @@ if __name__ == "__main__":
     spread_points = 0
     lecture_points = 0
     capacity_points = 0
-    mutual_course_malus = 0
 
     # Haal met het eerste algoritme een rooster er uit dat aan de hard constraints voldoet
-    # schedule, points, plan.schedule_counter, plan.own_session_points = firstalgorithm.hard_constraints(schedule, plan.courses, plan.schedule_counter)
+    # schedule, points, plan.schedule_counter, plan.own_session_points = hillclimber.hard_constraints(schedule, plan.courses, plan.schedule_counter)
 
     # Geef dit rooster mee aan de soft constraints
-    # schedule, points, plan.schedule_counter, plan.own_session_points = firstalgorithm.soft_constraint(schedule, plan.courses, plan.schedule_counter)
+    # schedule, points, plan.schedule_counter, plan.own_session_points = hillclimber.soft(schedule, plan.courses, plan.schedule_counter)
+
 
     # test genetic Algorithm
     # schedule1, lectures, other_sessions, empty_sessions = plan.initialize_schedule(plan.courses)
@@ -454,19 +454,23 @@ if __name__ == "__main__":
     # firstalgorithm.genetic_algortim(schedule1, schedule2)
 
     # mutual_course_malus = Constraint.mutual_courses_check(schedule, plan.courses)[1]
+
+    print(Constraint.own_sessions_check(schedule, plan.courses)[1])
+    mutual_course_malus = Constraint.mutual_courses_check(schedule, plan.courses)[1]
+
     # print(Constraint.own_sessions_check(schedule, plan.courses))
     # Constraint.all_constraints(schedule, plan.courses)
     spread_points = Constraint.session_spread_check(schedule, plan.courses)
-    # capacity_points = (Constraint.students_fit(schedule, plan.courses))
-    # lecture_points = Constraint.lecture_first(schedule, plan.courses)[1]
+    capacity_points = (Constraint.students_fit(schedule, plan.courses))
+    lecture_points = Constraint.lecture_first(schedule, plan.courses)[1]
 
-    # # Print the end-text
-    # plan.end()
-    # # Make a plot of the points
-    # try:
-    #     plan.makeplot(points)
-    # except:
-    #     print("No points to plot for now.")
+    # Print the end-text
+    plan.end()
+    # Make a plot of the points
+    try:
+        plan.makeplot(points)
+    except:
+        print("No points to plot for now.")
 
     # Make a html file for the schedule
     plan.save_html(schedule, rooms, spread_points, capacity_points, lecture_points, mutual_course_malus)
