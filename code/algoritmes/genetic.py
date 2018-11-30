@@ -1,3 +1,4 @@
+import copy
 import numpy as np
 from random import randint
 
@@ -14,8 +15,6 @@ def genetic_algortim(schedule1, schedule2):
     - maak lineaire lijst van beide roosters
     -
 
-    PROBLEEM:
-    HET GAAT FOUT MET EMPTY SESSIES EN DAAR WORDT IK VERDRIETIG VAN
     """
     flatten1 = np.array(schedule1).flatten().tolist()
     flatten2 = np.array(schedule2).flatten().tolist()
@@ -28,13 +27,14 @@ def genetic_algortim(schedule1, schedule2):
     for i in range(len(flatten2)):
         flatten2_id.append(flatten2[i].overall_id)
 
-    print(flatten1_id)
-    print(flatten2_id)
+    # print(flatten1_id)
+    # print(flatten2_id)
 
     cycles = []
+    cycles_len = []
     start_point = randint(0, SLOTS - 1)
 
-    for i in range(CHILDREN):
+    while len(cycles_len) < SLOTS:
         cycle_i = []
         index = flatten1.index(flatten1[start_point])
         in_cycle = [index]
@@ -43,21 +43,25 @@ def genetic_algortim(schedule1, schedule2):
         while flatten1_id[start_point] not in cycle_i:
             temp = flatten2_id[index]
             cycle_i.append(temp)
-
-            # HIER WILLEN WE DUS KIJKEN NAAR OVERALL_ID MAAR DAAR KAN JE NIET
-            # NAAR ZOEKEN WANT LIJST MET OBJECTEN EN NIET MET ID'S
             index = flatten1_id.index(temp)
             in_cycle.append(index)
-            # print(counter, temp, index, cycle_i)
             counter += 1
 
         cycles.append(cycle_i)
+        cycles_len += cycle_i
 
         start_point = randint(0, SLOTS - 1)
         while start_point in in_cycle:
             start_point = randint(0, SLOTS - 1)
 
-    print(cycles)
+    child1 = copy.deepcopy(flatten1)
+    child2 = copy.deepcopy(flatten2)
+    for i in range(len(cycles)):
+        for j in cycles[i]:
+            child1[j] = flatten2[j]
+            child2[j] = flatten1[j]
+
+
 
 
     #     cycle_i = []

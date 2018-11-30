@@ -28,7 +28,7 @@ import matplotlib
 matplotlib.use('TkAgg')
 import matplotlib.pyplot as plt
 
-
+SESSIONS = 129
 SLOTS = 140
 TIME_SLOTS = 4
 DAYS = 5
@@ -51,7 +51,7 @@ class Plan():
         session_list = []
         lecture_sessions = []
         other_sessions = []
-        # empty_sessions = []
+        empty_sessions = []
 
         # random.shuffle(courses)
 
@@ -65,14 +65,17 @@ class Plan():
             session_list[i].overall_id = session_counter
             session_counter += 1
 
-        # make a general empty session with overall_id 140
-        name = ' '
-        type = ' '
-        max_students = ' '
-        session_id = 'nvt2'
-        group_id = 'nvt2'
-        empty_session = Session(name, type, max_students, session_id, group_id)
-        empty_session.overall_id = 140
+
+        for i in range(SLOTS):
+            # make a general empty session with overall_id 140
+            name = ' '
+            type = ' '
+            max_students = ' '
+            session_id = 'nvt2'
+            group_id = 'nvt2'
+            empty_session = Session(name, type, max_students, session_id, group_id)
+            empty_session.overall_id = SLOTS
+            empty_sessions.append(empty_session)
 
         # for i in range(SLOTS - session_counter):
         #     # Maak lege sessies aan om lege cellen mee op te vullen
@@ -145,9 +148,12 @@ class Plan():
         # plan.fill_schedule(schedule, total, other_sessions, empty_sessions, courses)
         # print(session_list)
         # print(len(session_list))
+
+# VRAAG AAN DENK IK REBECCA: WAAROM DOEN WE DIT??
+
         new_sched = False
         while new_sched == False:
-            new_sched = plan.fill_schedule(schedule, session_list, lecture_sessions, empty_session, courses)
+            new_sched = plan.fill_schedule(schedule, session_list, lecture_sessions, empty_sessions, courses)
             plan.schedule_counter +=1
             # if plan.schedule_counter % 100 == 0:
             #     print(plan.schedule_counter)
@@ -158,10 +164,10 @@ class Plan():
         # VOOR NU: Even een random rooster
         # schedule = plan.random_schedule(schedule, total)
 
-        return schedule, total, other_sessions, empty_session
+        return schedule, total, other_sessions, empty_sessions
 
 
-    def fill_schedule(self, schedule, lectures, other_sessions, empty_session, courses):
+    def fill_schedule(self, schedule, lectures, other_sessions, empty_sessions, courses):
         """
         Fill empty schedule with sessions. This function will begin to fill all
         the lectures and will go on to fill other sessions.
@@ -174,10 +180,12 @@ class Plan():
         # Vul eerst met lege sessions
         # counter = 0
 
+        session_counter = 0
         for b in range(DAYS):
             for c in range(TIME_SLOTS):
                 for d in range(ROOMS):
-                    schedule[b][c][d] = empty_session
+                    schedule[b][c][d] = empty_sessions[session_counter]
+                    session_counter += 1
 
         # Verdelen over slots als hard constraint
 
@@ -301,7 +309,17 @@ class Plan():
                 # break
         if found:
 
-            #  TODO: VERANDER EMPTY_SESSIONS OVERAL_IDS
+            # give the empty_sessions overall_ids
+            overall_id_counter = 129
+            for i in range(DAYS):
+                for j in range(TIME_SLOTS):
+                    for k in range(ROOMS):
+
+                        # checks if the session is empty
+                        if schedule[i][j][k].overall_id == SLOTS:
+                            schedule[i][j][k].overall_id = overall_id_counter
+                            overall_id_counter += 1
+
             return schedule
 
         else:
@@ -444,7 +462,7 @@ if __name__ == "__main__":
 
     # Load all the courses, rooms and sessions
     plan.courses = loaddata.load_courses()
-    schedule, lectures, other_sessions, empty_session = plan.initialize_schedule(plan.courses)
+    schedule, lectures, other_sessions, empty_sessions = plan.initialize_schedule(plan.courses)
     rooms = loaddata.load_rooms()
     plan.own_session_points = 0
     spread_points = 0
@@ -459,8 +477,8 @@ if __name__ == "__main__":
 
 
     # test genetic Algorithm
-    schedule1, lectures, other_sessions, empty_session = plan.initialize_schedule(plan.courses)
-    schedule2, lectures, other_sessions, empty_session = plan.initialize_schedule(plan.courses)
+    schedule1, lectures, other_sessions, empty_sessions = plan.initialize_schedule(plan.courses)
+    schedule2, lectures, other_sessions, empty_sessions = plan.initialize_schedule(plan.courses)
 
     genetic.genetic_algortim(schedule1, schedule2)
 
