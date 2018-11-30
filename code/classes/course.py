@@ -49,7 +49,6 @@ class Course(object):
         sessions = []
         sessions_with_groups = []
         group_id = 0
-        temp_id = 0
 
         if type == 'lecture':
             session_id = 0
@@ -76,7 +75,7 @@ class Course(object):
                 group_id = 1
                 # make a session for every group
                 for j in range(group_count):
-                    session = Session(temp_id, self.name, type, max_students, session_id, group_id)
+                    session = Session(self.name, type, max_students, session_id, group_id)
                     sessions_with_groups.append(session)
                     group_id += 1
                 session_id += 1

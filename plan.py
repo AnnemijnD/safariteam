@@ -58,7 +58,7 @@ class Plan():
 
         session_counter = 0
         for i in range(len(session_list)):
-            session_list[i].id = session_counter
+            session_list[i].index = session_counter
             session_counter += 1
 
         # # Put every session into schedule
