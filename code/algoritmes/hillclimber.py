@@ -134,9 +134,9 @@ def soft(schedule, courses, schedule_counter):
 
     while Constraint.lecture_first(schedule, courses)[0] is False or \
             Constraint.own_sessions_check(schedule, courses)[1] < COURSECOUNT or \
-            Constraint.mutual_courses_check(schedule, courses)[1] > 0:
-            # Constraint.session_spread_check(schedule, courses) < 440 or \
-            # Constraint.students_fit(schedule, courses) > 0:
+            Constraint.mutual_courses_check(schedule, courses)[1] > 0 or \
+            Constraint.session_spread_check(schedule, courses) < 350 or \
+            Constraint.students_fit(schedule, courses) > 50:
         # Append points to show in a graph when the schedule is made
         points.append(get_points(schedule, courses))
         # Count the number of schedules made
@@ -166,9 +166,9 @@ def soft(schedule, courses, schedule_counter):
         if schedule_counter % LIMIT == 0:
             switcher = 1
 
-        # Force a change in the schedule at a local optimum
-        if schedule_counter % OPTIMUM == 0:
-            schedule = switch.switch_session(schedule, switcher)
+        # # Force a change in the schedule at a local optimum
+        # if schedule_counter % OPTIMUM == 0:
+        #     schedule = switch.switch_session(schedule, switcher)
 
 
 
