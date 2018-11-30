@@ -60,30 +60,6 @@ def hard_constraints(schedule, courses, schedule_counter):
         else:
             schedule = schedule1
 
-        # -----------------------------------------------------------------------------------
-        # DIT IS VOOR ALS HET ROOSTER IN EEN LOKAAL OPTIMUM KOMT.
-        # ZIJN VAST HEEL VEEL MANIEREN OM DIT TE VERBETEREN!!!
-
-        # Als het rooster 10 punten verder is, bewaar het rooster dan om er
-        # later op terug te kunnen komen
-        # if Constraint.lecture_first(schedule, courses)[1] % 10 == 0:
-        #     schedule_10_points = schedule
-        # Als het rooster vast blijft zitten, ga dan terug naar het originele
-        # rooster of naar het bewaarde rooster.
-
-
-        # if schedule_counter % LIMIT == 0:
-        #     schedule = switch.switch_session(schedule, 1)
-
-
-
-            # makeplot(points)
-            # if Constraint.lecture_first(schedule, courses)[1] % 10 == 0:
-            #     if schedule_10_points:
-            #         schedule = schedule_10_points
-            #     else:
-            #         schedule = save_schedule
-
     points.append(Constraint.lecture_first(schedule, courses)[1] + \
                   Constraint.own_sessions_check(schedule, courses)[1] - \
                   Constraint.mutual_courses_check(schedule, courses)[1])
@@ -91,43 +67,13 @@ def hard_constraints(schedule, courses, schedule_counter):
 
     return schedule, points, schedule_counter, Constraint.own_sessions_check(schedule, courses)[1]
 
-def soft_constraint(schedule, courses, schedule_counter):
-
-    points = []
-
-    while Constraint.session_spread_check(schedule, courses) < 50:
-        # Hou de punten bij zodat deze geplot kunnen worden.
-        points.append(Constraint.session_spread_check(schedule, courses))
-        print(Constraint.session_spread_check(schedule, courses))
-        # Hou een teller bij van het aantal roosters die gemaakt zijn
-        # schedule_counter += 1
-        # Bewaar het eerste rooster
-        schedule1 = schedule
-        spread_points1 = Constraint.session_spread_check(schedule1, courses)
-        # Maak een nieuw roosters
-        # 5 dingen per keer switchen gaat iets sneller dan 1 per keer
-        # Deze verandering mag alleen gemaakt worden als er dan nog aan de hard constraints voldaan wordt.
-        # Check dus; zolang er niet aan de hard constraints voldaan wordt, moet er opnieuw geswitcht worden.
-        # while Constraint.hard_constraints(schedule, courses) == False:
-        schedule2 = switch.switch_session(schedule, 2)
-        # Bereken de punten van het nieuwe rooster
-        spread_points2 = Constraint.session_spread_check(schedule2, courses)
-        # Als deze hetzelfde aantal of meer punten heeft, accepteer dit rooster dan.
-        print(Constraint.hard_constraints(schedule2, courses) == True)
-        if spread_points2 >= spread_points1 and Constraint.hard_constraints(schedule2, courses) == True:
-            # Accepteer dit rooster
-            schedule = schedule2
-            schedule_counter += 1
-        # Als deze minder punten heeft, ga dan terug naar het vorige rooster
-        else:
-            schedule = schedule1
-            # lol dit klopt niet maar even tijdelijk
-            schedule_counter += 1
-
-    return schedule, points, schedule_counter, Constraint.session_spread_check(schedule, courses)
-
 
 def soft(schedule, courses, schedule_counter):
+    """
+    Generates a schedule using a hill climber algorithm.
+    Input is a random schedule, output is a schedule that fulfills all hard-
+    and soft constraints.
+    """
 
     switcher = 3
     points = []
@@ -145,24 +91,22 @@ def soft(schedule, courses, schedule_counter):
         schedule1 = schedule
         # Get points of the first schedule
         schedule1_points = get_points(schedule1, courses)
-        # Make a new schedule by switching
+        # Make a new schedule by switching random sessions. Amount of sessions
+        # switched starts high and ends low.
         schedule2 = switch.switch_session(schedule, switcher)
-        # Bereken de punten van het nieuwe rooster
+        # Get points of the new (not yet accepted) schedule
         schedule2_points = get_points(schedule2, courses)
-        # Als deze hetzelfde aantal of meer punten heeft, accepteer dit rooster dan.
+        # Accept new schedule if it has more points that the old schedule.
+        # Also accept schedules with equal number of points for a higher chance
+        # of finding a solution!
         if schedule2_points >= schedule1_points:
-            # Accepteer dit rooster
             schedule = schedule2
-        # Als deze minder punten heeft, ga dan terug naar het vorige rooster
+        # If the second schedule has less points, go back to the old schedule.
         else:
             schedule = schedule1
-
-        # ALs het rooster een limiet heeft bereikt, zet de switcher dan op 1
-        # Hierbij neemt de kans toe dat er een goed rooster wordt gevonden, maar duurt het wel langer.
-        # if schedule_counter % LIMIT == 0:
-        #     makeplot(points)
-
-        # Lower the heat, by changing switcher to 1.
+        # If a limit is reached, change the number of switches to 1, resulting
+        # in a higher chance of finding schedule with more points. Disadvantage
+        # is that it takes longer to find a good schedule.
         if schedule_counter % LIMIT == 0:
             switcher = 1
 
@@ -170,18 +114,18 @@ def soft(schedule, courses, schedule_counter):
         # if schedule_counter % OPTIMUM == 0:
         #     schedule = switch.switch_session(schedule, switcher)
 
-
-
+    # Append last points of the new schedule
     points.append(get_points(schedule, courses))
 
+    # Return the generated schedule and its points
     return schedule, points, schedule_counter, Constraint.own_sessions_check(schedule, courses)[1]
 
 
 def get_points(schedule, courses):
     """
-    Returns the points of a given schedule.
+    Returns the points of a given schedule. Some constraint checks return
+    negative points, so these are substracted in stead of added to the points.
     """
-
     points = Constraint.lecture_first(schedule, courses)[1] + \
             Constraint.own_sessions_check(schedule, courses)[1] - \
             Constraint.mutual_courses_check(schedule, courses)[1] + \

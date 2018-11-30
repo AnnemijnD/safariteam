@@ -438,7 +438,7 @@ if __name__ == "__main__":
     # schedule, points, plan.schedule_counter, plan.own_session_points = hillclimber.hard_constraints(schedule, plan.courses, plan.schedule_counter)
 
     # Geef dit rooster mee aan de soft constraints
-    schedule, points, plan.schedule_counter, plan.own_session_points = hillclimber.soft(schedule, plan.courses, plan.schedule_counter)
+    # schedule, points, plan.schedule_counter, plan.own_session_points = hillclimber.soft(schedule, plan.courses, plan.schedule_counter)
 
     print(Constraint.own_sessions_check(schedule, plan.courses)[1])
     mutual_course_malus = Constraint.mutual_courses_check(schedule, plan.courses)[1]
