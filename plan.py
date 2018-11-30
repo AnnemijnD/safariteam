@@ -51,7 +51,6 @@ class Plan():
         other_sessions = []
         empty_sessions = []
 
-
         # random.shuffle(courses)
 
         # ANNEMIJN KAN JE HIER NOG EEN COMMENT BIJ ZETTEN, SNap niet wat je hier hebt gedaan
@@ -413,8 +412,7 @@ class Plan():
         print("SUCCES!!")
         print("It took:", round(time.time() - plan.then, 3), "seconds, = ", round((time.time() - plan.then) / 60, 3), "minutes.")
         print("Made", plan.schedule_counter, "schedule(s) until the 'right' was found.")
-        print(Constraint.lecture_first(schedule, plan.courses)[1], "out of 39 correctly placed lectures.")
-        print(plan.own_session_points, "points for not placing own sessions in the same timeslot.")
+        print(plan.own_session_points, "minus points for placing mutual courses in the same timeslot.")
         print("Spread bonus points:", Constraint.session_spread_check(schedule, plan.courses), "out of 440.")
 
 if __name__ == "__main__":
@@ -434,27 +432,29 @@ if __name__ == "__main__":
     lecture_points = 0
     capacity_points = 0
 
+    # schedule = switch.switch_session(schedule, 50)
+
     # Haal met het eerste algoritme een rooster er uit dat aan de hard constraints voldoet
-    # schedule, points, plan.schedule_counter, plan.own_session_points = hillclimber.hard_constraints(schedule, plan.courses, plan.schedule_counter)
+    # schedule, points, plan.schedule_counter = hillclimber.hard_constraints(schedule, plan.courses, plan.schedule_counter)
 
     # Geef dit rooster mee aan de soft constraints
-    # schedule, points, plan.schedule_counter, plan.own_session_points = hillclimber.soft(schedule, plan.courses, plan.schedule_counter)
+    # schedule, points, plan.schedule_counter = hillclimber.soft(schedule, plan.courses, plan.schedule_counter)
 
-    print(Constraint.own_sessions_check(schedule, plan.courses)[1])
-    mutual_course_malus = Constraint.mutual_courses_check(schedule, plan.courses)[1]
-    # print(Constraint.own_sessions_check(schedule, plan.courses))
+    # print(Constraint.mutual_courses_check(schedule, plan.courses))
+    mutual_course_malus = Constraint.mutual_courses_check(schedule, plan.courses)
     # Constraint.all_constraints(schedule, plan.courses)
     spread_points = Constraint.session_spread_check(schedule, plan.courses)
     capacity_points = (Constraint.students_fit(schedule, plan.courses))
     lecture_points = Constraint.lecture_first(schedule, plan.courses)[1]
+    Constraint.lecture_first(schedule, plan.courses)
 
-    # Print the end-text
-    plan.end()
-    # Make a plot of the points
-    try:
-        plan.makeplot(points)
-    except:
-        print("No points to plot for now.")
+    # # Print the end-text
+    # plan.end()
+    # # Make a plot of the points
+    # try:
+    #     plan.makeplot(points)
+    # except:
+    #     print("No points to plot for now.")
 
     # Make a html file for the schedule
     plan.save_html(schedule, rooms, spread_points, capacity_points, lecture_points, mutual_course_malus)
