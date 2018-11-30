@@ -82,7 +82,7 @@ class Course(object):
 
             else:
                 group_id = 0
-                session = Session(temp_id, self.name, type, max_students, session_id, group_id)
+                session = Session(self.name, type, max_students, session_id, group_id)
                 sessions_with_groups.append(session)
                 session_id += 1
 

@@ -8,7 +8,7 @@ class Session(object):
     """
 
     def __init__(self, name, type, max_students, session_id, group_id):
-        self.index = 0
+        self.overall_id = 0
         self.name = name
         self.type = type
         self.max_students = max_students
