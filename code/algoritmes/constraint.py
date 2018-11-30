@@ -76,13 +76,9 @@ class Constraint():
         constrains in the comments bellow.
         A course can maximally get 20 points, this amount is spreaded over the
         number of groups a course has.
-<<<<<<< HEAD
 
         Maximum amount of bonuspoints is 440
         Maximum amount of maluspoints is 430
-=======
-        Maxium amount of bonuspoints is 440
->>>>>>> 9a19dd072fba0aa783898658e046e55f633123ea
         """
         courses_schedule = Constraint.all_constraints(schedule, courses)
         bonuspoints = 0
@@ -174,11 +170,8 @@ class Constraint():
             #         maluspoints += (malusfactor * 10) / len(sessions)
 
         bonuspoints = round(bonuspoints)
-<<<<<<< HEAD
         print(f"bonuspoints: {bonuspoints}")
         print(f"maluspoints: {maluspoints}")
-=======
->>>>>>> 9a19dd072fba0aa783898658e046e55f633123ea
         return bonuspoints
 
     def lecture_first(schedule, courses):
@@ -282,7 +275,7 @@ class Constraint():
             # return False if there are sessions planned at the same time
             # Als de gefilterde lijst even groot is als de niet-gefilterde lijst,
             # dan is er geen overlappend vak (dus + 1 punt)
-            # Dit kunnen er maximaal 29 zijn, want er zijn 29 vakken. 
+            # Dit kunnen er maximaal 29 zijn, want er zijn 29 vakken.
             if len(set(course_sessions)) == len(course_sessions):
                 own_session_points += 1
             # Als er wel een overlappend vak is, check dan of dit een groep is.

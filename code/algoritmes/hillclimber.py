@@ -21,7 +21,7 @@ MUTUALCOURSES = 33
 LECTURECOUNT = 39
 SLOTS = 140
 SPREADPOINTS = 440
-<<<<<<< HEAD:code/algoritmes/firstalgorithm.py
+
 CHILDREN = 2
 
 
@@ -90,9 +90,7 @@ def genetic_algortim(schedule1, schedule2):
     #         start_point = randint(0, SLOTS - 1)
     #
     # print(f"cycles: {cycles}")
-=======
 SAVELIMIT = 3000
->>>>>>> 9a19dd072fba0aa783898658e046e55f633123ea:code/algoritmes/hillclimber.py
 
 
 def hard_constraints(schedule, courses, schedule_counter):
