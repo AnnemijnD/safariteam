@@ -77,10 +77,13 @@ class Constraint():
         constrains in the comments bellow.
         A course can maximally get 20 points, this amount is spreaded over the
         number of groups a course has.
-        Maxium amount of bonuspoints is 440
+
+        Maximum amount of bonuspoints is 440
+        Maximum amount of maluspoints is 430
         """
         courses_schedule = Constraint.all_constraints(schedule, courses)
         bonuspoints = 0
+        maluspoints = 0
 
         for course in courses:
             id = course.course_id
@@ -155,7 +158,21 @@ class Constraint():
                        (courses_schedule[id]["day"][sessions[i][4]] == 4):
                         bonuspoints += spread_bonus
 
+            # for i in range(len(sessions)):
+            #     days = []
+            #     print(course.name)
+            #     print(groups)
+            #     print(sessions[i])
+            #     print(courses_schedule[id]["day"])
+            #     for j in range(groups - 1):
+            #         days.append(courses_schedule[id]["day"][sessions[i][j]])
+            #     if len(days) - len(set(days)) > 0:
+            #         malusfactor = (course.sessions - len(days) - len(set(days)))
+            #         maluspoints += (malusfactor * 10) / len(sessions)
+
         bonuspoints = round(bonuspoints)
+        print(f"bonuspoints: {bonuspoints}")
+        print(f"maluspoints: {maluspoints}")
         return bonuspoints
 
     def lecture_first(schedule, courses):

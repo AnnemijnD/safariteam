@@ -58,6 +58,10 @@ class Plan():
         for course in courses:
             session_list = session_list + course.sessions_total
 
+        session_counter = 0
+        for i in range(len(session_list)):
+            session_list[i].overall_id = session_counter
+            session_counter += 1
 
         # # Put every session into schedule
         # for i in range(SLOTS):
@@ -97,13 +101,15 @@ class Plan():
         # Maak lege sessies aan om lege cellen mee op te vullen
         # Dit stukje wordt gebruikt in de nested for loop waarbij aan elke cel
         # een sessie wordt meegegeven.
+        # TODO: WE MOETEN NOG DE RANGE AANPASSEN
         for i in range(140-72):
             name = ' '
             type = ' '
             max_students = ' '
+            id = 'nvt2'
             session_id = 'nvt2'
             group_id = 'nvt2'
-            session = Session(name, type, max_students, session_id, group_id)
+            session = Session(id, name, type, max_students, session_id, group_id)
             # session = Session(name, type, room, timeslot, day)
             empty_sessions.append(session)
 
@@ -442,6 +448,13 @@ if __name__ == "__main__":
 
     # print(Constraint.mutual_courses_check(schedule, plan.courses))
     mutual_course_malus = Constraint.mutual_courses_check(schedule, plan.courses)
+
+    # test genetic Algorithm
+    # schedule1, lectures, other_sessions, empty_sessions = plan.initialize_schedule(plan.courses)
+    # schedule2, lectures, other_sessions, empty_sessions = plan.initialize_schedule(plan.courses)
+
+    # firstalgorithm.genetic_algortim(schedule1, schedule2)
+
     # Constraint.all_constraints(schedule, plan.courses)
     spread_points = Constraint.session_spread_check(schedule, plan.courses)
     capacity_points = (Constraint.students_fit(schedule, plan.courses))

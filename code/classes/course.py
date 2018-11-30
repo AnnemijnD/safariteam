@@ -45,6 +45,8 @@ class Course(object):
         -----
         """
 
+        index = 0
+
         mutual_courses = []
         sessions = []
         sessions_with_groups = []
@@ -75,14 +77,14 @@ class Course(object):
                 group_id = 1
                 # make a session for every group
                 for j in range(group_count):
-                    session = Session(self.name, type, max_students, session_id, group_id)
+                    session = Session(index, self.name, type, max_students, session_id, group_id)
                     sessions_with_groups.append(session)
                     group_id += 1
                 session_id += 1
 
             else:
                 group_id = 0
-                session = Session(self.name, type, max_students, session_id, group_id)
+                session = Session(index, self.name, type, max_students, session_id, group_id)
                 sessions_with_groups.append(session)
                 session_id += 1
 
