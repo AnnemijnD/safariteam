@@ -1,18 +1,26 @@
 import copy
 import numpy as np
+from constraint import Constraint
 from random import randint
 
 CHILDREN = 2
 SLOTS = 140
 
 
+def evaluate(schedule, courses):
+    """
+    Alle constraint functies bij elkaar, returned 1 getal
+    """
+    pass
+    course_schedule = Constraint.all_constraints(schedule, courses)
+
+
 def genetic_algortim(schedule1, schedule2):
     """
     Dit gaat ooit een genetisch algortime worden.
 
-    Begin met twee roosters combineren:
-    PSEUDO:
-    - maak lineaire lijst van beide roosters
+    TODO:
+    - de twee kinderen omzetten naar echte roosters die we kunnen evalueren
     -
 
     """
@@ -26,9 +34,6 @@ def genetic_algortim(schedule1, schedule2):
     flatten2_id = []
     for i in range(len(flatten2)):
         flatten2_id.append(flatten2[i].overall_id)
-
-    # print(flatten1_id)
-    # print(flatten2_id)
 
     cycles = []
     cycles_len = []
@@ -60,7 +65,6 @@ def genetic_algortim(schedule1, schedule2):
         for j in cycles[i]:
             child1[j] = flatten2[j]
             child2[j] = flatten1[j]
-
 
 
 
