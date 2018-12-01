@@ -1,5 +1,6 @@
 import loaddata
 import numpy as np
+import switch
 
 SLOTS = 140
 TIME_SLOTS = 4
@@ -186,124 +187,112 @@ class Constraint():
         """
         lecture_points = 0
         courses_schedule = Constraint.all_constraints(schedule, courses)
-        for course in courses:
 
-            # checks for the amount of lectures if the lectures are planned first
+        for course in courses:
+            # checks for the number of lectures if the lectures are planned first
             for i in range(course.lecture):
                 if courses_schedule[course.course_id]["type"][i] != "lecture":
-                    return [False, lecture_points]
-                else:
                     lecture_points += 1
 
-        return [True, lecture_points]
+        return lecture_points
 
     def mutual_courses_check(schedule, courses):
         """
-        Checks if the mutual courses aren't scheduled in the same slot
-        ----
-        !!!!!!! WERKT NOG NIET !!!!!!!!!!!
-        ZIJN NOG MEERDERE PROBLEMEN!!
-        1 course.mutual_courses bevat alleen maar de naam vd courses
-        Als we dat hebben veranderd kunnen we het gecommente stuk checken
-
-        Rebecca: Kan misschien gecombineerd worden met own_sessions_check, aangezien
-        je hier ook gewoon loopt door course in courses. Gewoon own_sessions_check
-        iets meer uitbreiden met deze functie zodat er uiteindelijk minder geloopt wordt
-
-        MAXIMUM PUNTEN VOOR MUTUAL COURSES BEREKENEN
-
+        Checks if same courses and  mutual courses aren't scheduled in the
+        same timeslot. Iterates over every course in the schedule.
+        Input is a schedule, output is the number of minus points calculated
+        by the number of conflicting courses.
         """
-        courses_schedule = Constraint.all_constraints(schedule, courses)
-        malus_points = 0
 
-         # check voor elk slot in het rooster
+        minus_points = 0
+
+        # Check every slot in the schedule
         for i in range(DAYS):
             for j in range(TIME_SLOTS):
                 for k in range(ROOMS):
-                    # check of het slot ook echt gevuld is (dus geen 'None')
+                    # Check if this slot is filled (= check if not None)
                     if schedule[i][j][k].course_object:
-                        if schedule[i][j][k].type == 'lecture':
-                            # elk gevuld slot heeft een naam van de course met zijn mutual courses
+                        # Check if session in this slot is a lecture
+                        if schedule[i][j][k].type == "lecture":
+                            # Each slot has a course name and the courses' mutual courses
+                            # Mutual courses is a list of courses that can't be in the same timeslot
                             mutual_courses = schedule[i][j][k].course_object.mutual_courses
-                            # Voor elk ding in mutual_courses, check of het in het tijdslot zit van deze course
-                            # DIT MOET ANDERS, DIT KAN IN MINDER LOOPS!!!!!
-                            # Je kan toch zeggen: if 'name' in [name1, name2, name3 ...]???
-                            for l in range(len(mutual_courses)):
+                            # For every mutual course in the mutual_courses list,
+                            # check if it is placed in the same timeslot.
+                            for mutual_course in range(len(mutual_courses)):    # DIT MOET ANDERS, DIT KAN IN MINDER LOOPS??!!
+                                                                                # Je kan toch zeggen: if 'name' in [name1, name2, name3 ...]???
                                 for z in range(len(schedule[i][j])):
-                                    # als de mutual_course in deze timeslot zit geef dan 1 maluspunt
-                                    if mutual_courses[l] in schedule[i][j][z].name:
-                                        malus_points += 1
+                                    # If this mutual course is placed in the same timeslot
+                                    # (for example Bioinformatica and Compilerbouw),
+                                    # count one minus point.
+                                    if mutual_courses[mutual_course] in schedule[i][j][z].name:
+                                        minus_points += 1
+                            # Also, if this course has a session of its own in
+                            # this timeslot (for example: Bioinformatica and Bioinformatica)
+                            # count one minus point.
+                            own_session_counter = 0
+                            for z in range(len(schedule[i][j])):
+                                if schedule[i][j][z].name == schedule[i][j][k].name:
+                                    # Count how many own_sessions there are in this timeslot
+                                    own_session_counter += 1
+                                # If own_session_counter is greater than 1, there is
+                                # a conflicting session placed in this timeslot.
+                                if own_session_counter > 1:
+                                    minus_points += 1
 
-        # for course in courses:
-        #     # print(course.name)
-        #     # print(course.mutual_courses)
-        #
-        #     # adds (day, slot) of every session of course to course_sessions
-        #     checked_course = courses_schedule[course.course_id]
-        #     course_sessions = []
-        #     for i in range(len(checked_course["day"])):
-        #         course_sessions.append((checked_course["day"][i], checked_course["slot"][i]))
+                                # HIER MOET NOG EEN MALUS PUNT KOMEN VOOR ALS TUTORIAL GROEP A
+                                # SAMEN MET PRACTICUM GROEP A ZIT!!!
+        return minus_points
 
-            # # checks for all the mutual courses if they are at the same time
-            # for mutual in course.mutual_courses:
-            #     mutual_course = courses_schedule[mutual.course_id]
-            #
-            #     # adds (day, slot) of every session of mutual to mutual_sessions
-            #     mutual_sessions = []
-            #     for i in range(len(mutual_course)):
-            #         mutual_sessions.append((mutual_course["day"][i], mutual_course["slot"][i]))
-            #
-            #     # return False if there are sessions planned at the same time
-            #     checked_sessions = course_sessions + mutual_sessions
-            #     if len(set(checked_sessions)) < len(checked_sessions):
-            #         return False
-
-        return True, malus_points
-
-    def own_sessions_check(schedule, courses):
-        """
-        Returns true if the sessions of a course aren't planned in the same
-        slot; counts amount of points for each course that is placed in a different
-        UPDATE: MAX = 62
-        """
-        own_session_points = 0
-        courses_schedule = Constraint.all_constraints(schedule, courses)
-
-        for course in courses:
-            checked_course = courses_schedule[course.course_id]
-
-            # adds (day, slot) of every session to course_sessions
-            course_sessions = []
-            for i in range(len(checked_course["day"])):
-                course_sessions.append((checked_course["day"][i], checked_course["slot"][i]))
-                sessionID = checked_course["session_id"][i]
-            # return False if there are sessions planned at the same time
-            # Als de gefilterde lijst even groot is als de niet-gefilterde lijst,
-            # dan is er geen overlappend vak (dus + 1 punt)
-            # Dit kunnen er maximaal 29 zijn, want er zijn 29 vakken.
-            if len(set(course_sessions)) == len(course_sessions):
-                own_session_points += 1
-            # Als er wel een overlappend vak is, check dan of dit een groep is.
-            # Check dit aan de hand van de session_id en group_id.
-            # alle group_ids met dezelfde session_id mogen als uitzondering wel bij elkaar.
-            else:
-                for i in range(len(checked_course["group_id"])): # of in range (session_id), maakt niet uit, zijn even lang.
-                    # Check of het een werkcollege of practicum is (deze hebben een group_id van groter dan 1)
-                    if checked_course["group_id"][i] > 0:
-                        # print(checked_course["session_id"][i] == sessionID)
-                        # Check of deze session_id gelijk is aan de session_id van de huidige iteratie
-                        # Als dit wel zo is, dan is dit vak ook toegestaan in hetzelfde tijslot
-                        # Dus tel een punt op.
-                        if checked_course["session_id"][i] == sessionID:
-                            own_session_points += 1
-
-                        # for j in range(len(course_ids)):
-                        #     if course_ids["session_id"] == checked_course["session_id"][i]:
-                        #         print("tes")
-
-
-
-        return True, own_session_points
+    # def own_sessions_check(schedule, courses):
+    #     """
+    #     Returns true if the sessions of a course aren't planned in the same
+    #     slot; counts amount of points for each course that is placed in a different
+    #     UPDATE: MAX = 62
+    #     """
+    #
+    #     own_session_points = 0
+    #     # Get the schedule with locations of every course and its session
+    #     courses_schedule = Constraint.all_constraints(schedule, courses)
+    #
+    #     # For every course; check if this course has one of its own sessions
+    #     # in the same timeslot.
+    #     for course in courses:
+    #         # Get the locations of every session for a specific course.
+    #         checked_course = courses_schedule[course.course_id]
+    #
+    #         # Make a selection by adding (day, slot) of every session to course_sessions
+    #         course_sessions = []
+    #         for i in range(len(checked_course["day"])):
+    #             course_sessions.append((checked_course["day"][i], checked_course["slot"][i]))
+    #
+    #             sessionID = checked_course["session_id"][i]
+    #         # return False if there are sessions planned at the same time
+    #         # Als de gefilterde lijst even groot is als de niet-gefilterde lijst,
+    #         # dan is er geen overlappend vak (dus + 1 punt)
+    #         # Dit kunnen er maximaal 29 zijn, want er zijn 29 vakken.
+    #         if len(set(course_sessions)) == len(course_sessions):
+    #             own_session_points += 1
+    #         # Als er wel een overlappend vak is, check dan of dit een groep is.
+    #         # Check dit aan de hand van de session_id en group_id.
+    #         # alle group_ids met dezelfde session_id mogen als uitzondering wel bij elkaar.
+    #         else:
+    #             for i in range(len(checked_course["group_id"])): # of in range (session_id), maakt niet uit, zijn even lang.
+    #                 # Check of het een werkcollege of practicum is (deze hebben een group_id van groter dan 1)
+    #                 if checked_course["group_id"][i] > 0:
+    #                     # print(checked_course["session_id"][i] == sessionID)
+    #                     # Check of deze session_id gelijk is aan de session_id van de huidige iteratie
+    #                     # Als dit wel zo is, dan is dit vak ook toegestaan in hetzelfde tijslot
+    #                     # Dus tel een punt op.
+    #                     if checked_course["session_id"][i] == sessionID:
+    #                         own_session_points += 1
+    #
+    #                     # for j in range(len(course_ids)):
+    #                     #     if course_ids["session_id"] == checked_course["session_id"][i]:
+    #                     #         print("tes")
+    #
+    #
+    #     return True, own_session_points
 
     def students_fit(schedule, courses):
         """

@@ -1,5 +1,6 @@
 
 SLOTS = 140
+A = 65
 
 
 class Session(object):
@@ -29,6 +30,7 @@ class Session(object):
         """
         return self.name
 
+    # Dit gebruiken we volgens mij niet meer?
     def __getitem__(self, day):
         return self.day
 
@@ -36,4 +38,4 @@ class Session(object):
         if self.max_students == " ":
             return f'{self.name} {self.type}'
         else:
-            return f'{self.name} {self.type}, group: {(chr(self.group_id + 65))}, ({self.max_students} students)'
+            return f'{self.name} {self.type}, group: {(chr(self.group_id + A))}, ({self.max_students} students)'
