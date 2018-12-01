@@ -30,21 +30,21 @@ def hard_constraints(schedule, courses, schedule_counter):
     # Om de code te met dit algoritme helemaal te runnen dan zet je hier
     # de bovenste regel weer 'aan'! (even ont-commenten)
 
-    while Constraint.lecture_first(schedule, courses)[1] > 1 or \
+    while Constraint.lecture_first(schedule, courses) > 0 or \
             Constraint.mutual_courses_check(schedule, courses) > 0:
 
-        points.append(Constraint.lecture_first(schedule, courses)[1] + \
+        points.append(Constraint.lecture_first(schedule, courses) + \
                       Constraint.mutual_courses_check(schedule, courses))
         schedule_counter += 1
         # Bewaar het eerste rooster
         schedule1 = schedule
-        lecture_points1 = Constraint.lecture_first(schedule1, courses)[1]
+        lecture_points1 = Constraint.lecture_first(schedule1, courses)
         mutual_points1 = Constraint.mutual_courses_check(schedule1, courses)
         # Maak een nieuw roosters
         # 5 dingen per keer switchen gaat iets sneller dan 1 per keer
-        schedule2 = switch.switch_session(schedule, 6)
+        schedule2 = switch.switch_session(schedule, 3)
         # Bereken de punten van het nieuwe rooster
-        lecture_points2 = Constraint.lecture_first(schedule2, courses)[1]
+        lecture_points2 = Constraint.lecture_first(schedule2, courses)
         mutual_points2 = Constraint.mutual_courses_check(schedule2, courses)
         # Als deze hetzelfde aantal of meer punten heeft, accepteer dit rooster dan.
         if lecture_points2 <= lecture_points1 \
@@ -57,7 +57,7 @@ def hard_constraints(schedule, courses, schedule_counter):
         # if schedule_counter % 700 == 0:
         #     makeplot(points)
 
-    points.append(Constraint.lecture_first(schedule, courses)[1] - \
+    points.append(Constraint.lecture_first(schedule, courses) - \
                   Constraint.mutual_courses_check(schedule, courses))
 
 
@@ -74,9 +74,9 @@ def soft(schedule, courses, schedule_counter):
     switcher = 3
     points = []
 
-    while Constraint.lecture_first(schedule, courses)[1] > 1 or \
+    while Constraint.lecture_first(schedule, courses) > 0 or \
             Constraint.mutual_courses_check(schedule, courses) > 0 or \
-            Constraint.session_spread_check(schedule, courses) < 0 or \
+            Constraint.session_spread_check(schedule, courses) < 300 or \
             Constraint.students_fit(schedule, courses) > 400:
         # Append points to show in a graph when the schedule is made
         points.append(get_points(schedule, courses))
@@ -127,7 +127,7 @@ def get_points(schedule, courses):
     Minimum of malus points of students_fit() = 0 and maxmimum = 1332.
     """
     points = Constraint.session_spread_check(schedule, courses) - \
-            Constraint.lecture_first(schedule, courses)[1] - \
+            Constraint.lecture_first(schedule, courses) - \
             Constraint.mutual_courses_check(schedule, courses) - \
             Constraint.students_fit(schedule, courses)
 

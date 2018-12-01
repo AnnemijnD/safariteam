@@ -411,7 +411,7 @@ class Plan():
         plt.ylabel("Points")
         plt.show()
 
-    def end(self):
+    def end(self, schedule):
         """
         Prints text to tell user how many schedules were made and how long it took to make.
         """
@@ -421,53 +421,59 @@ class Plan():
         print(plan.own_session_points, "minus points for placing mutual courses in the same timeslot.")
         print("Spread bonus points:", Constraint.session_spread_check(schedule, plan.courses), "out of 440.")
 
+    def generate(self):
+        """
+        Generates a schedule that fulfills all constraints using different algorithms.
+        """
+
+        plan.then = time.time()
+        print("Loading...")
+        plan.random_numbers = []
+        plan.schedule_counter = 0
+
+        # Load all the courses, rooms and sessions
+        plan.courses = loaddata.load_courses()
+        schedule, lectures, other_sessions, empty_sessions = plan.initialize_schedule(plan.courses)
+        rooms = loaddata.load_rooms()
+        plan.own_session_points = 0
+        spread_points = 0
+        lecture_points = 0
+        capacity_points = 0
+
+        # Haal met het eerste algoritme een rooster er uit dat aan de hard constraints voldoet
+        # schedule, points, plan.schedule_counter = hillclimber.hard_constraints(schedule, plan.courses, plan.schedule_counter)
+
+        # Geef dit rooster mee aan de soft constraints
+        # schedule, points, plan.schedule_counter = hillclimber.soft(schedule, plan.courses, plan.schedule_counter)
+
+        # print(Constraint.mutual_courses_check(schedule, plan.courses))
+        mutual_course_malus = Constraint.mutual_courses_check(schedule, plan.courses)
+
+        # test genetic Algorithm
+        # schedule1, lectures, other_sessions, empty_sessions = plan.initialize_schedule(plan.courses)
+        # schedule2, lectures, other_sessions, empty_sessions = plan.initialize_schedule(plan.courses)
+
+        # firstalgorithm.genetic_algortim(schedule1, schedule2)
+
+        # Constraint.all_constraints(schedule, plan.courses)
+        spread_points = Constraint.session_spread_check(schedule, plan.courses)
+        capacity_points = (Constraint.students_fit(schedule, plan.courses))
+        lecture_points = Constraint.lecture_first(schedule, plan.courses)
+        Constraint.lecture_first(schedule, plan.courses)
+
+        # Print the end-text
+        plan.end(schedule)
+        # Make a plot of the points
+        try:
+            plan.makeplot(points)
+        except:
+            print("No points to plot for now.")
+
+        # Make a html file for the schedule
+        plan.save_html(schedule, rooms, spread_points, capacity_points, lecture_points, mutual_course_malus)
+
+
 if __name__ == "__main__":
 
     plan = Plan()
-    plan.then = time.time()
-    print("Loading...")
-    plan.random_numbers = []
-    plan.schedule_counter = 0
-
-    # Load all the courses, rooms and sessions
-    plan.courses = loaddata.load_courses()
-    schedule, lectures, other_sessions, empty_sessions = plan.initialize_schedule(plan.courses)
-    rooms = loaddata.load_rooms()
-    plan.own_session_points = 0
-    spread_points = 0
-    lecture_points = 0
-    capacity_points = 0
-
-    # schedule = switch.switch_session(schedule, 50)
-
-    # Haal met het eerste algoritme een rooster er uit dat aan de hard constraints voldoet
-    # schedule, points, plan.schedule_counter = hillclimber.hard_constraints(schedule, plan.courses, plan.schedule_counter)
-
-    # Geef dit rooster mee aan de soft constraints
-    # schedule, points, plan.schedule_counter = hillclimber.soft(schedule, plan.courses, plan.schedule_counter)
-
-    # print(Constraint.mutual_courses_check(schedule, plan.courses))
-    mutual_course_malus = Constraint.mutual_courses_check(schedule, plan.courses)
-
-    # test genetic Algorithm
-    # schedule1, lectures, other_sessions, empty_sessions = plan.initialize_schedule(plan.courses)
-    # schedule2, lectures, other_sessions, empty_sessions = plan.initialize_schedule(plan.courses)
-
-    # firstalgorithm.genetic_algortim(schedule1, schedule2)
-
-    # Constraint.all_constraints(schedule, plan.courses)
-    spread_points = Constraint.session_spread_check(schedule, plan.courses)
-    capacity_points = (Constraint.students_fit(schedule, plan.courses))
-    lecture_points = Constraint.lecture_first(schedule, plan.courses)[1]
-    Constraint.lecture_first(schedule, plan.courses)
-
-    # # Print the end-text
-    # plan.end()
-    # # Make a plot of the points
-    # try:
-    #     plan.makeplot(points)
-    # except:
-    #     print("No points to plot for now.")
-
-    # Make a html file for the schedule
-    plan.save_html(schedule, rooms, spread_points, capacity_points, lecture_points, mutual_course_malus)
+    plan.generate()

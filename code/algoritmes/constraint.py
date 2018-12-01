@@ -158,6 +158,9 @@ class Constraint():
                        (courses_schedule[id]["day"][sessions[i][4]] == 4):
                         bonuspoints += spread_bonus
 
+            # HIER MOET TOCH OOK NOG ALS DE COURSE 6 DINGEN HEEFT!?
+
+
             # for i in range(len(sessions)):
             #     days = []
             #     print(course.name)
@@ -171,8 +174,8 @@ class Constraint():
             #         maluspoints += (malusfactor * 10) / len(sessions)
 
         bonuspoints = round(bonuspoints)
-        print(f"bonuspoints: {bonuspoints}")
-        print(f"maluspoints: {maluspoints}")
+        # print(f"bonuspoints: {bonuspoints}")
+        # print(f"maluspoints: {maluspoints}")
         return bonuspoints
 
     def lecture_first(schedule, courses):
@@ -182,18 +185,14 @@ class Constraint():
         """
         lecture_points = 0
         courses_schedule = Constraint.all_constraints(schedule, courses)
+
         for course in courses:
-
-
             # checks for the number of lectures if the lectures are planned first
             for i in range(course.lecture):
                 if courses_schedule[course.course_id]["type"][i] != "lecture":
                     lecture_points += 1
-                    # print(lecture_points)
-                    # print("YES")
-                    return [False, lecture_points]
 
-        return [True, lecture_points]
+        return lecture_points
 
     def mutual_courses_check(schedule, courses):
         """
@@ -234,9 +233,9 @@ class Constraint():
                                 if schedule[i][j][z].name == schedule[i][j][k].name:
                                     # Count how many own_sessions there are in this timeslot
                                     own_session_counter += 1
-                                # If own_session_counter is greater than 2, there is
+                                # If own_session_counter is greater than 1, there is
                                 # a conflicting session placed in this timeslot.
-                                if own_session_counter >= 2:
+                                if own_session_counter > 1:
                                     minus_points += 1
 
                                 # HIER MOET NOG EEN MALUS PUNT KOMEN VOOR ALS TUTORIAL GROEP A
