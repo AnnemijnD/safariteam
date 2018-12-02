@@ -1,5 +1,6 @@
 
 SLOTS = 140
+A = 65
 
 
 class Session(object):
@@ -8,6 +9,7 @@ class Session(object):
     """
 
     def __init__(self, name, type, max_students, session_id, group_id):
+        self.overall_id = 0
         self.name = name
         self.type = type
         self.max_students = max_students
@@ -29,6 +31,7 @@ class Session(object):
         """
         return self.name
 
+    # Dit gebruiken we volgens mij niet meer?
     def __getitem__(self, day):
         return self.day
 
@@ -36,4 +39,4 @@ class Session(object):
         if self.max_students == " ":
             return f'{self.name} {self.type}'
         else:
-            return f'{self.name} {self.type}, ({self.max_students} students)'
+            return f'{self.name} {self.type}, group: {(chr(self.group_id + A))}, ({self.max_students} students)'

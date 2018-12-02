@@ -1,5 +1,8 @@
-# Heuristieken 2018 -- Lesroosters
-# Namen: Annemijn, Sanne & Rebecca
+"""
+Heuristieken 2018 -- Lectures
+Names: Annemijn, Sanne & Rebecca
+This script generates a schedule.
+"""
 
 import os, sys
 
@@ -12,7 +15,8 @@ from constraint import Constraint
 import loaddata
 from session import Session
 import switch
-import firstalgorithm
+import hillclimber
+import genetic
 import csv
 import random
 import copy
@@ -24,6 +28,7 @@ import matplotlib
 matplotlib.use('TkAgg')
 import matplotlib.pyplot as plt
 
+SESSIONS = 129
 SLOTS = 140
 TIME_SLOTS = 4
 DAYS = 5
@@ -48,7 +53,6 @@ class Plan():
         other_sessions = []
         empty_sessions = []
 
-
         # random.shuffle(courses)
 
         # ANNEMIJN KAN JE HIER NOG EEN COMMENT BIJ ZETTEN, SNap niet wat je hier hebt gedaan
@@ -56,6 +60,42 @@ class Plan():
         for course in courses:
             session_list = session_list + course.sessions_total
 
+        session_counter = 0
+        for i in range(len(session_list)):
+            session_list[i].overall_id = session_counter
+            session_counter += 1
+
+
+        for i in range(SLOTS):
+            # make a general empty session with overall_id 140
+            name = ' '
+            type = ' '
+            max_students = ' '
+            session_id = 'nvt2'
+            group_id = 'nvt2'
+            empty_session = Session(name, type, max_students, session_id, group_id)
+            empty_session.overall_id = SLOTS
+            empty_sessions.append(empty_session)
+
+        # for i in range(SLOTS - session_counter):
+        #     # Maak lege sessies aan om lege cellen mee op te vullen
+        #     # Dit stukje wordt gebruikt in de nested for loop waarbij aan elke cel
+        #     # een sessie wordt meegegeven.
+        #     # TODO: WE MOETEN NOG DE RANGE AANPASSEN
+        #     # for i in range(140-72):
+        #     name = ' '
+        #     type = ' '
+        #     max_students = ' '
+        #     session_id = 'nvt2'
+        #     group_id = 'nvt2'
+        #     session = Session(name, type, max_students, session_id, group_id)
+        #     # session = Session(name, type, room, timeslot, day)
+        #     session.overall_id = session_counter
+        #     empty_sessions.append(session)
+        #     session_counter += 1
+        #     print(empty_sessions[i].overall_id)
+        #
+        # print(empty_sessions)
 
         # # Put every session into schedule
         # for i in range(SLOTS):
@@ -92,19 +132,6 @@ class Plan():
         # random.shuffle(lectures)
         # random.shuffle(other_sessions)
 
-        # Maak lege sessies aan om lege cellen mee op te vullen
-        # Dit stukje wordt gebruikt in de nested for loop waarbij aan elke cel
-        # een sessie wordt meegegeven.
-        for i in range(140-72):
-            name = ' '
-            type = ' '
-            max_students = ' '
-            session_id = 'nvt2'
-            group_id = 'nvt2'
-            session = Session(name, type, max_students, session_id, group_id)
-            # session = Session(name, type, room, timeslot, day)
-            empty_sessions.append(session)
-
         # De lijst met totale sessies bestaat dus uit een lijst met eerst
         # Hoorcolleges, daarna de andere sessies en is opgevuld tot 140 met lege sessies
         total = []
@@ -119,7 +146,13 @@ class Plan():
 
 
         # plan.fill_schedule(schedule, total, other_sessions, empty_sessions, courses)
+        # print(session_list)
+        # print(len(session_list))
 
+# VRAAG AAN DENK IK REBECCA: WAAROM DOEN WE DIT??
+
+    # bedoel je het stukje code hieronder? Dat is zodat als er iets foutgaat
+    # bij het inroosteren, hij opnieuw begint met het maken van een rooster
         new_sched = False
         while new_sched == False:
             new_sched = plan.fill_schedule(schedule, session_list, lecture_sessions, empty_sessions, courses, rooms_list)
@@ -132,16 +165,13 @@ class Plan():
         # VOOR NU: Even een random rooster
         # schedule = plan.random_schedule(schedule, total)
 
-
         return schedule, total, other_sessions, empty_sessions
 
 
     def fill_schedule(self, schedule, lectures, other_sessions, empty_sessions, courses, rooms_list):
         """
-        Fill empty schedule with sessions. Function will begin to fill all the lectures
-        and will go on to fill other sessions.
-
-        Lectures = een lijst met alle sessies
+        Fill empty schedule with sessions. This function will begin to fill all
+        the lectures and will go on to fill other sessions.
         """
         # Gebruik nested for loop om elke cel een session te gegen.
         # Je geeft hierbij een lijst met sessies mee aan de functie get_session
@@ -149,6 +179,7 @@ class Plan():
 
         # Vul eerst met lege sessions
         # counter = 0
+
 
         for empty_session in empty_sessions:
             for b in range(DAYS):
@@ -159,6 +190,13 @@ class Plan():
 
 
 
+
+        session_counter = 0
+        for b in range(DAYS):
+            for c in range(TIME_SLOTS):
+                for d in range(ROOMS):
+                    schedule[b][c][d] = empty_sessions[session_counter]
+                    session_counter += 1
 
         # Verdelen over slots als hard constraint
 
@@ -292,6 +330,17 @@ class Plan():
                 # break
         if found:
 
+            # give the empty_sessions overall_ids
+            overall_id_counter = 129
+            for i in range(DAYS):
+                for j in range(TIME_SLOTS):
+                    for k in range(ROOMS):
+
+                        # checks if the session is empty
+                        if schedule[i][j][k].overall_id == SLOTS:
+                            schedule[i][j][k].overall_id = overall_id_counter
+                            overall_id_counter += 1
+
             return schedule
 
         else:
@@ -336,10 +385,10 @@ class Plan():
         schedule1 = copy.copy(schedule)
 
         # Maak een grafiek van alle punten
-        d = pd.Series([lecture_points, -mutual_course_malus,"", spread_points,capacity_points,spread_points - capacity_points ])
+        d = pd.Series([lecture_points, -mutual_course_malus, "", spread_points, capacity_points, spread_points - capacity_points])
         d = pd.DataFrame(d)
         d.columns = ["Points"]
-        d.index = ["Correctly placed lectures (out of 39)", "Malus points for placing courses with specific 'mutual' courses", "", "Spread bonus points (out of 440)", "Capacity malus points (out of 1332)", "Total points"]
+        d.index = ["Correctly placed lectures (out of 39)", "Minus points for placing courses with specific 'mutual' courses", "", "Spread bonus points (out of 440)", "Capacity malus points (out of 1332)", "Total points"]
 
         flatten = np.array(schedule).flatten()
         counter = 0
@@ -353,7 +402,7 @@ class Plan():
 
         # Dit is voor het eerste rooster van de hele week
         df = pd.DataFrame(schedule1)
-        pd.set_option('display.max_colwidth', 400)
+        pd.set_option('display.max_colwidth', 600)
         df.columns = ['9:00 - 11:00', '11:00 - 13:00', '13:00 - 15:00', '15:00 - 17:00']
         df.index = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"]
         # Transpose rows and columns
@@ -361,24 +410,23 @@ class Plan():
 
         # Dit is voor de kleinere roosters
         test = pd.DataFrame(schedule)
-        pd.set_option('display.max_colwidth', 400)
+        pd.set_option('display.max_colwidth', 600)
         test.columns = ['9:00 - 11:00', '11:00 - 13:00', '13:00 - 15:00', '15:00 - 17:00']
         test.index = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"]
         # Transpose rows and columns
         test = test.T
 
         # Stel de column namen vast
-        i = 0
         tags = df['Monday'].apply(pd.Series)
-        tags.columns = [rooms[i], rooms[i+1], rooms[i+2], rooms[i+3], rooms[i+4], rooms[i+5], rooms[i+6]]
+        tags.columns = [rooms[0], rooms[1], rooms[2], rooms[3], rooms[4], rooms[5], rooms[6]]
         tuesday = df['Tuesday'].apply(pd.Series)
-        tuesday.columns = [rooms[i], rooms[i+1], rooms[i+2], rooms[i+3], rooms[i+4], rooms[i+5], rooms[i+6]]
+        tuesday.columns = [rooms[0], rooms[1], rooms[2], rooms[3], rooms[4], rooms[5], rooms[6]]
         wednesday = df['Wednesday'].apply(pd.Series)
-        wednesday.columns = [rooms[i], rooms[i+1], rooms[i+2], rooms[i+3], rooms[i+4], rooms[i+5], rooms[i+6]]
+        wednesday.columns = [rooms[0], rooms[1], rooms[2], rooms[3], rooms[4], rooms[5], rooms[6]]
         thursday = df['Thursday'].apply(pd.Series)
-        thursday.columns = [rooms[i], rooms[i+1], rooms[i+2], rooms[i+3], rooms[i+4], rooms[i+5], rooms[i+6]]
+        thursday.columns = [rooms[0], rooms[1], rooms[2], rooms[3], rooms[4], rooms[5], rooms[6]]
         friday = df['Friday'].apply(pd.Series)
-        friday.columns = [rooms[i], rooms[i+1], rooms[i+2], rooms[i+3], rooms[i+4], rooms[i+5], rooms[i+6]]
+        friday.columns = [rooms[0], rooms[1], rooms[2], rooms[3], rooms[4], rooms[5], rooms[6]]
 
         html_string = '''
         <html>
@@ -414,9 +462,9 @@ class Plan():
         plt.ylabel("Points")
         plt.show()
 
-    def end(self):
+    def end(self, schedule):
         """
-        Prints text to tell user how many schedules were made and how long it took to make
+        Prints text to tell user how many schedules were made and how long it took to make.
         """
         print("SUCCES!!")
         print("It took:", round(time.time() - plan.then, 3), "seconds, = ", round((time.time() - plan.then) / 60, 3), "minutes.")
@@ -425,49 +473,59 @@ class Plan():
         print(plan.own_session_points, "sessions were placed in a different timeslot.")
         print("Spread bonus points:", Constraint.session_spread_check(schedule, plan.courses), "out of 440.")
 
+    def generate(self):
+        """
+        Generates a schedule that fulfills all constraints using different algorithms.
+        """
+
+        plan.then = time.time()
+        print("Loading...")
+        plan.random_numbers = []
+        plan.schedule_counter = 0
+
+        # Load all the courses, rooms and sessions
+        plan.courses = loaddata.load_courses()
+        schedule, lectures, other_sessions, empty_sessions = plan.initialize_schedule(plan.courses)
+        rooms = loaddata.load_rooms()
+        plan.own_session_points = 0
+        spread_points = 0
+        lecture_points = 0
+        capacity_points = 0
+
+        # Haal met het eerste algoritme een rooster er uit dat aan de hard constraints voldoet
+        # schedule, points, plan.schedule_counter = hillclimber.hard_constraints(schedule, plan.courses, plan.schedule_counter)
+
+        # Geef dit rooster mee aan de soft constraints
+        # schedule, points, plan.schedule_counter = hillclimber.soft(schedule, plan.courses, plan.schedule_counter)
+
+        # print(Constraint.mutual_courses_check(schedule, plan.courses))
+        mutual_course_malus = Constraint.mutual_courses_check(schedule, plan.courses)
+
+        # test genetic Algorithm
+        # schedule1, lectures, other_sessions, empty_sessions = plan.initialize_schedule(plan.courses)
+        # schedule2, lectures, other_sessions, empty_sessions = plan.initialize_schedule(plan.courses)
+
+        # firstalgorithm.genetic_algortim(schedule1, schedule2)
+
+        # Constraint.all_constraints(schedule, plan.courses)
+        spread_points = Constraint.session_spread_check(schedule, plan.courses)
+        capacity_points = (Constraint.students_fit(schedule, plan.courses))
+        lecture_points = Constraint.lecture_first(schedule, plan.courses)
+        Constraint.lecture_first(schedule, plan.courses)
+
+        # Print the end-text
+        plan.end(schedule)
+        # Make a plot of the points
+        try:
+            plan.makeplot(points)
+        except:
+            print("No points to plot for now.")
+
+        # Make a html file for the schedule
+        plan.save_html(schedule, rooms, spread_points, capacity_points, lecture_points, mutual_course_malus)
+
+
 if __name__ == "__main__":
 
     plan = Plan()
-    plan.then = time.time()
-    print("Loading...")
-    plan.random_numbers = []
-    plan.schedule_counter = 0
-
-    # Load all the courses, rooms and sessions
-    plan.courses = loaddata.load_courses()
-    rooms_list = loaddata.load_rooms()
-    schedule, lectures, other_sessions, empty_sessions = plan.initialize_schedule(plan.courses, rooms_list)
-
-    plan.own_session_points = 0
-    spread_points = 0
-    capacity_points = 0
-
-
-    # Maak van een random rooster een rooster met eerst de hoorcolleges en geen overlappende vakken.
-    # schedule, points, plan.schedule_counter, plan.own_session_points = firstalgorithm.hard_constraints(schedule, plan.courses, plan.schedule_counter)
-
-    # Haal met het eerste algoritme een rooster er uit dat aan de hard constraints voldoet
-    # schedule, points, plan.schedule_counter, plan.own_session_points = firstalgorithm.hard_constraints(schedule, plan.courses, plan.schedule_counter)
-
-    # Geef dit rooster mee aan de soft constraints
-    # schedule, points, plan.schedule_counter, plan.own_session_points = firstalgorithm.soft_constraint(schedule, plan.courses, plan.schedule_counter)
-
-
-    mutual_course_malus = Constraint.mutual_courses_check(schedule, plan.courses)[1]
-    print(Constraint.own_sessions_check(schedule, plan.courses))
-    # Constraint.all_constraints(schedule, plan.courses)
-    spread_points = Constraint.session_spread_check(schedule, plan.courses)
-    capacity_points = (Constraint.students_fit(schedule, plan.courses))
-    lecture_points = Constraint.lecture_first(schedule, plan.courses)[1]
-
-
-    # # Print the end-text
-    # plan.end()
-    # # Make a plot of the points
-    # try:
-    #     plan.makeplot(points)
-    # except:
-    #     print("No points to plot for now.")
-
-    # Make a html file for the schedule
-    plan.save_html(schedule, rooms_list, spread_points, capacity_points, lecture_points, mutual_course_malus)
+    plan.generate()
