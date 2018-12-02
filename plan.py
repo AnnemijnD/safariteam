@@ -449,7 +449,8 @@ class Plan():
         print("It took:", round(time.time() - plan.then, 3), "seconds, = ", round((time.time() - plan.then) / 60, 3), "minutes.")
         print("Made", plan.schedule_counter, "schedule(s) until the 'right' was found.")
         print(plan.own_session_points, "minus points for placing mutual courses in the same timeslot.")
-        print("Spread bonus points:", Constraint.session_spread_check(schedule, plan.courses), "out of 440.")
+        courses_schedule = Constraint.all_constraints(schedule, plan.courses)
+        print("Spread bonus points:", Constraint.session_spread_check(schedule, plan.courses, courses_schedule), "out of 440.")
 
     def generate(self):
         """
@@ -485,11 +486,11 @@ class Plan():
 
         # firstalgorithm.genetic_algortim(schedule1, schedule2)
 
-        # Constraint.all_constraints(schedule, plan.courses)
-        spread_points = Constraint.session_spread_check(schedule, plan.courses)
-        capacity_points = (Constraint.students_fit(schedule, plan.courses))
-        lecture_points = Constraint.lecture_first(schedule, plan.courses)
-        Constraint.lecture_first(schedule, plan.courses)
+        courses_schedule = Constraint.all_constraints(schedule, plan.courses)
+        spread_points = Constraint.session_spread_check(schedule, plan.courses, courses_schedule)
+        capacity_points = (Constraint.students_fit(schedule, plan.courses, courses_schedule))
+        lecture_points = Constraint.lecture_first(schedule, plan.courses, courses_schedule)
+        # Constraint.lecture_first(schedule, plan.courses, courses_schedule)
 
         # Print the end-text
         plan.end(schedule)

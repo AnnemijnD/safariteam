@@ -69,7 +69,7 @@ class Constraint():
 
         return courses_schedule
 
-    def session_spread_check(schedule, courses):
+    def session_spread_check(schedule, courses, courses_schedule):
         """
         Calculates the amount of bonuspoints earned by correctly spreading the
         courses over the week. Where a course with 2 sessions should be on
@@ -81,7 +81,7 @@ class Constraint():
         Maximum amount of bonuspoints is 440
         Maximum amount of maluspoints is 430
         """
-        courses_schedule = Constraint.all_constraints(schedule, courses)
+        # courses_schedule = Constraint.all_constraints(schedule, courses)
         bonuspoints = 0
         maluspoints = 0
 
@@ -180,13 +180,13 @@ class Constraint():
         # deze functie overal wordt aangeroepen dus daar wacht ik nog even mee
         return bonuspoints
 
-    def lecture_first(schedule, courses):
+    def lecture_first(schedule, courses, courses_schedule):
         """
         Returns true if the lectures are before the tutorials and or
         practicals, otherwise returns false.
         """
         lecture_points = 0
-        courses_schedule = Constraint.all_constraints(schedule, courses)
+        # courses_schedule = Constraint.all_constraints(schedule, courses)
 
         for course in courses:
             # checks for the number of lectures if the lectures are planned first
@@ -294,13 +294,13 @@ class Constraint():
     #
     #     return True, own_session_points
 
-    def students_fit(schedule, courses):
+    def students_fit(schedule, courses, courses_schedule):
         """
         Returns the number of maluspoints that are given for the number of
         students that don't fit in the room of the session
         max aantal malus punten voor deze functie = 1332
         """
-        courses_schedule = Constraint.all_constraints(schedule, courses)
+        # courses_schedule = Constraint.all_constraints(schedule, courses)
         rooms = loaddata.load_rooms()
 
         maluspoints = 0
@@ -330,7 +330,7 @@ class Constraint():
 
         return maluspoints
 
-    def hard_constraints(schedule, courses):
+    def hard_constraints(schedule, courses, courses_schedule):
         """
         Een functie die alle hard constraints checkt.
         Return True als het rooster aan alle constraints voldoet.
@@ -339,7 +339,7 @@ class Constraint():
         """
         # LECTURES CHECK
         lecture_points = 0
-        courses_schedule = Constraint.all_constraints(schedule, courses)
+        # courses_schedule = Constraint.all_constraints(schedule, courses)
         for course in courses:
 
             # checks for the number of lectures if the lectures are planned first
