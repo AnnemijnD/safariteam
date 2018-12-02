@@ -512,7 +512,7 @@ class Plan():
         spread_points = Constraint.session_spread_check(schedule, plan.courses, courses_schedule)
         capacity_points = (Constraint.students_fit(schedule, plan.courses, courses_schedule))
         lecture_points = Constraint.lecture_first(schedule, plan.courses, courses_schedule)
-        Constraint.session_points(schedule, plan.courses, courses_schedule)
+        # Constraint.session_points(schedule, plan.courses, courses_schedule)
 
         # Print the end-text
         plan.end(schedule)

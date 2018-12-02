@@ -193,7 +193,7 @@ class Constraint():
 
         bonuspoints = round(bonuspoints)
         maluspoints = round(maluspoints)
-        print(course_bonus_malus)
+        # print(course_bonus_malus)
         print(f"bonuspoints: {bonuspoints}")
         print(f"maluspoints: {maluspoints}")
 
