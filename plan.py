@@ -42,7 +42,7 @@ class Plan():
     Main script to make a schedule.
     """
 
-    def initialize_schedule(self, courses):
+    def initialize_schedule(self, courses, rooms_list):
         """
         Initialize schedule using Session().
         """
@@ -151,12 +151,13 @@ class Plan():
 
 # VRAAG AAN DENK IK REBECCA: WAAROM DOEN WE DIT??
 
+    # bedoel je het stukje code hieronder? Dat is zodat als er iets foutgaat
+    # bij het inroosteren, hij opnieuw begint met het maken van een rooster
         new_sched = False
         while new_sched == False:
-            new_sched = plan.fill_schedule(schedule, session_list, lecture_sessions, empty_sessions, courses)
+            new_sched = plan.fill_schedule(schedule, session_list, lecture_sessions, empty_sessions, courses, rooms_list)
             plan.schedule_counter +=1
-            # if plan.schedule_counter % 100 == 0:
-            #     print(plan.schedule_counter)
+
             if not new_sched == False:
                 break
 
@@ -167,18 +168,28 @@ class Plan():
         return schedule, total, other_sessions, empty_sessions
 
 
-    def fill_schedule(self, schedule, lectures, other_sessions, empty_sessions, courses):
+    def fill_schedule(self, schedule, lectures, other_sessions, empty_sessions, courses, rooms_list):
         """
         Fill empty schedule with sessions. This function will begin to fill all
         the lectures and will go on to fill other sessions.
         """
-
         # Gebruik nested for loop om elke cel een session te gegen.
         # Je geeft hierbij een lijst met sessies mee aan de functie get_session
         # De lijst met sessies is al gemaakt in initialize_schedule()
 
         # Vul eerst met lege sessions
         # counter = 0
+
+
+        for empty_session in empty_sessions:
+            for b in range(DAYS):
+                for c in range(TIME_SLOTS):
+                    for d in range(ROOMS):
+                        schedule[b][c][d] = empty_session
+                        # schedule[b][c][d] = empty_session[counter]
+
+
+
 
         session_counter = 0
         for b in range(DAYS):
@@ -224,9 +235,9 @@ class Plan():
                         # als het een tutorial of pracitcal is
                         if not lectures_first:
 
-
                             if lectures[e].name == schedule[b][c][d].name:
                                 if schedule[b][c][d].type == "lecture":
+                                    #print("hee")
 
                                     # alle eerdere locaties mogen weg want er mag niets voor een lecture
                                     location.clear()
@@ -237,10 +248,12 @@ class Plan():
                                         for k in range(len(location) - 1, -1, -1):
                                             if location[k][1] == c and location[k][0] == b:
                                                 del location[k]
+                                        # print("lala")
                                         break
 
 
                             elif schedule[b][c][d].name in mutual_courses_session:
+                                # print("heh")
                                 rooms_allowed = False
                                 for k in range(len(location) - 1, -1, -1):
                                     if location[k][1] == c and location[k][0] == b:
@@ -262,11 +275,19 @@ class Plan():
                             # print(location)
                             break
 
+                        # # als de capaciteit van de ruimte niet voldoende is
+                        # if rooms_list[d].capacity < lectures[e].max_students:
+                        #     # print("hoi")
+                        #     if e < 108:
+                        #         continue
+
                         # if the slot in the schedule is empty
                         if schedule[b][c][d].name == ' ':
+                            # print("hmm")
                             location.append((b,c,d))
 
             if bool(location):
+                # print("bijna?")
                 counter = 0
 
                 # als het een lecture was, verwijder het aantal potentiele locaties aan het einde van het rooster gelijk
@@ -302,7 +323,7 @@ class Plan():
             else:
 
                 # plan.schedule_counter += 1
-
+                print(e)
                 return False
                 # return schedule
                 #plan.initialize_schedule(plan.courses)
@@ -323,7 +344,7 @@ class Plan():
             return schedule
 
         else:
-            # plan.schedule_counter += 1
+            # plan.sch edule_counter += 1
 
             return False
 
@@ -464,7 +485,8 @@ class Plan():
 
         # Load all the courses, rooms and sessions
         plan.courses = loaddata.load_courses()
-        schedule, lectures, other_sessions, empty_sessions = plan.initialize_schedule(plan.courses)
+        rooms_list = loaddata.load_rooms()
+        schedule, lectures, other_sessions, empty_sessions = plan.initialize_schedule(plan.courses, rooms_list)
         rooms = loaddata.load_rooms()
         plan.own_session_points = 0
         spread_points = 0
@@ -490,7 +512,7 @@ class Plan():
         spread_points = Constraint.session_spread_check(schedule, plan.courses, courses_schedule)
         capacity_points = (Constraint.students_fit(schedule, plan.courses, courses_schedule))
         lecture_points = Constraint.lecture_first(schedule, plan.courses, courses_schedule)
-        # Constraint.lecture_first(schedule, plan.courses, courses_schedule)
+        Constraint.session_points(schedule, plan.courses, courses_schedule)
 
         # Print the end-text
         plan.end(schedule)

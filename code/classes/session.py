@@ -18,6 +18,7 @@ class Session(object):
         self.course_object = None
 
 
+
     def __iter__(self):
         """
         Enables a list of objects to be iterated one element at a time.
