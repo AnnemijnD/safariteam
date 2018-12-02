@@ -76,7 +76,7 @@ def soft(schedule, courses, schedule_counter):
 
     while Constraint.lecture_first(schedule, courses) > 0 or \
             Constraint.mutual_courses_check(schedule, courses) > 0 or \
-            Constraint.session_spread_check(schedule, courses) < 300 or \
+            Constraint.session_spread_check(schedule, courses) < 380 or \
             Constraint.students_fit(schedule, courses) > 400:
         # Append points to show in a graph when the schedule is made
         points.append(get_points(schedule, courses))
@@ -129,7 +129,7 @@ def get_points(schedule, courses):
     points = Constraint.session_spread_check(schedule, courses) - \
             Constraint.lecture_first(schedule, courses) - \
             Constraint.mutual_courses_check(schedule, courses) - \
-            Constraint.students_fit(schedule, courses)
+            (Constraint.students_fit(schedule, courses) / 10)
 
     return points
 

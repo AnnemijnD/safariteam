@@ -337,7 +337,7 @@ class Plan():
         d = pd.Series([lecture_points, -mutual_course_malus, "", spread_points, capacity_points, spread_points - capacity_points])
         d = pd.DataFrame(d)
         d.columns = ["Points"]
-        d.index = ["Correctly placed lectures (out of 39)", "Minus points for placing courses with specific 'mutual' courses", "", "Spread bonus points (out of 440)", "Capacity malus points (out of 1332)", "Total points"]
+        d.index = ["Incorrectly placed lectures", "Incorrectly placed courses with 'mutual' courses", "", "Spread bonus points (out of 440)", "Capacity malus points (out of 1332)", "Total points"]
 
         flatten = np.array(schedule).flatten()
         counter = 0
@@ -423,7 +423,7 @@ class Plan():
 
     def generate(self):
         """
-        Generates a schedule that fulfills all constraints using different algorithms.
+        Generates a schedule by calling several helper functions and algorithms.
         """
 
         plan.then = time.time()
