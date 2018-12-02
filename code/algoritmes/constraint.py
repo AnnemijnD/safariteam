@@ -199,6 +199,8 @@ class Constraint():
 
         # we moeten ook maluspoints returnen maar ik weet nog even niet waar
         # deze functie overal wordt aangeroepen dus daar wacht ik nog even mee
+
+        # zelfde geldt voor de bonus_malus_points
         return bonuspoints
 
     def lecture_first(schedule, courses):
