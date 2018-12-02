@@ -8,6 +8,7 @@ DAYS = 5
 ROOMS = 7
 SPREAD_BONUS = 20
 SESSION_LEN = 72
+SESSION_NUM = 129
 
 
 class Constraint():
@@ -49,7 +50,7 @@ class Constraint():
 
         courses_schedule = []
         for course in courses:
-            course_schedule = {"day": [], "slot": [], "room": [], "type": [], "session_id": [], "group_id": []}
+            course_schedule = {"day": [], "slot": [], "room": [], "type": [], "session_id": [], "group_id": [], "overall_id": []}
             for i in range(DAYS):
                 for j in range(TIME_SLOTS):
                     for k in range(ROOMS):
@@ -64,6 +65,7 @@ class Constraint():
                                 course_schedule["type"].append(schedule[i][j][k].type)
                                 course_schedule["session_id"].append(schedule[i][j][k].session_id)
                                 course_schedule["group_id"].append(schedule[i][j][k].group_id)
+                                course_schedule["overall_id"].append(schedule[i][j][k].overall_id)
 
             courses_schedule.append(course_schedule)
 
@@ -399,3 +401,48 @@ class Constraint():
                         return False
 
         return True
+
+
+    def session_points(schedule, courses):
+         courses_schedule = Constraint.all_constraints(schedule, courses)
+         rooms = loaddata.load_rooms()
+
+         session_points_dict = [{"session_id_ov": i, "capacity_points":0, "spread_points": 0,
+                                "flex_points": 0} for i in range(SESSION_NUM)]
+
+         maluspoints = 0
+         for course in courses:
+
+             #  saves the room and type of the checked_course sessions
+             checked_course = courses_schedule[course.course_id]
+             room_ids = checked_course["room"]
+             types = checked_course["type"]
+             session_overall_ids = checked_course["overall_id"]
+
+             for i in range(len(room_ids)):
+
+                 # saves the max amount of students for the session type
+                 if types[i] is "lecture":
+                     students = course.max_students_lecture
+                 elif types[i] is "tutorial":
+                     students = course.max_students_tutorial
+                 else:
+                     students = course.max_students_practical
+
+                 # calculates how many empty seats there are
+                 empty_seats = rooms[room_ids[i]].capacity - students
+
+                 # increases maluspoints with the nmbr of students that don't have a seat
+                 if empty_seats < 0:
+                     maluspoints += abs(empty_seats)
+                    
+                     # print(session_overall_ids[i])
+                     # print(abs(empty_seats))
+                     # print(session_points_dict[session_overall_ids[i]])
+                     session_points_dict[session_overall_ids[i]]["capacity_points"] += abs(empty_seats)
+
+
+
+
+
+         return session_points_dict

@@ -485,7 +485,8 @@ class Plan():
 
         # Load all the courses, rooms and sessions
         plan.courses = loaddata.load_courses()
-        schedule, lectures, other_sessions, empty_sessions = plan.initialize_schedule(plan.courses)
+        rooms_list = loaddata.load_rooms()
+        schedule, lectures, other_sessions, empty_sessions = plan.initialize_schedule(plan.courses, rooms_list)
         rooms = loaddata.load_rooms()
         plan.own_session_points = 0
         spread_points = 0
@@ -512,6 +513,7 @@ class Plan():
         capacity_points = (Constraint.students_fit(schedule, plan.courses))
         lecture_points = Constraint.lecture_first(schedule, plan.courses)
         Constraint.lecture_first(schedule, plan.courses)
+        Constraint.session_points(schedule, plan.courses)
 
         # Print the end-text
         plan.end(schedule)
