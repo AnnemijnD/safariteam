@@ -82,14 +82,21 @@ class Constraint():
 
         Maximum amount of bonuspoints is 440
         Maximum amount of maluspoints is 430
+
+        Returns a list of malus and bonuspoints per course as well.
         """
         courses_schedule = Constraint.all_constraints(schedule, courses)
         bonuspoints = 0
         maluspoints = 0
 
+        # list with course id, bonus points and malus points
+        course_bonus_malus = []
+
+
         for course in courses:
             id = course.course_id
-
+            course_mal_points = 0
+            course_bon_points = 0
             lectures = []
             sessions = []
 
@@ -121,11 +128,14 @@ class Constraint():
                     if (courses_schedule[id]["day"][sessions[i][0]] == 0) and \
                        (courses_schedule[id]["day"][sessions[i][1]] == 3):
                         bonuspoints += spread_bonus
+                        course_bon_points += spread_bonus
+
 
                     # checks if the courses are on tuesday an friday
                     elif (courses_schedule[id]["day"][sessions[i][0]] == 1) and \
                          (courses_schedule[id]["day"][sessions[i][1]] == 4):
                         bonuspoints += spread_bonus
+                        course_bon_points += spread_bonus
 
             elif course.sessions == 3:
 
@@ -136,6 +146,7 @@ class Constraint():
                        (courses_schedule[id]["day"][sessions[i][1]] == 2) and \
                        (courses_schedule[id]["day"][sessions[i][2]] == 4):
                         bonuspoints += spread_bonus
+                        course_bon_points += spread_bonus
 
             elif course.sessions == 4:
 
@@ -147,6 +158,7 @@ class Constraint():
                        (courses_schedule[id]["day"][sessions[i][2]] == 3) and \
                        (courses_schedule[id]["day"][sessions[i][3]] == 4):
                         bonuspoints += spread_bonus
+                        course_bon_points += spread_bonus
 
             elif course.sessions == 5:
 
@@ -159,6 +171,7 @@ class Constraint():
                        (courses_schedule[id]["day"][sessions[i][3]] == 3) and \
                        (courses_schedule[id]["day"][sessions[i][4]] == 4):
                         bonuspoints += spread_bonus
+                        course_bon_points += spread_bonus
 
             #  check the overall spread per group
             for i in range(len(sessions)):
@@ -172,9 +185,15 @@ class Constraint():
                 if len(days) - len(set(days)) > 0:
                     malusfactor = (course.sessions - len(days) - len(set(days)))
                     maluspoints += (malusfactor * 10) / len(sessions)
+                    course_mal_points += (malusfactor * 10) / len(sessions)
+
+
+            course_bonus_malus.append([id, round(course_bon_points), round(course_mal_points)])
+
 
         bonuspoints = round(bonuspoints)
         maluspoints = round(maluspoints)
+        print(course_bonus_malus)
         print(f"bonuspoints: {bonuspoints}")
         print(f"maluspoints: {maluspoints}")
 
@@ -407,8 +426,8 @@ class Constraint():
          courses_schedule = Constraint.all_constraints(schedule, courses)
          rooms = loaddata.load_rooms()
 
-         session_points_dict = [{"session_id_ov": i, "capacity_points":0, "spread_points": 0,
-                                "flex_points": 0} for i in range(SESSION_NUM)]
+         session_points_dict = [{"session_id_ov": i, "capacity_points":0, "spread_malus_points": 0,
+                                "spread_bonus_points": 0, "flex_points": 0} for i in range(SESSION_NUM)]
 
          maluspoints = 0
          for course in courses:
@@ -435,7 +454,7 @@ class Constraint():
                  # increases maluspoints with the nmbr of students that don't have a seat
                  if empty_seats < 0:
                      maluspoints += abs(empty_seats)
-                    
+
                      # print(session_overall_ids[i])
                      # print(abs(empty_seats))
                      # print(session_points_dict[session_overall_ids[i]])
