@@ -2,19 +2,21 @@
 SLOTS = 140
 A = 65
 
+
 class Session(object):
     """
     Representation of a schedule.
     """
 
-    def __init__(self, index, name, type, max_students, session_id, group_id):
-        self.index = 0
+    def __init__(self, name, type, max_students, session_id, group_id):
+        self.overall_id = 0
         self.name = name
         self.type = type
         self.max_students = max_students
         self.session_id = session_id
         self.group_id = group_id
         self.course_object = None
+
 
 
     def __iter__(self):

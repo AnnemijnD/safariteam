@@ -30,21 +30,30 @@ def hard_constraints(schedule, courses, schedule_counter):
     # Om de code te met dit algoritme helemaal te runnen dan zet je hier
     # de bovenste regel weer 'aan'! (even ont-commenten)
 
-    while Constraint.lecture_first(schedule, courses) > 0 or \
+    courses_schedule = Constraint.all_constraints(schedule, plan.courses)
+
+    while Constraint.lecture_first(schedule, courses, courses_schedule) > 0 or \
             Constraint.mutual_courses_check(schedule, courses) > 0:
 
-        points.append(Constraint.lecture_first(schedule, courses) + \
+        # HOI REBECCA IK HEB EEN DEEL VAN DE CONSTRAINTFUNCTIES AANGEPAST MET
+        # DAT WE NU COURSES_SCHEDULE ERIN DOEN ALS ARGUMENT WANT DAN GAAT HET
+        # IETS SNELLER. HOOP DAT IK HEM VAAK GENOEG OPNIEUW AANROEP, ZOU CHILL
+        # ZIJN ALS JIJ HET VOOR DE ZEKERHEID KAN CHECKEN :) XOXO
+
+        courses_schedule = Constraint.all_constraints(schedule, plan.courses)
+        points.append(Constraint.lecture_first(schedule, courses, courses_schedule) + \
                       Constraint.mutual_courses_check(schedule, courses))
         schedule_counter += 1
         # Bewaar het eerste rooster
         schedule1 = schedule
-        lecture_points1 = Constraint.lecture_first(schedule1, courses)
+        lecture_points1 = Constraint.lecture_first(schedule1, courses, courses_schedule)
         mutual_points1 = Constraint.mutual_courses_check(schedule1, courses)
         # Maak een nieuw roosters
         # 5 dingen per keer switchen gaat iets sneller dan 1 per keer
         schedule2 = switch.switch_session(schedule, 3)
         # Bereken de punten van het nieuwe rooster
-        lecture_points2 = Constraint.lecture_first(schedule2, courses)
+        courses_schedule = Constraint.all_constraints(schedule, plan.courses)
+        lecture_points2 = Constraint.lecture_first(schedule2, courses, courses_schedule)
         mutual_points2 = Constraint.mutual_courses_check(schedule2, courses)
         # Als deze hetzelfde aantal of meer punten heeft, accepteer dit rooster dan.
         if lecture_points2 <= lecture_points1 \
@@ -57,9 +66,9 @@ def hard_constraints(schedule, courses, schedule_counter):
         # if schedule_counter % 700 == 0:
         #     makeplot(points)
 
-    points.append(Constraint.lecture_first(schedule, courses) - \
+    courses_schedule = Constraint.all_constraints(schedule, plan.courses)
+    points.append(Constraint.lecture_first(schedule, courses, courses_schedule) - \
                   Constraint.mutual_courses_check(schedule, courses))
-
 
     return schedule, points, schedule_counter
 
