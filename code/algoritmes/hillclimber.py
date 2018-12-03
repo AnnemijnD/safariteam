@@ -1,7 +1,7 @@
 
 """
-Vanuit een random rooster wordt een rooster gegenereerd waarbij alle
-hoorcolleges voor de andere sessies geplaatst zijn.
+Hill climber algorithm: generates a schedule that fulfills certain constraints
+by accepting schedules with higher points.
 """
 
 from constraint import Constraint
@@ -10,83 +10,27 @@ import matplotlib
 matplotlib.use('TkAgg')
 import matplotlib.pyplot as plt
 
-SESSION_LEN = 72
-LIMIT = 3000
-OPTIMUM = 10000
-COURSECOUNT = 29
-MUTUALCOURSES = 33
-LECTURECOUNT = 39
-SLOTS = 140
-SPREADPOINTS = 440
-SAVELIMIT = 3000
+CYCLES = 20000
+OPTIMUM = 250
+LIMIT = 500
+MAXPOINTS = 440
 
-
-def hard_constraints(schedule, courses, schedule_counter):
-
-    points = []
-
-    # Ga door totdat alle hoorcolleges voor de andere sessies zijn ingeroosterd,
-    # Dus totdat de lecture_first functie True is.
-    # Om de code te met dit algoritme helemaal te runnen dan zet je hier
-    # de bovenste regel weer 'aan'! (even ont-commenten)
-
-    courses_schedule = Constraint.all_constraints(schedule, plan.courses)
-
-    while Constraint.lecture_first(schedule, courses, courses_schedule) > 0 or \
-            Constraint.mutual_courses_check(schedule, courses) > 0:
-
-        # HOI REBECCA IK HEB EEN DEEL VAN DE CONSTRAINTFUNCTIES AANGEPAST MET
-        # DAT WE NU COURSES_SCHEDULE ERIN DOEN ALS ARGUMENT WANT DAN GAAT HET
-        # IETS SNELLER. HOOP DAT IK HEM VAAK GENOEG OPNIEUW AANROEP, ZOU CHILL
-        # ZIJN ALS JIJ HET VOOR DE ZEKERHEID KAN CHECKEN :) XOXO
-
-        courses_schedule = Constraint.all_constraints(schedule, plan.courses)
-        points.append(Constraint.lecture_first(schedule, courses, courses_schedule) + \
-                      Constraint.mutual_courses_check(schedule, courses))
-        schedule_counter += 1
-        # Bewaar het eerste rooster
-        schedule1 = schedule
-        lecture_points1 = Constraint.lecture_first(schedule1, courses, courses_schedule)
-        mutual_points1 = Constraint.mutual_courses_check(schedule1, courses)
-        # Maak een nieuw roosters
-        # 5 dingen per keer switchen gaat iets sneller dan 1 per keer
-        schedule2 = switch.switch_session(schedule, 3)
-        # Bereken de punten van het nieuwe rooster
-        courses_schedule = Constraint.all_constraints(schedule, plan.courses)
-        lecture_points2 = Constraint.lecture_first(schedule2, courses, courses_schedule)
-        mutual_points2 = Constraint.mutual_courses_check(schedule2, courses)
-        # Als deze hetzelfde aantal of meer punten heeft, accepteer dit rooster dan.
-        if lecture_points2 <= lecture_points1 \
-                and mutual_points2 <= mutual_points1:
-            # Accepteer dit rooster
-            schedule = schedule2
-        # Als deze minder punten heeft, ga dan terug naar het vorige rooster
-        else:
-            schedule = schedule1
-        # if schedule_counter % 700 == 0:
-        #     makeplot(points)
-
-    courses_schedule = Constraint.all_constraints(schedule, plan.courses)
-    points.append(Constraint.lecture_first(schedule, courses, courses_schedule) - \
-                  Constraint.mutual_courses_check(schedule, courses))
-
-    return schedule, points, schedule_counter
-
-
-def soft(schedule, courses, schedule_counter):
+def soft_constraints(schedule, courses, schedule_counter):
     """
     Generates a schedule using a hill climber algorithm.
     Input is a random schedule, output is a schedule that fulfills all hard-
-    and soft constraints.
+    constraints and most soft constraints.
     """
 
     switcher = 3
+    accept_counter = 0
     points = []
 
-    while Constraint.lecture_first(schedule, courses) > 0 or \
-            Constraint.mutual_courses_check(schedule, courses) > 0 or \
-            Constraint.session_spread_check(schedule, courses) < 300 or \
-            Constraint.students_fit(schedule, courses) > 400:
+    # while Constraint.lecture_first(schedule, courses) > 0 or \
+    #         Constraint.mutual_courses_check(schedule, courses) > 0 or \
+    #         Constraint.session_spread_check(schedule, courses) < -200 or \
+    #         Constraint.students_fit(schedule, courses) > 1300:
+    while schedule_counter < CYCLES:
         # Append points to show in a graph when the schedule is made
         points.append(get_points(schedule, courses))
         # Count the number of schedules made
@@ -105,21 +49,28 @@ def soft(schedule, courses, schedule_counter):
         # of finding a solution.
         if schedule2_points >= schedule1_points:
             schedule = schedule2
+            accept_counter = 0
+            # Set a boolian for when a schedule is accepted
         # If the second schedule has less points, go back to the old schedule.
         else:
             schedule = schedule1
+            accept_counter += 1
         # If a limit is reached, change the number of switches to 1, resulting
-        # in a higher chance of finding schedule with more points. Disadvantage
-        # is that it takes longer to find a good schedule.
+        # in a higher chance of finding schedule with more points. The disadvantage
+        # is that it (could) take longer to find a good schedule.
         if schedule_counter == LIMIT:
             switcher = 1
+            if get_points(schedule, courses) == MAXPOINTS:
+                return schedule, points, schedule_counter
+        # When a local optimum is found:
+        # Make a forced switch if an optimum is reached for the number of times
+        # that a schedule was rejected. For example: if a random schedule with less
+        # points was rejected a 100 times, force a new schedule (with less points).
+        if accept_counter > OPTIMUM:
+            schedule = switch.switch_session(schedule, switcher)
+            accept_counter = 0
 
-        # # Force a change in the schedule at a local optimum
-        # if schedule_counter % OPTIMUM == 0:
-        #     schedule = switch.switch_session(schedule, switcher)
-
-
-    # Append last points of the new schedule
+    # Append last points of the new schedule to make a full plot of the points
     points.append(get_points(schedule, courses))
 
     # Return the generated schedule and its points :-)
@@ -134,11 +85,14 @@ def get_points(schedule, courses):
     Minimum of 'minus points' of mutual_course() = 0.
     Maximum of 'good points' of session_spread_check() = 440.
     Minimum of malus points of students_fit() = 0 and maxmimum = 1332.
+
+    Multiply the points of the hard constraints (lecture_first and mutual_courses)
+    to ensure that a schedule fulfills these constraints.
     """
     points = Constraint.session_spread_check(schedule, courses) - \
-            Constraint.lecture_first(schedule, courses) - \
-            Constraint.mutual_courses_check(schedule, courses) - \
-            Constraint.students_fit(schedule, courses)
+            (Constraint.lecture_first(schedule, courses) * 40) - \
+            (Constraint.mutual_courses_check(schedule, courses) * 40) - \
+            (Constraint.students_fit(schedule, courses) / 15)
 
     return points
 
