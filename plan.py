@@ -66,8 +66,6 @@ class Plan():
             session_list[i].overall_id = session_counter
             session_counter += 1
 
-<<<<<<< HEAD
-=======
         # make #SLOTS empty sessions
         for i in range(SLOTS):
             name = ' '
@@ -78,7 +76,6 @@ class Plan():
             empty_session = Session(name, type, max_students, session_id, group_id)
             empty_session.overall_id = SLOTS
             empty_sessions.append(empty_session)
->>>>>>> e9a047457b7f8816ee4f92c24d2e0d69e2015ab9
 
         for i in range(len(session_list)):
             # Get all the lectures
