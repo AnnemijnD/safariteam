@@ -1,5 +1,6 @@
 import loaddata
 import numpy as np
+import math
 import switch
 
 SLOTS = 140
@@ -9,6 +10,7 @@ ROOMS = 7
 SPREAD_BONUS = 20
 SESSION_LEN = 72
 SESSION_NUM = 129
+SLOTS_PER_DAY = 28
 
 
 class Constraint():
@@ -50,14 +52,12 @@ class Constraint():
 
         courses_schedule = []
         for course in courses:
-            course_schedule = {"day": [], "slot": [], "room": [], "type": [], "session_id": [], "group_id": [], "overall_id": []}
+            course_schedule = {"day": [], "slot": [], "room": [], "type": [],
+                               "session_id": [], "group_id": [], "overall_id": []}
             for i in range(DAYS):
                 for j in range(TIME_SLOTS):
                     for k in range(ROOMS):
-                        # print(schedule[i][j][k] is None)
-                        # print(schedule[i][j][k])
                         if schedule[i][j][k] is not None:
-                            # print("??????")
                             if course.name == schedule[i][j][k].name:
                                 course_schedule["day"].append(i)
                                 course_schedule["slot"].append(j)
@@ -66,6 +66,30 @@ class Constraint():
                                 course_schedule["session_id"].append(schedule[i][j][k].session_id)
                                 course_schedule["group_id"].append(schedule[i][j][k].group_id)
                                 course_schedule["overall_id"].append(schedule[i][j][k].overall_id)
+
+            courses_schedule.append(course_schedule)
+
+        return courses_schedule
+
+    def all_constraints_linear(schedule, courses):
+        """
+        Similar as all_constraints but then as a linear list instead of
+        a matrix.
+        """
+        courses_schedule = []
+        for course in courses:
+            course_schedule = {"day": [], "slot": [], "room": [], "type": [],
+                               "session_id": [], "group_id": [], "overall_id": []}
+            for i in range(SLOTS):
+                if schedule[i] is not None:
+                    if course.name == schedule[i].name:
+                        course_schedule["day"].append(math.floor(i / SLOTS_PER_DAY))
+                        course_schedule["slot"].append(math.floor(i / ROOMS) % TIME_SLOTS)
+                        course_schedule["room"].append(i % ROOMS)
+                        course_schedule["type"].append(schedule[i].type)
+                        course_schedule["session_id"].append(schedule[i].session_id)
+                        course_schedule["group_id"].append(schedule[i].group_id)
+                        course_schedule["overall_id"].append(schedule[i].overall_id)
 
             courses_schedule.append(course_schedule)
 
@@ -91,7 +115,6 @@ class Constraint():
 
         # list with course id, bonus points and malus points
         course_bonus_malus = []
-
 
         for course in courses:
             id = course.course_id

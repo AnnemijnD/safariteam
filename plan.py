@@ -4,6 +4,9 @@ Names: Annemijn, Sanne & Rebecca
 This script generates a schedule.
 """
 
+# HET VIEL ME OP DAT ROOMS_LIST WEG KAN MAAR ER ZIJN ALLEMAAL MERGE DINGEN
+# FOUT GEGAAN DENK IK, DUS WIL HET MORGEN EERST EVEN OVERLEGGEN!
+
 import os, sys
 
 directory = os.path.dirname(os.path.realpath(__file__))
@@ -502,11 +505,32 @@ class Plan():
         # print(Constraint.mutual_courses_check(schedule, plan.courses))
         mutual_course_malus = Constraint.mutual_courses_check(schedule, plan.courses)
 
-        # test genetic Algorithm
-        # schedule1, lectures, other_sessions, empty_sessions = plan.initialize_schedule(plan.courses)
-        # schedule2, lectures, other_sessions, empty_sessions = plan.initialize_schedule(plan.courses)
+        # test all_constraints_linear
+        # schedule1, lectures, other_sessions, empty_sessions = plan.initialize_schedule(plan.courses, rooms_list)
+        # courses_schedule1 = Constraint.all_constraints(schedule1, plan.courses)
+        # schedule2 = np.array(schedule1).flatten().tolist()
+        # courses_schedule2 = Constraint.all_constraints_linear(schedule2, plan.courses)
+        #
+        # if courses_schedule1 == courses_schedule2:
+        #     print("CHILL")
+        # else:
+        #     print("huilon")
+        #
+        # for i in range(len(courses_schedule1)):
+        #     if courses_schedule1[i] != courses_schedule2[i]:
+        #         print(i)
+        #         print(courses_schedule1[i])
+        #         print(courses_schedule2[i])
+        #
+        # genetic.get_points(schedule2, plan.courses)
 
-        # firstalgorithm.genetic_algortim(schedule1, schedule2)
+        # test genetic Algorithm
+        # schedule1, lectures, other_sessions, empty_sessions = plan.initialize_schedule(plan.courses, rooms_list)
+        # schedule2, lectures, other_sessions, empty_sessions = plan.initialize_schedule(plan.courses, rooms_list)
+        # genetic.genetic_algortim(schedule1, schedule2)
+
+        # test new constraint function
+        # courses_schedule = Constraint.all_constraints(schedule, plan.courses)
 
         courses_schedule = Constraint.all_constraints(schedule, plan.courses)
         spread_points = Constraint.session_spread_check(schedule, plan.courses, courses_schedule)

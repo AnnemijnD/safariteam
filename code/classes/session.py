@@ -23,7 +23,7 @@ class Session(object):
         """
         Enables a list of objects to be iterated one element at a time.
         """
-        return iter([self.name, self.type, self.room, self.timeslot, self.day])
+        return iter([self.name, self.type, self.room, self.timeslot])
 
     def __repr__(self):
         """
@@ -32,8 +32,8 @@ class Session(object):
         return self.name
 
     # Dit gebruiken we volgens mij niet meer?
-    def __getitem__(self, day):
-        return self.day
+    # def __getitem__(self, day):
+    #     return self.day
 
     def __str__(self):
         if self.max_students == " ":
