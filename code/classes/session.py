@@ -8,7 +8,7 @@ class Session(object):
     Representation of a schedule.
     """
 
-    def __init__(self, overall_id, name, type, max_students, session_id, group_id):
+    def __init__(self, name, type, max_students, session_id, group_id):
         self.overall_id = 0
         self.name = name
         self.type = type

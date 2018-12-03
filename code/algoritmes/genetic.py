@@ -5,7 +5,10 @@ from constraint import Constraint
 from random import randint
 
 CHILDREN = 2
+DAYS = 5
+ROOMS = 7
 SLOTS = 140
+TIME_SLOTS = 4
 
 
 def evaluate(schedule, courses):
@@ -13,7 +16,6 @@ def evaluate(schedule, courses):
     Alle constraint functies bij elkaar, returned 1 getal
     """
     pass
-    course_schedule = Constraint.all_constraints(schedule, courses)
 
 
 def genetic_algortim(schedule1, schedule2):
@@ -42,6 +44,7 @@ def genetic_algortim(schedule1, schedule2):
     cycles_len = []
     start_point = randint(0, SLOTS - 1)
 
+    # while not all slots are looked at, search for cycles
     while len(cycles_len) < SLOTS:
         cycle_i = []
         index = parent1.index(parent1[start_point])
@@ -71,6 +74,11 @@ def genetic_algortim(schedule1, schedule2):
         for j in cycles[i]:
             child1[j] = parent2[j]
             child2[j] = parent1[j]
+
+    child1 = np.asarray(child1)
+    child2 = np.asarray(child2)
+    child1 = child1.reshape(DAYS, TIME_SLOTS, ROOMS).tolist()
+    child2 = child2.reshape(DAYS, TIME_SLOTS, ROOMS).tolist()
 
     # calculate the points of the children LATER DIT WAARSCHIJNLIJK IN EEN LOOPJE DOEN
     points_child1 = get_points(child1, courses)
@@ -112,11 +120,13 @@ def get_points(schedule, courses):
     Minimum of 'minus points' of mutual_course() = 0.
     Maximum of 'good points' of session_spread_check() = 440.
     Minimum of malus points of students_fit() = 0 and maxmimum = 1332.
+
+    Multiply the points of the hard constraints (lecture_first and mutual_courses)
+    to ensure that a schedule fulfills these constraints.
     """
-    courses_schedule = Constraint.all_constraints_linear(schedule, courses)
-    points = Constraint.session_spread_check(schedule, courses, courses_schedule) - \
-        Constraint.lecture_first(schedule, courses, courses_schedule) - \
-        Constraint.mutual_courses_check(schedule, courses) - \
-        Constraint.students_fit(schedule, courses, courses_schedule)
+    points = Constraint.session_spread_check(schedule, courses) - \
+        (Constraint.lecture_first(schedule, courses) * 40) - \
+        (Constraint.mutual_courses_check(schedule, courses) * 40) - \
+        (Constraint.students_fit(schedule, courses) / 15)
 
     return points

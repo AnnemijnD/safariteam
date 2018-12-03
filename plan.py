@@ -4,9 +4,6 @@ Names: Annemijn, Sanne & Rebecca
 This script generates a schedule.
 """
 
-# HET VIEL ME OP DAT ROOMS_LIST WEG KAN MAAR ER ZIJN ALLEMAAL MERGE DINGEN
-# FOUT GEGAAN DENK IK, DUS WIL HET MORGEN EERST EVEN OVERLEGGEN!
-
 import os, sys
 
 directory = os.path.dirname(os.path.realpath(__file__))
@@ -18,6 +15,7 @@ from constraint import Constraint
 import loaddata
 from session import Session
 import switch
+import genetic
 import hillclimber
 import csv
 import random
@@ -66,25 +64,16 @@ class Plan():
             session_list[i].overall_id = session_counter
             session_counter += 1
 
-        # # Put every session into schedule
-        # for i in range(SLOTS):
-        #     try:
-        #         name = session_list[i].name
-        #     except IndexError:
-        #         name = ' '
-        #     try:
-        #         type = session_list[i].type
-        #     except IndexError:
-        #         type = ' '
-        #     try:
-        #         max_students = session_list[i].max_students
-        #     except IndexError:
-        #         max_students = 'nvt'
-        #
-        #     group_id = 'nvt'
-        #     session_id = 'nvt'
-        #
-        #     session = Session(name, type, max_students, session_id, group_id)
+        # make #SLOTS empty sessions
+        for i in range(SLOTS):
+            name = ' '
+            type = ' '
+            max_students = ' '
+            session_id = 'nvt2'
+            group_id = 'nvt2'
+            empty_session = Session(name, type, max_students, session_id, group_id)
+            empty_session.overall_id = SLOTS
+            empty_sessions.append(empty_session)
 
         for i in range(len(session_list)):
 
@@ -100,21 +89,6 @@ class Plan():
         others = other_sessions[:]
         # random.shuffle(lectures)
         # random.shuffle(other_sessions)
-
-        # Maak lege sessies aan om lege cellen mee op te vullen
-        # Dit stukje wordt gebruikt in de nested for loop waarbij aan elke cel
-        # een sessie wordt meegegeven.
-        # TODO: WE MOETEN NOG DE RANGE AANPASSEN
-        for i in range(140-72):
-            name = ' '
-            type = ' '
-            max_students = ' '
-            id = 'nvt2'
-            session_id = 'nvt2'
-            group_id = 'nvt2'
-            session = Session(id, name, type, max_students, session_id, group_id)
-            # session = Session(name, type, room, timeslot, day)
-            empty_sessions.append(session)
 
         # De lijst met totale sessies bestaat dus uit een lijst met eerst
         # Hoorcolleges, daarna de andere sessies en is opgevuld tot 140 met lege sessies
@@ -161,12 +135,12 @@ class Plan():
 
         # Vul eerst met lege sessions
         # counter = 0
-        for empty_session in empty_sessions:
-            for b in range(DAYS):
-                for c in range(TIME_SLOTS):
-                    for d in range(ROOMS):
-                        schedule[b][c][d] = empty_session
-                        # schedule[b][c][d] = empty_session[counter]
+        session_counter = 0
+        for b in range(DAYS):
+            for c in range(TIME_SLOTS):
+                for d in range(ROOMS):
+                    schedule[b][c][d] = empty_sessions[session_counter]
+                    session_counter += 1
 
 
 
@@ -292,6 +266,16 @@ class Plan():
                 #plan.initialize_schedule(plan.courses)
                 # break
         if found:
+
+            # give the empty_sessions overall_ids
+            overall_id_counter = 129
+            for i in range(DAYS):
+                for j in range(TIME_SLOTS):
+                    for k in range(ROOMS):
+                        # checks if the session is empty
+                        if schedule[i][j][k].overall_id == SLOTS:
+                            schedule[i][j][k].overall_id = overall_id_counter
+                            overall_id_counter += 1
 
             return schedule
 
@@ -469,9 +453,9 @@ class Plan():
         # genetic.get_points(schedule2, plan.courses)
 
         # test genetic Algorithm
-        # schedule1, lectures, other_sessions, empty_sessions = plan.initialize_schedule(plan.courses, rooms_list)
-        # schedule2, lectures, other_sessions, empty_sessions = plan.initialize_schedule(plan.courses, rooms_list)
-        # genetic.genetic_algortim(schedule1, schedule2)
+        schedule1, lectures, other_sessions, empty_sessions = plan.initialize_schedule(plan.courses)
+        schedule2, lectures, other_sessions, empty_sessions = plan.initialize_schedule(plan.courses)
+        genetic.genetic_algortim(schedule1, schedule2)
 
         # test new constraint function
         # courses_schedule = Constraint.all_constraints(schedule, plan.courses)
