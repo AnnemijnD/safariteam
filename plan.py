@@ -34,6 +34,7 @@ DAYS = 5
 ROOMS = 7
 MAXMALUSPOINTS = 0
 MAXSCHEDULEPOINTS = 39
+POPULATION = 50
 
 
 class Plan():
@@ -441,9 +442,14 @@ class Plan():
         # genetic.get_points(schedule2, plan.courses)
 
         # test genetic Algorithm
-        schedule1, lectures, other_sessions, empty_sessions = plan.initialize_schedule(plan.courses)
-        schedule2, lectures, other_sessions, empty_sessions = plan.initialize_schedule(plan.courses)
-        genetic.genetic_algortim(schedule1, schedule2)
+        # schedule1, lectures, other_sessions, empty_sessions = plan.initialize_schedule(plan.courses)
+        # schedule2, lectures, other_sessions, empty_sessions = plan.initialize_schedule(plan.courses)
+        schedules = []
+        for i in range(POPULATION):
+            schedules.append(plan.initialize_schedule(plan.courses)[0])
+
+        # ALS JE GENETIC WIL TESTEN DEZE AANPASSEN
+        # genetic.genetic_algortim(schedules, plan.courses)
 
         # test new constraint function
         # courses_schedule = Constraint.all_constraints(schedule, plan.courses)
