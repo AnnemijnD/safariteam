@@ -1,10 +1,14 @@
 import copy
+import loaddata
 import numpy as np
 from constraint import Constraint
 from random import randint
 
 CHILDREN = 2
+DAYS = 5
+ROOMS = 7
 SLOTS = 140
+TIME_SLOTS = 4
 
 
 def evaluate(schedule, courses):
@@ -12,7 +16,6 @@ def evaluate(schedule, courses):
     Alle constraint functies bij elkaar, returned 1 getal
     """
     pass
-    course_schedule = Constraint.all_constraints(schedule, courses)
 
 
 def genetic_algortim(schedule1, schedule2):
@@ -24,6 +27,8 @@ def genetic_algortim(schedule1, schedule2):
     -
 
     """
+    courses = loaddata.load_courses()
+
     # transform the schedule in a linear list
     parent1 = np.array(schedule1).flatten().tolist()
     parent2 = np.array(schedule2).flatten().tolist()
@@ -39,6 +44,7 @@ def genetic_algortim(schedule1, schedule2):
     cycles_len = []
     start_point = randint(0, SLOTS - 1)
 
+    # while not all slots are looked at, search for cycles
     while len(cycles_len) < SLOTS:
         cycle_i = []
         index = parent1.index(parent1[start_point])
@@ -71,7 +77,14 @@ def genetic_algortim(schedule1, schedule2):
 
     child1 = np.asarray(child1)
     child2 = np.asarray(child2)
+    child1 = child1.reshape(DAYS, TIME_SLOTS, ROOMS).tolist()
+    child2 = child2.reshape(DAYS, TIME_SLOTS, ROOMS).tolist()
 
+    # calculate the points of the children LATER DIT WAARSCHIJNLIJK IN EEN LOOPJE DOEN
+    points_child1 = get_points(child1, courses)
+    points_child2 = get_points(child2, courses)
+    print(points_child1)
+    print(points_child2)
 
 
     #     cycle_i = []
@@ -98,3 +111,22 @@ def genetic_algortim(schedule1, schedule2):
     #         start_point = randint(0, SLOTS - 1)
     #
     # print(f"cycles: {cycles}")
+
+def get_points(schedule, courses):
+    """
+    Returns the points of a given schedule. Some constraint checks return
+    negative points, so these are substracted in stead of added to the points.
+    Minimum minus points for lecture_first = 0, maxmimum = 39.
+    Minimum of 'minus points' of mutual_course() = 0.
+    Maximum of 'good points' of session_spread_check() = 440.
+    Minimum of malus points of students_fit() = 0 and maxmimum = 1332.
+
+    Multiply the points of the hard constraints (lecture_first and mutual_courses)
+    to ensure that a schedule fulfills these constraints.
+    """
+    points = Constraint.session_spread_check(schedule, courses) - \
+        (Constraint.lecture_first(schedule, courses) * 40) - \
+        (Constraint.mutual_courses_check(schedule, courses) * 40) - \
+        (Constraint.students_fit(schedule, courses) / 15)
+
+    return points

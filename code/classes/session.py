@@ -8,7 +8,7 @@ class Session(object):
     Representation of a schedule.
     """
 
-    def __init__(self, overall_id, name, type, max_students, session_id, group_id):
+    def __init__(self, name, type, max_students, session_id, group_id):
         self.overall_id = 0
         self.name = name
         self.type = type
@@ -23,7 +23,7 @@ class Session(object):
         """
         Enables a list of objects to be iterated one element at a time.
         """
-        return iter([self.name, self.type, self.room, self.timeslot, self.day])
+        return iter([self.name, self.type, self.room, self.timeslot])
 
     def __repr__(self):
         """
@@ -32,8 +32,8 @@ class Session(object):
         return self.name
 
     # Dit gebruiken we volgens mij niet meer?
-    def __getitem__(self, day):
-        return self.day
+    # def __getitem__(self, day):
+    #     return self.day
 
     def __str__(self):
         if self.max_students == " ":

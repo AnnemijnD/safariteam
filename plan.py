@@ -15,6 +15,7 @@ from constraint import Constraint
 import loaddata
 from session import Session
 import switch
+import genetic
 import hillclimber
 import csv
 import random
@@ -65,6 +66,19 @@ class Plan():
             session_list[i].overall_id = session_counter
             session_counter += 1
 
+<<<<<<< HEAD
+=======
+        # make #SLOTS empty sessions
+        for i in range(SLOTS):
+            name = ' '
+            type = ' '
+            max_students = ' '
+            session_id = 'nvt2'
+            group_id = 'nvt2'
+            empty_session = Session(name, type, max_students, session_id, group_id)
+            empty_session.overall_id = SLOTS
+            empty_sessions.append(empty_session)
+>>>>>>> e9a047457b7f8816ee4f92c24d2e0d69e2015ab9
 
         for i in range(len(session_list)):
             # Get all the lectures
@@ -79,21 +93,6 @@ class Plan():
         others = other_sessions[:]
         # random.shuffle(lectures)
         # random.shuffle(other_sessions)
-
-        # Maak lege sessies aan om lege cellen mee op te vullen
-        # Dit stukje wordt gebruikt in de nested for loop waarbij aan elke cel
-        # een sessie wordt meegegeven.
-        # TODO: WE MOETEN NOG DE RANGE AANPASSEN
-        for i in range(140-72):
-            name = ' '
-            type = ' '
-            max_students = ' '
-            id = 'nvt2'
-            session_id = 'nvt2'
-            group_id = 'nvt2'
-            session = Session(id, name, type, max_students, session_id, group_id)
-            # session = Session(name, type, room, timeslot, day)
-            empty_sessions.append(session)
 
         # De lijst met totale sessies bestaat dus uit een lijst met eerst
         # Hoorcolleges, daarna de andere sessies en is opgevuld tot 140 met lege sessies
@@ -127,12 +126,12 @@ class Plan():
 
         # Vul eerst met lege sessions
         # counter = 0
-        for empty_session in empty_sessions:
-            for b in range(DAYS):
-                for c in range(TIME_SLOTS):
-                    for d in range(ROOMS):
-                        schedule[b][c][d] = empty_session
-                        # schedule[b][c][d] = empty_session[counter]
+        session_counter = 0
+        for b in range(DAYS):
+            for c in range(TIME_SLOTS):
+                for d in range(ROOMS):
+                    schedule[b][c][d] = empty_sessions[session_counter]
+                    session_counter += 1
 
 
 
@@ -258,6 +257,16 @@ class Plan():
                 #plan.initialize_schedule(plan.courses)
                 # break
         if found:
+
+            # give the empty_sessions overall_ids
+            overall_id_counter = 129
+            for i in range(DAYS):
+                for j in range(TIME_SLOTS):
+                    for k in range(ROOMS):
+                        # checks if the session is empty
+                        if schedule[i][j][k].overall_id == SLOTS:
+                            schedule[i][j][k].overall_id = overall_id_counter
+                            overall_id_counter += 1
 
             return schedule
 
@@ -415,11 +424,32 @@ class Plan():
         # print(Constraint.mutual_courses_check(schedule, plan.courses))
         mutual_course_malus = Constraint.mutual_courses_check(schedule, plan.courses)
 
-        # test genetic Algorithm
-        # schedule1, lectures, other_sessions, empty_sessions = plan.initialize_schedule(plan.courses)
-        # schedule2, lectures, other_sessions, empty_sessions = plan.initialize_schedule(plan.courses)
+        # test all_constraints_linear
+        # schedule1, lectures, other_sessions, empty_sessions = plan.initialize_schedule(plan.courses, rooms_list)
+        # courses_schedule1 = Constraint.all_constraints(schedule1, plan.courses)
+        # schedule2 = np.array(schedule1).flatten().tolist()
+        # courses_schedule2 = Constraint.all_constraints_linear(schedule2, plan.courses)
+        #
+        # if courses_schedule1 == courses_schedule2:
+        #     print("CHILL")
+        # else:
+        #     print("huilon")
+        #
+        # for i in range(len(courses_schedule1)):
+        #     if courses_schedule1[i] != courses_schedule2[i]:
+        #         print(i)
+        #         print(courses_schedule1[i])
+        #         print(courses_schedule2[i])
+        #
+        # genetic.get_points(schedule2, plan.courses)
 
-        # firstalgorithm.genetic_algortim(schedule1, schedule2)
+        # test genetic Algorithm
+        schedule1, lectures, other_sessions, empty_sessions = plan.initialize_schedule(plan.courses)
+        schedule2, lectures, other_sessions, empty_sessions = plan.initialize_schedule(plan.courses)
+        genetic.genetic_algortim(schedule1, schedule2)
+
+        # test new constraint function
+        # courses_schedule = Constraint.all_constraints(schedule, plan.courses)
 
         # Constraint.all_constraints(schedule, plan.courses)
         courses_schedule = Constraint.all_constraints(schedule, plan.courses)
