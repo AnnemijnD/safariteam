@@ -45,11 +45,13 @@ def soft_constraints(schedule, courses, schedule_counter):
         schedule1_points = get_points(schedule1, courses)
         # Make a new schedule by switching random sessions.
         if session_switcher is True:
-            session_to_switch = Constraint.session_points(schedule, courses)
+            session_to_switch = Constraint.session_points(schedule, courses)[0]
             session_switcher = False
         else:
             session_to_switch = -1
             session_switcher = True
+        # WE MOETEN NOG BEPALEN WAT DE BESTE PLEK IS VOOR DEZE SESSION
+        # AAN DE HAND VAN HET LAAGSTE AANTAL MALUSPUNTEN VOOR DE SPECIFIEKE SESSIE?
         schedule2 = switch.switch_session(schedule, 1, session_to_switch)
         # Get points of the new (not yet accepted) schedule
         schedule2_points = get_points(schedule2, courses)
@@ -82,7 +84,7 @@ def soft_constraints(schedule, courses, schedule_counter):
             info = Constraint.all_constraints(schedule, courses)
             print("Points: ", Constraint.session_spread_check(schedule, courses, info)[0] - Constraint.students_fit(schedule, courses, info))
             # Search for a session with highest maluspoints
-            session_to_switch = Constraint.session_points(schedule, courses)
+            session_to_switch = Constraint.session_points(schedule, courses)[0]
             # Pass this session on to the switcher
             # schedule = switch.switch_session(schedule, 1, session_to_switch)
             schedule = switch.switch_session(schedule, 1, session_to_switch)

@@ -340,6 +340,15 @@ class Constraint():
         return maluspoints
 
 
+    def overall_id_points(schedule, courses, overall_id):
+        """
+        Gets maluspoints for a specific session.
+        """
+
+        id = Constraint.session_points(schedule,courses)[1]
+        return id[overall_id]
+
+
     def session_points(schedule, courses):
         """
         Calculates maluspoints for each session, using session_spread_check and
@@ -422,7 +431,7 @@ class Constraint():
             print(points_dict)
             malus_session_id = randint(0, SLOTS - 1)
 
-        return malus_session_id
+        return [malus_session_id, points_dict]
 
     def get_points(schedule, courses):
         """

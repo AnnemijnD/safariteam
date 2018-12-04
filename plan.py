@@ -410,11 +410,12 @@ class Plan():
         # Load all the courses, rooms and sessions
         plan.courses = loaddata.load_courses()
         schedule = plan.initialize_schedule(plan.courses)[0]
+
         points = Constraint.get_points(schedule, plan.courses)
 
-        while points < -200:
-            schedule = plan.initialize_schedule(plan.courses)[0]
-            points = Constraint.get_points(schedule, plan.courses)
+        # while points < -200:
+        #     schedule = plan.initialize_schedule(plan.courses)[0]
+        #     points = Constraint.get_points(schedule, plan.courses)
 
         rooms = loaddata.load_rooms()
         plan.own_session_points = 0
@@ -426,7 +427,7 @@ class Plan():
         # Geef dit rooster mee aan de soft constraints
         # schedule, points, plan.schedule_counter = hillclimber.soft_constraints(schedule, plan.courses, plan.schedule_counter)
 
-        schedule, points, plan.schedule_counter = climbergreedy.soft_constraints(schedule, plan.courses, plan.schedule_counter)
+        # schedule, points, plan.schedule_counter = climbergreedy.soft_constraints(schedule, plan.courses, plan.schedule_counter)
 
         mutual_course_malus = Constraint.mutual_courses_check(schedule, plan.courses)
 
@@ -473,21 +474,19 @@ class Plan():
 
 
 
-        session_to_switch = Constraint.session_points(schedule, plan.courses)
-        schedule2 = switch.switch_session(schedule, 1, session_to_switch)
 
 
 
+        overall_id = Constraint.session_points(schedule, plan.courses)[0]
+        Constraint.overall_id_points(schedule, plan.courses, overall_id)
 
-        Constraint.session_points(schedule, plan.courses)
-
-        # Print the end-text
-        plan.end(schedule, courses_schedule)
-        # Make a plot of the points
-        try:
-            plan.makeplot(points)
-        except:
-            print("No points to plot for now.")
+        # # Print the end-text
+        # plan.end(schedule, courses_schedule)
+        # # Make a plot of the points
+        # try:
+        #     plan.makeplot(points)
+        # except:
+        #     print("No points to plot for now.")
 
         # Make a html file for the schedule
         plan.save_html(schedule, rooms, spread_points, capacity_points, lecture_points, mutual_course_malus)
