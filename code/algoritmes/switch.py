@@ -38,16 +38,18 @@ def switch_session(schedule, number_of_switches, session_to_switch):
 
     # If a specific session with most maluspoints has to be switched:
     else:
-        for i in range(number_of_switches):
-            # Get one random number
-            random_number = randint(0, SLOTS - 1)
-
-            # If the numbers are equal to each other, make another number
-            while random_number is session_to_switch:
-                random_number = randint(0, SLOTS - 1)
-
-            # Switch the specific session with a random other session
-            flatten[random_number], flatten[session_to_switch] = flatten[session_to_switch], flatten[random_number]
+        # Iterate over every session in the schedule to get the session location
+        for location in range(len(flatten)):
+            # If location of the session was found:
+            if flatten[location].overall_id == session_to_switch:
+                for i in range(number_of_switches):
+                    # Get one random number
+                    random_number = randint(0, SLOTS - 1)
+                    # If the numbers are equal to each other, make another number
+                    while random_number is location:
+                        random_number = randint(0, SLOTS - 1)
+                    # Switch the specific session with a random other session
+                    flatten[random_number], flatten[location] = flatten[location], flatten[random_number]
 
     # Convert back to 3D list
     schedule = flatten.reshape(DAYS, TIME_SLOTS, ROOMS).tolist()

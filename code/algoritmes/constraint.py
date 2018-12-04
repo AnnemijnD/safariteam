@@ -356,7 +356,7 @@ class Constraint():
         counter = 0
         points = 0
         for course in courses:
-
+            # print(course.course_id)
             #  saves the room and type of the checked_course sessions
             checked_course = courses_schedule[course.course_id]
             room_ids = checked_course["room"]
@@ -386,14 +386,14 @@ class Constraint():
                     # print(session_points_dict[session_overall_ids[i]])
                     session_points_dict[session_overall_ids[i]]["capacity_points"] += abs(empty_seats)
 
-                    # Maak een dictionary van {session_id_ov : punten}
-                # else:
-                #     points = 0
-                points_dict.update({counter:points})
-
+                # Maak een dictionary van {session_id_ov : punten}
+                points_dict[counter] = points
+                # Set points back to 0
                 counter += 1
+                points = 0
 
         # print(points_dict)
+        # Hieruit kunnen we de overall_id halen van de sessie met het meeste maluspunten
         try:
             malus_session_id = list(points_dict.keys())[list(points_dict.values()).index(max(points_dict.values()))]
         # If there are no malus points (for capacity_points)

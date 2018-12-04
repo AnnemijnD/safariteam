@@ -62,7 +62,7 @@ def soft_constraints(schedule, courses, schedule_counter):
         # that a schedule was rejected. For example: if a random schedule with less
         # points was rejected a 100 times, force a new schedule (with less points).
         if accept_counter > OPTIMUM:
-            # Check for sudden succes
+            # Check for sudden succes :D :D :D
             if get_points(schedule, courses) >= MAXPOINTS:
                 return schedule, points, schedule_counter
 
@@ -111,12 +111,12 @@ def get_points(schedule, courses):
     Alles delen door max aantal punten en vermenigvuldigen met 100,
     hard constraints dan ook vermenigvuldigen met 2.
     """
-    courses_schedule = Constraint.all_constraints(schedule, courses)
+    course_schedule = Constraint.all_constraints(schedule, courses)
 
-    points = Constraint.session_spread_check(schedule, courses, courses_schedule) - \
-            (Constraint.lecture_first(schedule, courses, courses_schedule) * 40) - \
+    points = Constraint.session_spread_check(schedule, courses, course_schedule)[0] - \
+            (Constraint.lecture_first(schedule, courses, course_schedule) * 40) - \
             (Constraint.mutual_courses_check(schedule, courses) * 40) - \
-            (Constraint.students_fit(schedule, courses, courses_schedule) / 5)
+            (Constraint.students_fit(schedule, courses, course_schedule) / 10)
 
     return points
 

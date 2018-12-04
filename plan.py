@@ -16,6 +16,7 @@ import loaddata
 from session import Session
 import switch
 import genetic
+import climbergreedy
 import hillclimber
 import csv
 import random
@@ -418,8 +419,8 @@ class Plan():
 
         # Geef dit rooster mee aan de soft constraints
         # schedule, points, plan.schedule_counter = hillclimber.soft_constraints(schedule, plan.courses, plan.schedule_counter)
+        # schedule, points, plan.schedule_counter = climbergreedy.soft_constraints(schedule, plan.courses, plan.schedule_counter)
 
-        # print(Constraint.mutual_courses_check(schedule, plan.courses))
         mutual_course_malus = Constraint.mutual_courses_check(schedule, plan.courses)
 
         # test all_constraints_linear
@@ -456,12 +457,13 @@ class Plan():
 
         # Constraint.all_constraints(schedule, plan.courses)
         courses_schedule = Constraint.all_constraints(schedule, plan.courses)
+        Constraint.session_spread_check(schedule, plan.courses, courses_schedule)
         spread_points = Constraint.session_spread_check(schedule, plan.courses, courses_schedule)[0]
         # print(spread_points)
         capacity_points = (Constraint.students_fit(schedule, plan.courses, courses_schedule))
         lecture_points = Constraint.lecture_first(schedule, plan.courses, courses_schedule)
         Constraint.lecture_first(schedule, plan.courses, courses_schedule)
-        # print(Constraint.session_points(schedule, plan.courses))
+        switch.switch_session(schedule, 1, 0)
 
 
         Constraint.session_points(schedule, plan.courses)
