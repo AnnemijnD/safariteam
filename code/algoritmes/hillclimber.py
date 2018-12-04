@@ -93,7 +93,7 @@ def get_points(schedule, courses):
     points = Constraint.session_spread_check(schedule, courses, course_schedule)[0] - \
             (Constraint.lecture_first(schedule, courses, course_schedule) * 40) - \
             (Constraint.mutual_courses_check(schedule, courses) * 40) - \
-            (Constraint.students_fit(schedule, courses, course_schedule) / 15)
+            (Constraint.students_fit(schedule, courses, course_schedule) / 4)
 
     return points
 

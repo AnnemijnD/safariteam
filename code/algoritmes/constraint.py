@@ -199,7 +199,7 @@ class Constraint():
 
 
             # course_bonus_malus.append([id, round(course_mal_points - course_bon_points)])
-            course_dict.update({id: (round(course_mal_points + course_bon_points))})
+            course_dict.update({id: (round(course_mal_points - course_bon_points))})
 
         bonuspoints = round(bonuspoints)
         maluspoints = round(maluspoints)
@@ -341,13 +341,18 @@ class Constraint():
 
 
     def session_points(schedule, courses):
+        """
+        Calculates maluspoints for each session, using session_spread_check and
+        student_fit check. Output is a the overall_id of a session with highest
+        maluspoints.
+        """
         courses_schedule = Constraint.all_constraints(schedule, courses)
         rooms = loaddata.load_rooms()
 
         spread_points = Constraint.session_spread_check(schedule, courses, courses_schedule)[1]
         # print(spread_points)
 
-        spread_points_dict = {}
+        points_dict = {}
         # Loop over alle sessions om elke sessie een punt te geven jeej
         for i in range(DAYS):
             for j in range(TIME_SLOTS):
@@ -359,17 +364,12 @@ class Constraint():
                         # print(schedule[i][j][k].course_object.course_id, "  ", schedule[i][j][k].course_object.name)
                         # Dus voor elke overall_id moeten punten gegeven worden:
                         # Nou dat gaan we eens even lekker doen
-                        # Deze moeten uit de spread_points_dict gehaald worden,
+                        # Deze moeten uit de points_dict gehaald worden,
                         # daarin staan alle spread puntjes per vak. :-)
                         temp_id = schedule[i][j][k].course_object.course_id
                         # Selecteer het vak uit de dictionary en geef de session de punten.
-                        spread_points_dict[schedule[i][j][k].overall_id] = spread_points[temp_id]
-        # print(spread_points_dict)
-
-
-
-
-        points_dict = {}
+                        points_dict[schedule[i][j][k].overall_id] = spread_points[temp_id]
+        # print(points_dict)
 
         session_points_dict = [{"session_id_ov": 0, "capacity_points":0, "spread_malus_points": 0,
                                 "spread_bonus_points": 0, "flex_points": 0, "points": 0} for i in range(SESSION_NUM)]
@@ -407,14 +407,11 @@ class Constraint():
                     # print(session_points_dict[session_overall_ids[i]])
                     session_points_dict[session_overall_ids[i]]["capacity_points"] += abs(empty_seats)
 
-                # Maak een dictionary van {session_id_ov : punten}
-                points_dict[counter] = points
-                spread_points_dict[counter] += points
+                # Tel de maluspunten op
+                points_dict[counter] += points
                 # Set points back to 0
                 counter += 1
                 points = 0
-        # print(points_dict)
-        # print(spread_points_dict)
 
         # print(points_dict)
         # Hieruit kunnen we de overall_id halen van de sessie met het meeste maluspunten

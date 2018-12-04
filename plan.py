@@ -392,11 +392,10 @@ class Plan():
         """
         Prints text to tell user how many schedules were made and how long it took to make.
         """
-        print("SUCCES!!")
+        print("Succes! :-)")
         print("It took:", round(time.time() - plan.then, 3), "seconds, = ", round((time.time() - plan.then) / 60, 3), "minutes.")
-        print("Made", plan.schedule_counter, "schedule(s) until the 'right' was found.")
-        print(plan.own_session_points, "minus points for placing mutual courses in the same timeslot.")
-        print("Spread bonus points:", Constraint.session_spread_check(schedule, plan.courses, courses_schedule)[0], "out of 440.")
+        print("Made", plan.schedule_counter, "schedule(s).")
+        print("Points:", Constraint.session_spread_check(schedule, plan.courses, courses_schedule)[0] - Constraint.students_fit(schedule, plan.courses, courses_schedule), "out of 440.")
 
     def generate(self):
         """

@@ -1,6 +1,6 @@
 body {
   padding: 20px;
-  background-color: #1E90FF;
+  background-color: powderblue;
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
   color: black;
@@ -49,12 +49,12 @@ body {
   box-shadow: 10px 10px 5px #808080;
 }
 
-.text {
+text {
   font-size: 10pt;
   font-family: Arial;
 }
 
-.h1 {
+h1 {
   font-size: 14pt;
   font-family: Arial;
 }
