@@ -464,25 +464,16 @@ class Plan():
         # print(Constraint.session_points(schedule, plan.courses))
 
 
-        dict = Constraint.session_points(schedule, plan.courses)
-        session_points = []
-        for i in range(len(Constraint.session_points(schedule, plan.courses))):
-            session_points.append(Constraint.session_points(schedule, plan.courses)[i]["capacity_points"])
+        Constraint.session_points(schedule, plan.courses)
 
-        # print(max(session_points))
-        # max = max(session_points)
-        #
-        # for session_id_ov, capacity_points in dict.items():    # for name, age in dictionary.iteritems():  (for Python 2.x)
-        #     if capacity_points == max:
-        #         print(session_id_ov)
 
-        # # Print the end-text
-        # plan.end(schedule, courses_schedule)
-        # # Make a plot of the points
-        # try:
-        #     plan.makeplot(points)
-        # except:
-        #     print("No points to plot for now.")
+        # Print the end-text
+        plan.end(schedule, courses_schedule)
+        # Make a plot of the points
+        try:
+            plan.makeplot(points)
+        except:
+            print("No points to plot for now.")
 
         # Make a html file for the schedule
         plan.save_html(schedule, rooms, spread_points, capacity_points, lecture_points, mutual_course_malus)

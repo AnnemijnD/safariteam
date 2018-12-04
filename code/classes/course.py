@@ -20,7 +20,6 @@ class Course(object):
         self.session_tutorial = self.load_sessions(self.tutorial, 'tutorial', max_students_tutorial, expected_students)
         self.session_practical = self.load_sessions(self.practical, 'practical', max_students_practical, expected_students)
         self.sessions_total = self.session_lecture + self.session_tutorial + self.session_practical
-        # Mutual courses moeten objecten worden.
         self.mutual_courses = self.load_mutual_courses(self.name)
         self.max_students_lecture = max_students_lecture
         self.max_students_tutorial = max_students_tutorial
