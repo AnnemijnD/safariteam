@@ -441,11 +441,11 @@ class Constraint():
         Alles delen door max aantal punten en vermenigvuldigen met 100,
         hard constraints dan ook vermenigvuldigen met 2.
         """
-        courses_schedule = Constraint.all_constraints(schedule, courses)
+        course_schedule = Constraint.all_constraints(schedule, courses)
 
-        points = Constraint.session_spread_check(schedule, courses, courses_schedule) - \
-                (Constraint.lecture_first(schedule, courses, courses_schedule) * 40) - \
+        points = Constraint.session_spread_check(schedule, courses, course_schedule)[0] - \
+                (Constraint.lecture_first(schedule, courses, course_schedule) * 40) - \
                 (Constraint.mutual_courses_check(schedule, courses) * 40) - \
-                (Constraint.students_fit(schedule, courses, courses_schedule) / 6)
+                (Constraint.students_fit(schedule, courses, course_schedule) / 4)
 
         return points

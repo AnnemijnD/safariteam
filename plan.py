@@ -409,16 +409,24 @@ class Plan():
 
         # Load all the courses, rooms and sessions
         plan.courses = loaddata.load_courses()
-        schedule, lectures, other_sessions, empty_sessions = plan.initialize_schedule(plan.courses)
+        schedule = plan.initialize_schedule(plan.courses)[0]
+        points = Constraint.get_points(schedule, plan.courses)
+
+        while points < -200:
+            schedule = plan.initialize_schedule(plan.courses)[0]
+            points = Constraint.get_points(schedule, plan.courses)
+
         rooms = loaddata.load_rooms()
         plan.own_session_points = 0
         spread_points = 0
         lecture_points = 0
         capacity_points = 0
 
+        print("Runnig algorithm...")
         # Geef dit rooster mee aan de soft constraints
         # schedule, points, plan.schedule_counter = hillclimber.soft_constraints(schedule, plan.courses, plan.schedule_counter)
-        # schedule, points, plan.schedule_counter = climbergreedy.soft_constraints(schedule, plan.courses, plan.schedule_counter)
+
+        schedule, points, plan.schedule_counter = climbergreedy.soft_constraints(schedule, plan.courses, plan.schedule_counter)
 
         mutual_course_malus = Constraint.mutual_courses_check(schedule, plan.courses)
 
@@ -462,11 +470,16 @@ class Plan():
         capacity_points = (Constraint.students_fit(schedule, plan.courses, courses_schedule))
         lecture_points = Constraint.lecture_first(schedule, plan.courses, courses_schedule)
         Constraint.lecture_first(schedule, plan.courses, courses_schedule)
-        switch.switch_session(schedule, 1, 0)
+
+
+
+        session_to_switch = Constraint.session_points(schedule, plan.courses)
+        schedule2 = switch.switch_session(schedule, 1, session_to_switch)
+
+
 
 
         Constraint.session_points(schedule, plan.courses)
-
 
         # Print the end-text
         plan.end(schedule, courses_schedule)

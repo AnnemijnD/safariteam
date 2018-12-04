@@ -20,6 +20,7 @@ def switch_session(schedule, number_of_switches, session_to_switch):
 
     # Flatten schedule to get a 1D list to switch elements
     flatten = np.array(schedule).flatten()
+    # print(flatten)
 
     # If there is no specific session to switch, make a random switch
     if session_to_switch < 0:
@@ -42,6 +43,8 @@ def switch_session(schedule, number_of_switches, session_to_switch):
         for location in range(len(flatten)):
             # If location of the session was found:
             if flatten[location].overall_id == session_to_switch:
+                # print("DIT IS HET!!!!!!", flatten[location])
+                # print(location)
                 for i in range(number_of_switches):
                     # Get one random number
                     random_number = randint(0, SLOTS - 1)
@@ -50,7 +53,8 @@ def switch_session(schedule, number_of_switches, session_to_switch):
                         random_number = randint(0, SLOTS - 1)
                     # Switch the specific session with a random other session
                     flatten[random_number], flatten[location] = flatten[location], flatten[random_number]
-
+                break
+    # print(flatten)
     # Convert back to 3D list
     schedule = flatten.reshape(DAYS, TIME_SLOTS, ROOMS).tolist()
 
