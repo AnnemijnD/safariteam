@@ -93,6 +93,7 @@ class Constraint():
         # courses_schedule = Constraint.all_constraints(schedule, courses)
         bonuspoints = 0
         maluspoints = 0
+        course_dict = {}
 
         # list with course id, bonus points and malus points
         course_bonus_malus = []
@@ -197,9 +198,8 @@ class Constraint():
                     course_mal_points += (malusfactor * 10) / len(sessions)
 
 
-            course_bonus_malus.append([id, round(course_mal_points - course_bon_points)])
-
-
+            # course_bonus_malus.append([id, round(course_mal_points - course_bon_points)])
+            course_dict.update({id: (round(course_mal_points + course_bon_points))})
 
         bonuspoints = round(bonuspoints)
         maluspoints = round(maluspoints)
@@ -212,7 +212,7 @@ class Constraint():
         # deze functie overal wordt aangeroepen dus daar wacht ik nog even mee
 
         # zelfde geldt voor de bonus_malus_points
-        return [spread_points, course_bonus_malus]
+        return [spread_points, course_dict]
 
     def lecture_first(schedule, courses, courses_schedule):
         """
@@ -347,6 +347,28 @@ class Constraint():
         spread_points = Constraint.session_spread_check(schedule, courses, courses_schedule)[1]
         # print(spread_points)
 
+        spread_points_dict = {}
+        # Loop over alle sessions om elke sessie een punt te geven jeej
+        for i in range(DAYS):
+            for j in range(TIME_SLOTS):
+                for k in range(ROOMS):
+                    # Even lekker de overall_id er uit halen want hierbij moet dus opgeteld worden he ja
+                    # Ben zo blij dat course_object bestaat wWOOOW echt meeeega handig
+                    # Dit is om te checken of de session niet leeg is.
+                    if schedule[i][j][k].course_object:
+                        # print(schedule[i][j][k].course_object.course_id, "  ", schedule[i][j][k].course_object.name)
+                        # Dus voor elke overall_id moeten punten gegeven worden:
+                        # Nou dat gaan we eens even lekker doen
+                        # Deze moeten uit de spread_points_dict gehaald worden,
+                        # daarin staan alle spread puntjes per vak. :-)
+                        temp_id = schedule[i][j][k].course_object.course_id
+                        # Selecteer het vak uit de dictionary en geef de session de punten.
+                        spread_points_dict[schedule[i][j][k].overall_id] = spread_points[temp_id]
+        # print(spread_points_dict)
+
+
+
+
         points_dict = {}
 
         session_points_dict = [{"session_id_ov": 0, "capacity_points":0, "spread_malus_points": 0,
@@ -356,7 +378,6 @@ class Constraint():
         counter = 0
         points = 0
         for course in courses:
-            # print(course.course_id)
             #  saves the room and type of the checked_course sessions
             checked_course = courses_schedule[course.course_id]
             room_ids = checked_course["room"]
@@ -388,9 +409,12 @@ class Constraint():
 
                 # Maak een dictionary van {session_id_ov : punten}
                 points_dict[counter] = points
+                spread_points_dict[counter] += points
                 # Set points back to 0
                 counter += 1
                 points = 0
+        # print(points_dict)
+        # print(spread_points_dict)
 
         # print(points_dict)
         # Hieruit kunnen we de overall_id halen van de sessie met het meeste maluspunten
@@ -415,7 +439,7 @@ class Constraint():
         Multiply the points of the hard constraints (lecture_first and mutual_courses)
         to ensure that a schedule fulfills these constraints.
 
-        BEREKENING:
+        BEREKENING NOG NIET AF:
         ALLE FUNCTIES 0 TOT 100 PUNTEN GEVEN
         Alles delen door max aantal punten en vermenigvuldigen met 100,
         hard constraints dan ook vermenigvuldigen met 2.

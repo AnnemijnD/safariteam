@@ -21,7 +21,7 @@ def switch_session(schedule, number_of_switches, session_to_switch):
     # Flatten schedule to get a 1D list to switch elements
     flatten = np.array(schedule).flatten()
 
-    # If there is no specific session to switch:
+    # If there is no specific session to switch, make a random switch
     if session_to_switch < 0:
 
         for i in range(number_of_switches):
@@ -33,10 +33,10 @@ def switch_session(schedule, number_of_switches, session_to_switch):
             while random_number is random_switch_number:
                 random_number = randint(0, SLOTS - 1)
                 random_switch_number = randint(0, SLOTS - 1)
-
+            # Make the switch
             flatten[random_number], flatten[random_switch_number] = flatten[random_switch_number], flatten[random_number]
 
-    # If a specific session with most maluspoints has to be switched:
+    # If a specific session (with most maluspoints) has to be switched:
     else:
         # Iterate over every session in the schedule to get the session location
         for location in range(len(flatten)):
