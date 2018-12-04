@@ -395,7 +395,7 @@ class Plan():
         print("It took:", round(time.time() - plan.then, 3), "seconds, = ", round((time.time() - plan.then) / 60, 3), "minutes.")
         print("Made", plan.schedule_counter, "schedule(s) until the 'right' was found.")
         print(plan.own_session_points, "minus points for placing mutual courses in the same timeslot.")
-        print("Spread bonus points:", Constraint.session_spread_check(schedule, plan.courses, courses_schedule), "out of 440.")
+        print("Spread bonus points:", Constraint.session_spread_check(schedule, plan.courses, courses_schedule)[0], "out of 440.")
 
     def generate(self):
         """
@@ -444,9 +444,9 @@ class Plan():
         # test genetic Algorithm
         # schedule1, lectures, other_sessions, empty_sessions = plan.initialize_schedule(plan.courses)
         # schedule2, lectures, other_sessions, empty_sessions = plan.initialize_schedule(plan.courses)
-        schedules = []
-        for i in range(POPULATION):
-            schedules.append(plan.initialize_schedule(plan.courses)[0])
+        # schedules = []
+        # for i in range(POPULATION):
+        #     schedules.append(plan.initialize_schedule(plan.courses)[0])
 
         # ALS JE GENETIC WIL TESTEN DEZE AANPASSEN
         # genetic.genetic_algortim(schedules, plan.courses)
@@ -456,7 +456,7 @@ class Plan():
 
         # Constraint.all_constraints(schedule, plan.courses)
         courses_schedule = Constraint.all_constraints(schedule, plan.courses)
-        spread_points = Constraint.session_spread_check(schedule, plan.courses, courses_schedule)
+        spread_points = Constraint.session_spread_check(schedule, plan.courses, courses_schedule)[0]
         # print(spread_points)
         capacity_points = (Constraint.students_fit(schedule, plan.courses, courses_schedule))
         lecture_points = Constraint.lecture_first(schedule, plan.courses, courses_schedule)
