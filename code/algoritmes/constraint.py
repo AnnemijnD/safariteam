@@ -287,8 +287,30 @@ class Constraint():
                                 if own_session_counter > 1:
                                     minus_points += 1
 
-                                # HIER MOET NOG EEN MALUS PUNT KOMEN VOOR ALS TUTORIAL GROEP A
-                                # SAMEN MET PRACTICUM GROEP A ZIT!!!
+
+                        # else:
+                        #     # Each slot has a course name and the courses' mutual courses
+                        #     # Mutual courses is a list of courses that can't be in the same timeslot
+                        #     mutual_courses = schedule[i][j][k].course_object.mutual_courses
+                        #     # For every mutual course in the mutual_courses list,
+                        #     # check if it is placed in the same timeslot.
+                        #     for mutual_course in range(len(mutual_courses)):
+                        #         for z in range(len(schedule[i][j])):
+                        #             # If this mutual course is placed in the same timeslot
+                        #             # (for example Bioinformatica and Compilerbouw),
+                        #             # count one minus point.
+                        #             if mutual_courses[mutual_course] in schedule[i][j][z].name:
+                        #                 minus_points += 1
+
+
+
+                        # HIER MOET NOG EEN MALUS PUNT KOMEN VOOR ALS TUTORIAL GROEP A
+                        # SAMEN MET PRACTICUM GROEP A ZIT!!!
+                        # else:
+                        #     print(schedule[i][j][k])
+
+
+
         return minus_points
 
     def students_fit(schedule, courses, courses_schedule):
@@ -329,42 +351,87 @@ class Constraint():
 
 
     def session_points(schedule, courses):
-     courses_schedule = Constraint.all_constraints(schedule, courses)
-     rooms = loaddata.load_rooms()
+        courses_schedule = Constraint.all_constraints(schedule, courses)
+        rooms = loaddata.load_rooms()
 
-     session_points_dict = [{"session_id_ov": i, "capacity_points":0, "spread_malus_points": 0,
-                            "spread_bonus_points": 0, "flex_points": 0, "points": 0} for i in range(SESSION_NUM)]
+        points_dict = {}
 
-     maluspoints = 0
-     for course in courses:
-
-         #  saves the room and type of the checked_course sessions
-         checked_course = courses_schedule[course.course_id]
-         room_ids = checked_course["room"]
-         types = checked_course["type"]
-         session_overall_ids = checked_course["overall_id"]
-
-         for i in range(len(room_ids)):
-
-             # saves the max amount of students for the session type
-             if types[i] is "lecture":
-                 students = course.max_students_lecture
-             elif types[i] is "tutorial":
-                 students = course.max_students_tutorial
-             else:
-                 students = course.max_students_practical
-
-             # calculates how many empty seats there are
-             empty_seats = rooms[room_ids[i]].capacity - students
-
-             # increases maluspoints with the nmbr of students that don't have a seat
-             if empty_seats < 0:
-                 maluspoints += abs(empty_seats)
-
-                 # print(session_overall_ids[i])
-                 # print(abs(empty_seats))
-                 # print(session_points_dict[session_overall_ids[i]])
-                 session_points_dict[session_overall_ids[i]]["capacity_points"] += abs(empty_seats)
+        session_points_dict = [{"session_id_ov": 0, "capacity_points":0, "spread_malus_points": 0,
+                                "spread_bonus_points": 0, "flex_points": 0, "points": 0} for i in range(SESSION_NUM)]
 
 
-     return session_points_dict
+
+
+        maluspoints = 0
+        counter = 0
+        points = 0
+        for course in courses:
+
+            #  saves the room and type of the checked_course sessions
+            checked_course = courses_schedule[course.course_id]
+            room_ids = checked_course["room"]
+            types = checked_course["type"]
+            session_overall_ids = checked_course["overall_id"]
+
+            for i in range(len(room_ids)):
+
+
+                # saves the max amount of students for the session type
+                if types[i] is "lecture":
+                    students = course.max_students_lecture
+                elif types[i] is "tutorial":
+                    students = course.max_students_tutorial
+                else:
+                    students = course.max_students_practical
+
+                # calculates how many empty seats there are
+                empty_seats = rooms[room_ids[i]].capacity - students
+
+                # increases maluspoints with the number of students that don't have a seat
+                if empty_seats < 0:
+                    maluspoints += abs(empty_seats)
+                    points = abs(empty_seats)
+
+                    # print(session_overall_ids[i])
+                    # print(abs(empty_seats))
+                    # print(session_points_dict[session_overall_ids[i]])
+                    session_points_dict[session_overall_ids[i]]["capacity_points"] += abs(empty_seats)
+
+                    # Maak een dictionary van {session_id_ov : punten}
+                    points_dict.update({counter:points})
+                counter += 1
+
+        try:
+            malus_session_id = list(points_dict.keys())[list(points_dict.values()).index(max(points_dict.values()))]
+        # If there are no malus points (for capacity_points)
+        except ValueError:
+            print(points_dict)
+            malus_session_id = randint(0, SLOTS - 1)
+
+        return malus_session_id
+
+    def get_points(schedule, courses):
+        """
+        Returns the points of a given schedule. Some constraint checks return
+        negative points, so these are substracted in stead of added to the points.
+        Minimum minus points for lecture_first = 0, maxmimum = 39.
+        Minimum of 'minus points' of mutual_course() = 0.
+        Maximum of 'good points' of session_spread_check() = 440.
+        Minimum of malus points of students_fit() = 0 and maxmimum = 1332.
+
+        Multiply the points of the hard constraints (lecture_first and mutual_courses)
+        to ensure that a schedule fulfills these constraints.
+
+        BEREKENING:
+        ALLE FUNCTIES 0 TOT 100 PUNTEN GEVEN
+        Alles delen door max aantal punten en vermenigvuldigen met 100,
+        hard constraints dan ook vermenigvuldigen met 2.
+        """
+        courses_schedule = Constraint.all_constraints(schedule, courses)
+
+        points = Constraint.session_spread_check(schedule, courses, courses_schedule) - \
+                (Constraint.lecture_first(schedule, courses, courses_schedule) * 40) - \
+                (Constraint.mutual_courses_check(schedule, courses) * 40) - \
+                (Constraint.students_fit(schedule, courses, courses_schedule) / 5)
+
+        return points
