@@ -17,27 +17,7 @@ from random import randint
 class Constraint():
     """
     A class with all the constraint functions.
-    ------
-    ALS WE ECHT DIE HARD ALGORITMEN GAAN SCHRIJVEN MOETEN WE DE FUNCTIES NET
-    IETS ANDERS NEERZETTEN. NU ROEPEN WE IN IEDERE FUNCTIE ALL_CONSTRAINTS AAN
-    MAAR HET IS LOGISCHER OM IN ALL_CONSTRAINTS DE ANDERE FUNCTIES AAN TE
-    ROEPEN EN DAN DE FUNCTIES DIE WE WILLEN GEBRUIKEN DAARIN ZETTEN.
-    Ja.
-    Mee eens.
-    Kunnen we gewoon lekker in de input geven van de functie , right?
-    Oh nee. even geprobeerd en het moet natuurlijk voor elk rooster opnieuw aangemaakt worden aaah.
-    Dus dan misschien deze functie in plan.py zetten en dan meegeven aan Constraint()
     """
-
-# Hier even een lijst met alle constraints:
-# 1. hoorcelleges voor werkcolleges en practica HARD
-# 2. er mag geen overlap zijn (met college zelf) HARD
-# 3. er mag geen overlap zijn (met andere vakkken) HARD
-# 4. studenten moeten in de zalen passen (NOG NIET)
-# 5. colleges van hetzelfde vak moeten goed verspreid zijn over de week
-#
-# Een fix_hard_constraints functie maken voor als na het soft maken van een
-# aantal constraints er niet meer wordt voldaan aan de hard constraints.
 
     def all_constraints(schedule, courses):
         """
@@ -45,10 +25,6 @@ class Constraint():
         type of the courses in the schedule. The courses are in the list in
         order of their course_id.
         -----
-        Dit is het begin voor het preprocessen. Een hele slechte naam maar
-        weet even niets beters JOE.
-
-        Ik denk dat het sneller is om numpy array hiervoor te gebruiken x R
         """
 
         courses_schedule = []
@@ -76,6 +52,10 @@ class Constraint():
         """
         Similar as all_constraints but then as a linear list instead of
         a matrix.
+
+
+        HUH DIT IS BIJNA dezelfde functie als die hierboven,
+        kan het niet gewoon bij elkaar gedaan worden en dat de input veranderd?
         """
         courses_schedule = []
         for course in courses:
@@ -317,7 +297,7 @@ class Constraint():
                         #     # print(schedule[i][j][k])
                         #     for z in range(len(schedule[i][j])):
                         #         print(schedule[i][j][z])
-                        #     print(" ______")
+                        #     print(" ______________")
 
 
 
