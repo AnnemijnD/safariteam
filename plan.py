@@ -449,7 +449,7 @@ class Plan():
         #     schedules.append(plan.initialize_schedule(plan.courses)[0])
 
         # ALS JE GENETIC WIL TESTEN DEZE AANPASSEN
-        genetic.genetic_algortim(schedules, plan.courses)
+        # genetic.genetic_algortim(schedules, plan.courses)
 
         # test new constraint function
         # courses_schedule = Constraint.all_constraints(schedule, plan.courses)

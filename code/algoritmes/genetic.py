@@ -1,12 +1,15 @@
 import copy
 import numpy as np
 import random
+import switch
 from constraint import Constraint
+from operator import itemgetter
 from random import randint
 
 CHILDREN = 2
 DAYS = 5
-GENERATIONS = 1
+GENERATIONS = 20
+MUTATIONS = 5
 POPULATION = 50
 ROOMS = 7
 SLOTS = 140
@@ -22,13 +25,35 @@ def genetic_algortim(schedules, courses):
     - ouders beter kiezen
     - battles beter kiezen
     """
+    population_points = []
+    for i in range(0, POPULATION):
+        points = Constraint.get_points(schedules[i], courses)
+        population_points.append(points)
+
+    print(population_points)
+    print(max(population_points), min(population_points))
+
+    population = schedules
 
     for generation in range(GENERATIONS):
+
+        sorted_population = []
+        for i in range(0, POPULATION):
+            points = Constraint.get_points(population[i], courses)
+            sorted_population.append([points, population[i]])
+        sorted_population = sorted(sorted_population, key=itemgetter(0))
+
+        # "bewijs" van erg weinig diversiteit
+        # print_list = []
+        # for i in range(len(sorted_population)):
+        #     print_list.append(sorted_population[i][0])
+        # print(print_list)
+
         children = []
         for i in range(0, POPULATION, 2):
-            parents = [schedules[i], schedules[i + 1]]
-            schedules.append(parents[0])
-            schedules.append(parents[1])
+            parents = [sorted_population[i][1], sorted_population[i + 1][1]]
+            # schedules.append(parents[0])
+            # schedules.append(parents[1])
 
             # transform the schedule in a linear list
             parent1 = np.array(parents[0]).flatten().tolist()
@@ -51,17 +76,23 @@ def genetic_algortim(schedules, courses):
             children.append(child1)
             children.append(child2)
 
-        # TODO MUTATIONS
+        # mutate a random amount of children
+        mutations = randint(0, MUTATIONS)
+        for mutation in range(mutations):
+            child = random.choice(children)
+            children.remove(child)
+            child = switch.switch_session(child, 1, -1)
+            children.append(child)
 
         # shuffle entire population
-        population = schedules + children
+        population += children
         random.shuffle(population)
 
         # pick pairs and let only the best one "survive"
         for i in range(0, POPULATION, 2):
             battle = [population[i], population[i + 1]]
-            points1 = get_points(battle[0], courses)
-            points2 = get_points(battle[1], courses)
+            points1 = Constraint.get_points(battle[0], courses)
+            points2 = Constraint.get_points(battle[1], courses)
             if points1 > points2:
                 population.remove(battle[1])
             else:
@@ -69,10 +100,11 @@ def genetic_algortim(schedules, courses):
 
     population_points = []
     for i in range(0, POPULATION):
-        points = get_points(population[i], courses)
+        points = Constraint.get_points(population[i], courses)
         population_points.append(points)
 
     print(population_points)
+    print(max(population_points), min(population_points))
     # TODO: BESTE ROOSTER RETURNEN
 
 
@@ -134,25 +166,3 @@ def make_children(cycles, parent1, parent1_id, parent2, parent2_id):
     child2 = np.asarray(child2).reshape(DAYS, TIME_SLOTS, ROOMS).tolist()
 
     return(child1, child2)
-
-
-def get_points(schedule, courses):
-    """
-    Returns the points of a given schedule. Some constraint checks return
-    negative points, so these are substracted in stead of added to the points.
-    Minimum minus points for lecture_first = 0, maxmimum = 39.
-    Minimum of 'minus points' of mutual_course() = 0.
-    Maximum of 'good points' of session_spread_check() = 440.
-    Minimum of malus points of students_fit() = 0 and maxmimum = 1332.
-
-    Multiply the points of the hard constraints (lecture_first and mutual_courses)
-    to ensure that a schedule fulfills these constraints.
-    """
-    courses_schedule = Constraint.all_constraints(schedule, courses)
-
-    points = Constraint.session_spread_check(schedule, courses, courses_schedule) - \
-        (Constraint.lecture_first(schedule, courses, courses_schedule) * 40) - \
-        (Constraint.mutual_courses_check(schedule, courses) * 40) - \
-        (Constraint.students_fit(schedule, courses, courses_schedule) / 15)
-
-    return points
