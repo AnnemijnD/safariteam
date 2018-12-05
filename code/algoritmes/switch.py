@@ -6,6 +6,7 @@ Output is a schedule with switched sessions.
 
 from random import randint
 import numpy as np
+# from constraint import Constraint
 
 SLOTS = 140
 TIME_SLOTS = 4
@@ -43,8 +44,13 @@ def switch_session(schedule, number_of_switches, session_to_switch):
         for location in range(len(flatten)):
             # If location of the session was found:
             if flatten[location].overall_id == session_to_switch:
-                # print("DIT IS HET!!!!!!", flatten[location])
-                # print(location)
+
+                # LAAT DE SWITCHER DE BESTE LOCATIE KIEZEN OM TE SWITCHEN
+                # GEBRUIK CONSTRAINT.overall_id_points OM TE BEREKENEN
+                # HOEVEEL PUNTEN EEN SESSIE ZOU HEBBEN OP EEN LOCATIE.
+                # print(Constraint.overall_id_points(schedule, courses, session_to_switch))
+
+
                 for i in range(number_of_switches):
                     # Get one random number
                     random_number = randint(0, SLOTS - 1)

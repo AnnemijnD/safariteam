@@ -479,6 +479,7 @@ class Plan():
 
         overall_id = Constraint.session_points(schedule, plan.courses)[0]
         Constraint.overall_id_points(schedule, plan.courses, overall_id)
+        Constraint.switch_session(schedule, 1, overall_id, plan.courses)
 
         # # Print the end-text
         # plan.end(schedule, courses_schedule)
