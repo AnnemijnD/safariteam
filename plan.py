@@ -413,9 +413,6 @@ class Plan():
 
         points = Constraint.get_points(schedule, plan.courses)
 
-        # while points < -200:
-        #     schedule = plan.initialize_schedule(plan.courses)[0]
-        #     points = Constraint.get_points(schedule, plan.courses)
 
         rooms = loaddata.load_rooms()
         plan.own_session_points = 0
@@ -423,12 +420,17 @@ class Plan():
         lecture_points = 0
         capacity_points = 0
 
-        print("Runnig algorithm...")
         # Geef dit rooster mee aan de soft constraints
         # schedule, points, plan.schedule_counter = hillclimber.soft_constraints(schedule, plan.courses, plan.schedule_counter)
 
-        # schedule, points, plan.schedule_counter = climbergreedy.soft_constraints(schedule, plan.courses, plan.schedule_counter)
-
+        # while points < -200:
+        #     schedule = plan.initialize_schedule(plan.courses)[0]
+        #     points = Constraint.get_points(schedule, plan.courses)
+        # print("Running algorithm...")
+        # plan.schedule_counter = 0
+        # # schedule, points, plan.schedule_counter = climbergreedy.climbergreedy(schedule, plan.courses, plan.schedule_counter)
+        # schedule, points, plan.schedule_counter = hillclimber.soft_constraints(schedule, plan.courses, plan.schedule_counter)
+        # # schedule, points, plan.schedule_counter = climbergreedy.soft_constraints(schedule, plan.courses, plan.schedule_counter)
         mutual_course_malus = Constraint.mutual_courses_check(schedule, plan.courses)
 
         # test all_constraints_linear
@@ -463,7 +465,7 @@ class Plan():
         # test new constraint function
         # courses_schedule = Constraint.all_constraints(schedule, plan.courses)
 
-        # Constraint.all_constraints(schedule, plan.courses)
+        # DIT MOET OOK ECHT EVEN IN EEN APARTE FUNCTIE XOXOXO R
         courses_schedule = Constraint.all_constraints(schedule, plan.courses)
         Constraint.session_spread_check(schedule, plan.courses, courses_schedule)
         spread_points = Constraint.session_spread_check(schedule, plan.courses, courses_schedule)[0]
@@ -471,9 +473,6 @@ class Plan():
         capacity_points = (Constraint.students_fit(schedule, plan.courses, courses_schedule))
         lecture_points = Constraint.lecture_first(schedule, plan.courses, courses_schedule)
         Constraint.lecture_first(schedule, plan.courses, courses_schedule)
-
-
-
 
 
 

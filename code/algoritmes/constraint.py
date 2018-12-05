@@ -368,8 +368,8 @@ class Constraint():
 
         # If a specific session (with most maluspoints) has to be switched:
         else:
-            print(session_to_switch, "Dit is de overall_id van de sessie die geswitcht moet worden lololol!")
-            print(Constraint.overall_id_points(schedule, courses, session_to_switch), "Dit is het aantal maluspunten van deze sessie aaah super hoog man!!")
+            # print(session_to_switch, "Dit is de overall_id van de sessie die geswitcht moet worden lololol!")
+            # print(Constraint.overall_id_points(schedule, courses, session_to_switch), "Dit is het aantal maluspunten van deze sessie aaah super hoog man!!")
 
             # Sorrrry voor degene die deze code leest dit is echt meeeega slordig maar even haastig aahh
             # Zat in de trein dus ja je moet wat he!!!!!!! :-)
@@ -386,7 +386,6 @@ class Constraint():
                     # Sla deze locatie op
                     locatie = location
             # Nou super leuk hoor dan hebben we de locatie en deze moeten we gaan switchen whoee
-            print(locatie)
 
             # Maark switch niet in het echte rooster, switch in een kopie omdat het
             # hypothetische switches zijn weetjewel ja weet niet hoe ik het anders moet zeggen
@@ -408,17 +407,17 @@ class Constraint():
                     flattencopy[i], flattencopy[locatie] = flattencopy[locatie], flattencopy[i]
                     flattencopy = flattencopy.reshape(DAYS, TIME_SLOTS, ROOMS).tolist()
                     # print(Constraint.overall_id_points(flattencopy, courses, session_to_switch), "Dit zou het aantal maluspunten worden...!")
-                    location_points[i] = Constraint.overall_id_points(flattencopy, courses, session_to_switch)
+                    location_points[i] = Constraint.get_points(flattencopy, courses)
                     flattencopy = np.array(schedule).flatten()
                     # Switch terug
                     flattencopy[locatie], flattencopy[i] = flattencopy[i], flattencopy[locatie]
             # Dit is een dictionary met alle mogelijke plaatsen (dus van 0 tot 138 als het goed is)
             # en het aantal punten die de sessie zou krijgen als hij hier ingezet wordt.
-            best_location = list(location_points.keys())[list(location_points.values()).index(min(location_points.values()))]
-            print(best_location, "Dit is de meest gunstige locatie voor deze session :)")
+            best_location = list(location_points.keys())[list(location_points.values()).index(max(location_points.values()))]
+            # print(best_location, "Dit is de meest gunstige locatie voor deze session :)")
             # OKE beste locatie gevonden dus switch nu met deze locatie.
             flatten[locatie], flatten[best_location] = flatten[best_location], flatten[locatie]
-            
+
         # Convert back to 3D list
         schedule = flatten.reshape(DAYS, TIME_SLOTS, ROOMS).tolist()
 
