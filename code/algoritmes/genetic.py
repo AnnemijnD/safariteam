@@ -76,6 +76,7 @@ def genetic_algortim(schedules, courses):
             children.append(child1)
             children.append(child2)
 
+        # dit ook in een losse functie doen?????
         # mutate a random amount of children
         mutations = randint(0, MUTATIONS)
         for mutation in range(mutations):
@@ -88,6 +89,7 @@ def genetic_algortim(schedules, courses):
         population += children
         random.shuffle(population)
 
+        # dit ook in een losse functie doen??????
         # pick pairs and let only the best one "survive"
         for i in range(0, POPULATION, 2):
             battle = [population[i], population[i + 1]]

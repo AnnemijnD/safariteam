@@ -409,25 +409,34 @@ class Plan():
 
         # Load all the courses, rooms and sessions
         plan.courses = loaddata.load_courses()
-        schedule = plan.initialize_schedule(plan.courses)[0]
 
-        points = Constraint.get_points(schedule, plan.courses)
+        # runs the hillclimber hunderd times
+        point_list = []
+        for i in range(100):
+            schedule = plan.initialize_schedule(plan.courses)[0]
 
-        # while points < -200:
-        #     schedule = plan.initialize_schedule(plan.courses)[0]
-        #     points = Constraint.get_points(schedule, plan.courses)
+            points = Constraint.get_points(schedule, plan.courses)
+
+            while points < -200:
+                schedule = plan.initialize_schedule(plan.courses)[0]
+                points = Constraint.get_points(schedule, plan.courses)
+
+            # print("Runnig algorithm...")
+            # Geef dit rooster mee aan de soft constraints
+            schedule, points, plan.schedule_counter = hillclimber.soft_constraints(schedule, plan.courses, plan.schedule_counter)
+
+            # schedule, points, plan.schedule_counter = climbergreedy.soft_constraints(schedule, plan.courses, plan.schedule_counter)
+            point_list.append(points[-1])
+            # print(i)
+
+        print("the almighty lijst van 100 hillclimber resultaten")
+        print(point_list)
 
         rooms = loaddata.load_rooms()
         plan.own_session_points = 0
         spread_points = 0
         lecture_points = 0
         capacity_points = 0
-
-        print("Runnig algorithm...")
-        # Geef dit rooster mee aan de soft constraints
-        # schedule, points, plan.schedule_counter = hillclimber.soft_constraints(schedule, plan.courses, plan.schedule_counter)
-
-        # schedule, points, plan.schedule_counter = climbergreedy.soft_constraints(schedule, plan.courses, plan.schedule_counter)
 
         mutual_course_malus = Constraint.mutual_courses_check(schedule, plan.courses)
 
