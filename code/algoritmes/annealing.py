@@ -1,7 +1,6 @@
 
 """
-Hill climber algorithm: generates a schedule that fulfills certain constraints
-by accepting a schedule with higher points.
+SIMULATED ANNEALING TEST
 """
 
 from constraint import Constraint
@@ -32,6 +31,8 @@ def soft_constraints(schedule, courses, schedule_counter):
     #         Constraint.session_spread_check(schedule, courses) < -200 or \
     #         Constraint.students_fit(schedule, courses) > 1300:
     while schedule_counter < CYCLES:
+
+        verschil = 10
         # Append points to show in a graph when the schedule is made
         points.append(get_points(schedule, courses))
         # Count the number of schedules made
@@ -48,7 +49,7 @@ def soft_constraints(schedule, courses, schedule_counter):
         # Accept new schedule if it has more points that the old schedule.
         # Also accept schedules with equal number of points for a higher chance
         # of finding a solution.
-        if schedule2_points >= schedule1_points:
+        if schedule2_points >= schedule1_points or schedule2_points - schedule1_points < verschil:
             schedule = schedule2
             accept_counter = 0
             # Set a boolian for when a schedule is accepted

@@ -1,6 +1,2 @@
 *__pycache__
 *.DS_Store
-*code/__pycache__
-*code/.DS_Store
-*data/__pycache__
-*data/.DS_Store

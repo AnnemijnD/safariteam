@@ -20,7 +20,6 @@ class Course(object):
         self.session_tutorial = self.load_sessions(self.tutorial, 'tutorial', max_students_tutorial, expected_students)
         self.session_practical = self.load_sessions(self.practical, 'practical', max_students_practical, expected_students)
         self.sessions_total = self.session_lecture + self.session_tutorial + self.session_practical
-        # Mutual courses moeten objecten worden.
         self.mutual_courses = self.load_mutual_courses(self.name)
         self.max_students_lecture = max_students_lecture
         self.max_students_tutorial = max_students_tutorial
@@ -51,9 +50,6 @@ class Course(object):
         group_id = 0
 
 
-        # MERGE FOUT DUS TIJDELIJK DIT:
-        overall_id = 0
-
         if type == 'lecture':
             session_id = 0
         elif type == 'tutorial':
@@ -79,14 +75,14 @@ class Course(object):
                 group_id = 1
                 # make a session for every group
                 for j in range(group_count):
-                    session = Session(overall_id, self.name, type, max_students, session_id, group_id)
+                    session = Session(self.name, type, max_students, session_id, group_id)
                     sessions_with_groups.append(session)
                     group_id += 1
                 session_id += 1
 
             else:
                 group_id = 0
-                session = Session(overall_id, self.name, type, max_students, session_id, group_id)
+                session = Session(self.name, type, max_students, session_id, group_id)
                 sessions_with_groups.append(session)
                 session_id += 1
 
