@@ -6,16 +6,18 @@ SIMULATED ANNEALING TEST
 from constraint import Constraint
 import switch
 import matplotlib
+import math
+from random import randint
 matplotlib.use('TkAgg')
 import matplotlib.pyplot as plt
 
-CYCLES = 30000
-OPTIMUM = 45
+CYCLES = 5
+OPTIMUM = 200
 LIMIT = 500
 MAXPOINTS = 440
 
 
-def soft_constraints(schedule, courses, schedule_counter):
+def anneal(schedule, courses, schedule_counter):
     """
     Generates a schedule using a hill climber algorithm.
     Input is a random schedule, output is a schedule that fulfills all hard-
@@ -25,16 +27,19 @@ def soft_constraints(schedule, courses, schedule_counter):
     switcher = 1
     accept_counter = 0
     points = []
+    verschil = 3
 
-    # while Constraint.lecture_first(schedule, courses) > 0 or \
-    #         Constraint.mutual_courses_check(schedule, courses) > 0 or \
-    #         Constraint.session_spread_check(schedule, courses) < -200 or \
-    #         Constraint.students_fit(schedule, courses) > 1300:
-    while schedule_counter < CYCLES:
+    for i in range(1, 8000):
 
-        verschil = 10
+
+        # temperatuur = begintemperatuur / log(i) + 2
+        temperatuur = 20 / math.log(i + 3)
+        # print(i, temperatuur)
+
+
         # Append points to show in a graph when the schedule is made
         points.append(get_points(schedule, courses))
+        # print(get_points(schedule, courses))
         # Count the number of schedules made
         schedule_counter += 1
         # Save the first schedule
@@ -49,31 +54,21 @@ def soft_constraints(schedule, courses, schedule_counter):
         # Accept new schedule if it has more points that the old schedule.
         # Also accept schedules with equal number of points for a higher chance
         # of finding a solution.
-        if schedule2_points >= schedule1_points or schedule2_points - schedule1_points < verschil:
+        if schedule2_points >= schedule1_points: # or schedule2_points - schedule1_points < verschil:
             schedule = schedule2
             accept_counter = 0
-            # Set a boolian for when a schedule is accepted
-        # If the second schedule has less points, go back to the old schedule.
+        elif (schedule2_points - schedule1_points) < verschil:
+            # BEREKEN HIER DE KANS OM DE SLECHTERE ALSNOG AAN TE NEMEN
+            acceptatiekans = math.exp(-verschil / temperatuur)
+            random_number = randint(0, 100)
+            if random_number < acceptatiekans * 100:
+                schedule = schedule2
+
+
         else:
             schedule = schedule1
             accept_counter += 1
-        # If a limit is reached, change the number of switches to 1, resulting
-        # in a higher chance of finding schedule with more points. The disadvantage
-        # is that it (could) take longer to find a good schedule.
-        if schedule_counter == LIMIT:
-            switcher = 1
-            if get_points(schedule, courses) == MAXPOINTS:
-                return schedule, points, schedule_counter
-        # When a local optimum is found:
-        # Make a forced switch if an optimum is reached for the number of times
-        # that a schedule was rejected. For example: if a random schedule with less
-        # points was rejected a 100 times, force a new schedule (with less points).
-        if accept_counter > OPTIMUM:
-            print("found optimum")
-            schedule = switch.switch_session(schedule, switcher, -1)
-            accept_counter = 0
 
-            # ROEP HIER DE FUNCTIE SIMULATED ANNEALING AAN???
 
 
     # Append last points of the new schedule to make a full plot of the points
