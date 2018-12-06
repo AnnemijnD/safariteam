@@ -20,6 +20,21 @@ class Constraint():
     A class with all the constraint functions.
     """
 
+# Hier even een lijst met alle constraints:
+# 1. hoorcelleges voor werkcolleges en practica HARD
+# 2. er mag geen overlap zijn (met college zelf) HARD
+# 3. er mag geen overlap zijn (met andere vakkken) HARD
+# 4. studenten moeten in de zalen passen (NOG NIET)
+# 5. colleges van hetzelfde vak moeten goed verspreid zijn over de week
+#
+# Een fix_hard_constraints functie maken voor als na het soft maken van een
+# aantal constraints er niet meer wordt voldaan aan de hard constraints.
+
+    def __init__(self):
+        self.bonus_malus = []
+        self.capacity = []
+
+
     def all_constraints(schedule, courses):
         """
         Makes a list that contains lists of every course with the moment and

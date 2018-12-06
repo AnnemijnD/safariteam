@@ -94,6 +94,7 @@ def get_points(schedule, courses):
     to ensure that a schedule fulfills these constraints.
     """
     course_schedule = Constraint.all_constraints(schedule, courses)
+
     points = Constraint.session_spread_check(schedule, courses, course_schedule)[0] - \
             (Constraint.lecture_first(schedule, courses, course_schedule) * 40) - \
             (Constraint.mutual_courses_check(schedule, courses) * 40) - \
