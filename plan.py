@@ -447,6 +447,37 @@ class Plan():
         #     point_list.append(points[-1])
         #     # print(i)
 
+        # runs the hillclimber hunderd times
+        # point_list = []
+        # for i in range(100):
+        #     print(f"i = {i}")
+        #     schedule = plan.initialize_schedule(plan.courses)[0]
+        #
+        #     # schedule_points = Constraint.get_points(schedule, plan.courses)
+        #
+        #
+        #     while Constraint.get_points(schedule, plan.courses) < -200:
+        #         plan.schedule_counter = 0
+        #         schedule = plan.initialize_schedule(plan.courses)[0]
+        #
+        #         # schedule_points = Constraint.get_points(schedule, plan.courses)
+        #     schedule, points, plan.schedule_counter = hillclimber.soft_constraints(schedule, plan.courses, plan.schedule_counter)
+        #     print("TEST VAN POINTS LIST", points)
+        #     point_list.append(max(points))
+        #     print(f"point_list: {point_list}")
+        #
+        #         # points = Constraint.get_points(schedule, plan.courses)
+        #     # schedule, points, plan.schedule_counter = hillclimber.soft_constraints(schedule, plan.courses, plan.schedule_counter)
+        #     # schedule, points, plan.schedule_counter = hillclimber.soft_constraints(schedule, plan.courses, plan.schedule_counter)
+        #     # print("Runnig algorithm...")
+        #     # Geef dit rooster mee aan de soft constraints
+        #     # schedule, points, plan.schedule_counter = hillclimber.soft_constraints(schedule, plan.courses, plan.schedule_counter)
+        #
+        #     # schedule, points, plan.schedule_counter = climbergreedy.soft_constraints(schedule, plan.courses, plan.schedule_counter)
+        #
+        # #     # print(i)
+        # #
+>>>>>>> 8171bbdaea475b81b27b15899991e5f2e1961cb8
         # print("the almighty lijst van 100 hillclimber resultaten")
         # print(point_list)
 
@@ -465,6 +496,7 @@ class Plan():
         #     points = Constraint.get_points(schedule, plan.courses)
         # print("Running algorithm...")
         # plan.schedule_counter = 0
+<<<<<<< HEAD
 
 
         # Zoek het beste rooster met een hill climber
@@ -472,6 +504,13 @@ class Plan():
         # Bij optimum: geef door aan simulated annealing
         # schedule, points, schedule_counter = annealing.anneal(schedule, plan.courses, plan.schedule_counter)
 
+=======
+        # # schedule, points, plan.schedule_counter = climbergreedy.climbergreedy(schedule, plan.courses, plan.schedule_counter)
+
+        # # schedule, points, plan.schedule_counter = climbergreedy.soft_constraints(schedule, plan.courses, plan.schedule_counter)
+
+        # annealing.anneal(schedule, plan.courses, plan.schedule_counter)
+>>>>>>> 8171bbdaea475b81b27b15899991e5f2e1961cb8
 
         # test all_constraints_linear
         # schedule1, lectures, other_sessions, empty_sessions = plan.initialize_schedule(plan.courses, rooms_list)
@@ -499,8 +538,29 @@ class Plan():
 
         # genetic.genetic_algortim(schedules, plan.courses)
 
+<<<<<<< HEAD
         # Get all points to pass on to save_html
         courses_schedule, spread_points, capacity_points, lecture_points, mutual_course_malus = plan.points_to_print(schedule)
+=======
+        # test new constraint function
+        # courses_schedule = Constraint.all_constraints(schedule, plan.courses)
+
+        # DIT MOET OOK ECHT EVEN IN EEN APARTE FUNCTIE lol XOXOXO R
+        courses_schedule = Constraint.all_constraints(schedule, plan.courses)
+        Constraint.session_spread_check(schedule, plan.courses, courses_schedule)
+        spread_points = Constraint.session_spread_check(schedule, plan.courses, courses_schedule)[0]
+        # print(spread_points)
+        capacity_points = (Constraint.students_fit(schedule, plan.courses, courses_schedule))
+        lecture_points = Constraint.lecture_first(schedule, plan.courses, courses_schedule)
+        Constraint.lecture_first(schedule, plan.courses, courses_schedule)
+        mutual_course_malus = Constraint.mutual_courses_check(schedule, plan.courses)
+
+
+        #
+        # overall_id = Constraint.session_points(schedule, plan.courses)[0]
+        # Constraint.overall_id_points(schedule, plan.courses, overall_id)
+        # Constraint.switch_session(schedule, 1, overall_id, plan.courses)
+>>>>>>> 8171bbdaea475b81b27b15899991e5f2e1961cb8
 
         # Print the end-text
         plan.end(schedule, courses_schedule)
