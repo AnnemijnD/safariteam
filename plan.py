@@ -16,7 +16,6 @@ import loaddata
 from session import Session
 import switch
 import hillclimber
-import genetic
 import csv
 import random
 import copy
@@ -28,13 +27,13 @@ import matplotlib
 matplotlib.use('TkAgg')
 import matplotlib.pyplot as plt
 
-SESSIONS = 129
 SLOTS = 140
 TIME_SLOTS = 4
 DAYS = 5
 ROOMS = 7
 MAXMALUSPOINTS = 0
 MAXSCHEDULEPOINTS = 39
+SESSION_NUM = 129
 
 
 class Plan():
@@ -42,7 +41,7 @@ class Plan():
     Main script to make a schedule.
     """
 
-    def initialize_schedule(self, courses, rooms_list):
+    def initialize_schedule(self, courses):
         """
         Initialize schedule using Session().
         """
@@ -53,7 +52,7 @@ class Plan():
         other_sessions = []
         empty_sessions = []
 
-        # random.shuffle(courses)
+        random.shuffle(courses)
 
         # ANNEMIJN KAN JE HIER NOG EEN COMMENT BIJ ZETTEN, SNap niet wat je hier hebt gedaan
 
@@ -64,38 +63,6 @@ class Plan():
         for i in range(len(session_list)):
             session_list[i].overall_id = session_counter
             session_counter += 1
-
-
-        for i in range(SLOTS):
-            # make a general empty session with overall_id 140
-            name = ' '
-            type = ' '
-            max_students = ' '
-            session_id = 'nvt2'
-            group_id = 'nvt2'
-            empty_session = Session(name, type, max_students, session_id, group_id)
-            empty_session.overall_id = SLOTS
-            empty_sessions.append(empty_session)
-
-        # for i in range(SLOTS - session_counter):
-        #     # Maak lege sessies aan om lege cellen mee op te vullen
-        #     # Dit stukje wordt gebruikt in de nested for loop waarbij aan elke cel
-        #     # een sessie wordt meegegeven.
-        #     # TODO: WE MOETEN NOG DE RANGE AANPASSEN
-        #     # for i in range(140-72):
-        #     name = ' '
-        #     type = ' '
-        #     max_students = ' '
-        #     session_id = 'nvt2'
-        #     group_id = 'nvt2'
-        #     session = Session(name, type, max_students, session_id, group_id)
-        #     # session = Session(name, type, room, timeslot, day)
-        #     session.overall_id = session_counter
-        #     empty_sessions.append(session)
-        #     session_counter += 1
-        #     print(empty_sessions[i].overall_id)
-        #
-        # print(empty_sessions)
 
         # # Put every session into schedule
         # for i in range(SLOTS):
@@ -132,12 +99,28 @@ class Plan():
         # random.shuffle(lectures)
         # random.shuffle(other_sessions)
 
+        # Maak lege sessies aan om lege cellen mee op te vullen
+        # Dit stukje wordt gebruikt in de nested for loop waarbij aan elke cel
+        # een sessie wordt meegegeven.
+        # TODO: WE MOETEN NOG DE RANGE AANPASSEN
+        for i in range(140-72):
+            name = ' '
+            type = ' '
+            max_students = ' '
+            id = 'nvt2'
+            session_id = 'nvt2'
+            group_id = 'nvt2'
+            session = Session(id, name, type, max_students, session_id, group_id)
+            # session = Session(name, type, room, timeslot, day)
+            empty_sessions.append(session)
+
         # De lijst met totale sessies bestaat dus uit een lijst met eerst
         # Hoorcolleges, daarna de andere sessies en is opgevuld tot 140 met lege sessies
         total = []
         total = lectures + other_sessions
 
         schedule = [[[[None] for i in range(ROOMS)] for i in range(TIME_SLOTS)] for i in range(DAYS)]
+        session_analysis = [0 for i in range(129)]
 
 
          # Je geeft dus aan deze functie een leeg schedule mee en de sessions waarmee
@@ -147,40 +130,60 @@ class Plan():
 
         # plan.fill_schedule(schedule, total, other_sessions, empty_sessions, courses)
         # print(session_list)
-        # print(len(session_list))
-
-# VRAAG AAN DENK IK REBECCA: WAAROM DOEN WE DIT??
-
-    # bedoel je het stukje code hieronder? Dat is zodat als er iets foutgaat
-    # bij het inroosteren, hij opnieuw begint met het maken van een rooster
+        # print(len(session_list)
+        lalalijst = []
+        counter_2 = 0
         new_sched = False
-        while new_sched == False:
-            new_sched = plan.fill_schedule(schedule, session_list, lecture_sessions, empty_sessions, courses, rooms_list)
-            plan.schedule_counter +=1
-
+        while not counter_2 >= 1000:
+            new_sched, course_stop = plan.fill_schedule(schedule, session_list, lecture_sessions, empty_sessions, courses)
+            plan.schedule_counter += 1
+            # if plan.schedule_counter % 100 == 0:
+            #     print(plan.schedule_counter)
             if not new_sched == False:
-                break
+                if counter_2 <= 1000:
+
+                    continue
+                else:
+
+                    break
+            else:
+                session_analysis[course_stop] += 1
+                counter_2 += 1
+
+        print(counter_2)
+        plt.bar( [i for i in range(SESSION_NUM)], session_analysis )
+        plt.show()
+        print(session_analysis)
+
+        for k in range(len(session_analysis)):
+            if session_analysis[k] > 0:
+                for j in range(len(session_list)):
+                    if session_list[j].overall_id == k:
+                        lalalijst.append([session_list[j], session_analysis[k]])
+                        print(f"Vak {session_list[j]}: {session_analysis[k]}")
+
+        # print(lalalijst)
 
 
         # VOOR NU: Even een random rooster
         # schedule = plan.random_schedule(schedule, total)
 
+
         return schedule, total, other_sessions, empty_sessions
 
 
-    def fill_schedule(self, schedule, lectures, other_sessions, empty_sessions, courses, rooms_list):
+    def fill_schedule(self, schedule, lectures, other_sessions, empty_sessions, courses):
         """
         Fill empty schedule with sessions. This function will begin to fill all
         the lectures and will go on to fill other sessions.
         """
+
         # Gebruik nested for loop om elke cel een session te gegen.
         # Je geeft hierbij een lijst met sessies mee aan de functie get_session
         # De lijst met sessies is al gemaakt in initialize_schedule()
 
         # Vul eerst met lege sessions
         # counter = 0
-
-
         for empty_session in empty_sessions:
             for b in range(DAYS):
                 for c in range(TIME_SLOTS):
@@ -190,13 +193,6 @@ class Plan():
 
 
 
-
-        session_counter = 0
-        for b in range(DAYS):
-            for c in range(TIME_SLOTS):
-                for d in range(ROOMS):
-                    schedule[b][c][d] = empty_sessions[session_counter]
-                    session_counter += 1
 
         # Verdelen over slots als hard constraint
 
@@ -235,9 +231,9 @@ class Plan():
                         # als het een tutorial of pracitcal is
                         if not lectures_first:
 
+
                             if lectures[e].name == schedule[b][c][d].name:
                                 if schedule[b][c][d].type == "lecture":
-                                    #print("hee")
 
                                     # alle eerdere locaties mogen weg want er mag niets voor een lecture
                                     location.clear()
@@ -248,12 +244,10 @@ class Plan():
                                         for k in range(len(location) - 1, -1, -1):
                                             if location[k][1] == c and location[k][0] == b:
                                                 del location[k]
-                                        # print("lala")
                                         break
 
 
                             elif schedule[b][c][d].name in mutual_courses_session:
-                                # print("heh")
                                 rooms_allowed = False
                                 for k in range(len(location) - 1, -1, -1):
                                     if location[k][1] == c and location[k][0] == b:
@@ -275,19 +269,11 @@ class Plan():
                             # print(location)
                             break
 
-                        # # als de capaciteit van de ruimte niet voldoende is
-                        # if rooms_list[d].capacity < lectures[e].max_students:
-                        #     # print("hoi")
-                        #     if e < 108:
-                        #         continue
-
                         # if the slot in the schedule is empty
                         if schedule[b][c][d].name == ' ':
-                            # print("hmm")
                             location.append((b,c,d))
 
             if bool(location):
-                # print("bijna?")
                 counter = 0
 
                 # als het een lecture was, verwijder het aantal potentiele locaties aan het einde van het rooster gelijk
@@ -304,7 +290,7 @@ class Plan():
                     while not counter == prohibited_timeslots:
                         if not bool(location) or prohibited_timeslots >= len(location):
 
-                            return False
+                            return False, lectures[e].overall_id
 
                         elif not location[-1][1] == location[-2][1]:
                             # print(location)
@@ -323,30 +309,19 @@ class Plan():
             else:
 
                 # plan.schedule_counter += 1
-                print(e)
-                return False
+
+                return False, lectures[e].overall_id
                 # return schedule
                 #plan.initialize_schedule(plan.courses)
                 # break
         if found:
 
-            # give the empty_sessions overall_ids
-            overall_id_counter = 129
-            for i in range(DAYS):
-                for j in range(TIME_SLOTS):
-                    for k in range(ROOMS):
-
-                        # checks if the session is empty
-                        if schedule[i][j][k].overall_id == SLOTS:
-                            schedule[i][j][k].overall_id = overall_id_counter
-                            overall_id_counter += 1
-
-            return schedule
+            return schedule, 0
 
         else:
-            # plan.sch edule_counter += 1
+            # plan.schedule_counter += 1
 
-            return False
+            return False, lectures[e].overall_id
 
     def random_schedule(self, schedule, sessions):
         """
@@ -388,7 +363,7 @@ class Plan():
         d = pd.Series([lecture_points, -mutual_course_malus, "", spread_points, capacity_points, spread_points - capacity_points])
         d = pd.DataFrame(d)
         d.columns = ["Points"]
-        d.index = ["Correctly placed lectures (out of 39)", "Minus points for placing courses with specific 'mutual' courses", "", "Spread bonus points (out of 440)", "Capacity malus points (out of 1332)", "Total points"]
+        d.index = ["Incorrectly placed lectures", "Incorrectly placed courses with 'mutual' courses", "", "Spread bonus points (out of 440)", "Capacity malus points (out of 1332)", "Total points"]
 
         flatten = np.array(schedule).flatten()
         counter = 0
@@ -469,13 +444,12 @@ class Plan():
         print("SUCCES!!")
         print("It took:", round(time.time() - plan.then, 3), "seconds, = ", round((time.time() - plan.then) / 60, 3), "minutes.")
         print("Made", plan.schedule_counter, "schedule(s) until the 'right' was found.")
-        # print(Constraint.lecture_first(schedule, plan.courses)[1], "out of 39 correctly placed lectures.")
-        print(plan.own_session_points, "sessions were placed in a different timeslot.")
+        print(plan.own_session_points, "minus points for placing mutual courses in the same timeslot.")
         print("Spread bonus points:", Constraint.session_spread_check(schedule, plan.courses), "out of 440.")
 
     def generate(self):
         """
-        Generates a schedule that fulfills all constraints using different algorithms.
+        Generates a schedule by calling several helper functions and algorithms.
         """
 
         plan.then = time.time()
@@ -485,19 +459,15 @@ class Plan():
 
         # Load all the courses, rooms and sessions
         plan.courses = loaddata.load_courses()
-        rooms_list = loaddata.load_rooms()
-        schedule, lectures, other_sessions, empty_sessions = plan.initialize_schedule(plan.courses, rooms_list)
+        schedule, lectures, other_sessions, empty_sessions = plan.initialize_schedule(plan.courses)
         rooms = loaddata.load_rooms()
         plan.own_session_points = 0
         spread_points = 0
         lecture_points = 0
         capacity_points = 0
 
-        # Haal met het eerste algoritme een rooster er uit dat aan de hard constraints voldoet
-        # schedule, points, plan.schedule_counter = hillclimber.hard_constraints(schedule, plan.courses, plan.schedule_counter)
-
         # Geef dit rooster mee aan de soft constraints
-        # schedule, points, plan.schedule_counter = hillclimber.soft(schedule, plan.courses, plan.schedule_counter)
+        # schedule, points, plan.schedule_counter = hillclimber.soft_constraints(schedule, plan.courses, plan.schedule_counter)
 
         # print(Constraint.mutual_courses_check(schedule, plan.courses))
         mutual_course_malus = Constraint.mutual_courses_check(schedule, plan.courses)
@@ -510,10 +480,10 @@ class Plan():
 
         # Constraint.all_constraints(schedule, plan.courses)
         spread_points = Constraint.session_spread_check(schedule, plan.courses)
+        print(spread_points)
         capacity_points = (Constraint.students_fit(schedule, plan.courses))
         lecture_points = Constraint.lecture_first(schedule, plan.courses)
         Constraint.lecture_first(schedule, plan.courses)
-        Constraint.session_points(schedule, plan.courses)
 
         # Print the end-text
         plan.end(schedule)

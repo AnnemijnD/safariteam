@@ -24,16 +24,16 @@ def genetic_algortim(schedule1, schedule2):
     -
 
     """
-    flatten1 = np.array(schedule1).flatten().tolist()
-    flatten2 = np.array(schedule2).flatten().tolist()
+    # transform the schedule in a linear list
+    parent1 = np.array(schedule1).flatten().tolist()
+    parent2 = np.array(schedule2).flatten().tolist()
 
-    flatten1_id = []
-    for i in range(len(flatten1)):
-        flatten1_id.append(flatten1[i].overall_id)
-
-    flatten2_id = []
-    for i in range(len(flatten2)):
-        flatten2_id.append(flatten2[i].overall_id)
+    # make a list of the overall_ids of the sessions in the schedule
+    parent1_id = []
+    parent2_id = []
+    for i in range(len(parent1)):
+        parent1_id.append(parent1[i].overall_id)
+        parent2_id.append(parent2[i].overall_id)
 
     cycles = []
     cycles_len = []
@@ -41,14 +41,14 @@ def genetic_algortim(schedule1, schedule2):
 
     while len(cycles_len) < SLOTS:
         cycle_i = []
-        index = flatten1.index(flatten1[start_point])
+        index = parent1.index(parent1[start_point])
         in_cycle = [index]
         counter = 0
 
-        while flatten1_id[start_point] not in cycle_i:
-            temp = flatten2_id[index]
+        while parent1_id[start_point] not in cycle_i:
+            temp = parent2_id[index]
             cycle_i.append(temp)
-            index = flatten1_id.index(temp)
+            index = parent1_id.index(temp)
             in_cycle.append(index)
             counter += 1
 
@@ -59,12 +59,18 @@ def genetic_algortim(schedule1, schedule2):
         while start_point in in_cycle:
             start_point = randint(0, SLOTS - 1)
 
-    child1 = copy.deepcopy(flatten1)
-    child2 = copy.deepcopy(flatten2)
+    # copy the parents into the children
+    child1 = copy.deepcopy(parent1)
+    child2 = copy.deepcopy(parent2)
+
+    # divide the parents in cycles over the children
     for i in range(len(cycles)):
         for j in cycles[i]:
-            child1[j] = flatten2[j]
-            child2[j] = flatten1[j]
+            child1[j] = parent2[j]
+            child2[j] = parent1[j]
+
+    child1 = np.asarray(child1)
+    child2 = np.asarray(child2)
 
 
 
