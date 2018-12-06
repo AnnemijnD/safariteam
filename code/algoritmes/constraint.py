@@ -212,7 +212,7 @@ class Constraint():
         # deze functie overal wordt aangeroepen dus daar wacht ik nog even mee
 
         # zelfde geldt voor de bonus_malus_points
-        return [spread_points, course_dict]
+        return [spread_points, course_dict, bonuspoints, maluspoints]
 
     def lecture_first(schedule, courses, courses_schedule):
         """

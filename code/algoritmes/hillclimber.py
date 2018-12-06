@@ -10,8 +10,8 @@ import matplotlib
 matplotlib.use('TkAgg')
 import matplotlib.pyplot as plt
 
-CYCLES = 30000
-OPTIMUM = 45
+CYCLES = 20000
+OPTIMUM = 50
 LIMIT = 500
 MAXPOINTS = 440
 

@@ -398,6 +398,19 @@ class Plan():
         print("Made", plan.schedule_counter, "schedule(s).")
         print("Points:", Constraint.session_spread_check(schedule, plan.courses, courses_schedule)[0] - Constraint.students_fit(schedule, plan.courses, courses_schedule), "out of 440.")
 
+    def points_to_print(self, schedule):
+        """
+        TODO
+        """
+
+        courses_schedule = Constraint.all_constraints(schedule, plan.courses)
+        spread_points = Constraint.session_spread_check(schedule, plan.courses, courses_schedule)[0]
+        capacity_points = (Constraint.students_fit(schedule, plan.courses, courses_schedule))
+        lecture_points = Constraint.lecture_first(schedule, plan.courses, courses_schedule)
+        mutual_course_malus = Constraint.mutual_courses_check(schedule, plan.courses)
+
+        return courses_schedule, spread_points, capacity_points, lecture_points, mutual_course_malus
+
     def generate(self):
         """
         Generates a schedule by calling several helper functions and algorithms.
@@ -411,33 +424,34 @@ class Plan():
         # Load all the courses, rooms and sessions
         plan.courses = loaddata.load_courses()
 
-        # runs the hillclimber hunderd times
-        point_list = []
-        for i in range(100):
-            schedule = plan.initialize_schedule(plan.courses)[0]
+        # # runs the hillclimber hunderd times
+        # point_list = []
+        # for i in range(100):
+        #     schedule = plan.initialize_schedule(plan.courses)[0]
+        #
+        #     points = Constraint.get_points(schedule, plan.courses)
+        #
+        #     while points < -200:
+        #         schedule = plan.initialize_schedule(plan.courses)[0]
+        #         points = Constraint.get_points(schedule, plan.courses)
+        #
+        #     # print("Runnig algorithm...")
+        #     # Geef dit rooster mee aan de soft constraints
+        #     schedule, points, plan.schedule_counter = hillclimber.soft_constraints(schedule, plan.courses, plan.schedule_counter)
+        #
+        #     # schedule, points, plan.schedule_counter = climbergreedy.soft_constraints(schedule, plan.courses, plan.schedule_counter)
+        #     point_list.append(points[-1])
+        #     # print(i)
 
-            points = Constraint.get_points(schedule, plan.courses)
-
-            while points < -200:
-                schedule = plan.initialize_schedule(plan.courses)[0]
-                points = Constraint.get_points(schedule, plan.courses)
-
-            # print("Runnig algorithm...")
-            # Geef dit rooster mee aan de soft constraints
-            schedule, points, plan.schedule_counter = hillclimber.soft_constraints(schedule, plan.courses, plan.schedule_counter)
-
-            # schedule, points, plan.schedule_counter = climbergreedy.soft_constraints(schedule, plan.courses, plan.schedule_counter)
-            point_list.append(points[-1])
-            # print(i)
-
-        print("the almighty lijst van 100 hillclimber resultaten")
-        print(point_list)
+        # print("the almighty lijst van 100 hillclimber resultaten")
+        # print(point_list)
 
         rooms = loaddata.load_rooms()
         plan.own_session_points = 0
         spread_points = 0
         lecture_points = 0
         capacity_points = 0
+        schedule = plan.initialize_schedule(plan.courses)[0]
 
         # Geef dit rooster mee aan de soft constraints
         # schedule, points, plan.schedule_counter = hillclimber.soft_constraints(schedule, plan.courses, plan.schedule_counter)
@@ -451,8 +465,7 @@ class Plan():
         # schedule, points, plan.schedule_counter = hillclimber.soft_constraints(schedule, plan.courses, plan.schedule_counter)
         # # schedule, points, plan.schedule_counter = climbergreedy.soft_constraints(schedule, plan.courses, plan.schedule_counter)
 
-        annealing.anneal(schedule, plan.courses, plan.schedule_counter)
-
+        # schedule, points, schedule_counter = annealing.anneal(schedule, plan.courses, plan.schedule_counter)
         # test all_constraints_linear
         # schedule1, lectures, other_sessions, empty_sessions = plan.initialize_schedule(plan.courses, rooms_list)
         # courses_schedule1 = Constraint.all_constraints(schedule1, plan.courses)
@@ -482,31 +495,16 @@ class Plan():
         # ALS JE GENETIC WIL TESTEN DEZE AANPASSEN
         # genetic.genetic_algortim(schedules, plan.courses)
 
-        # test new constraint function
-        # courses_schedule = Constraint.all_constraints(schedule, plan.courses)
+        # Get all points to pass on to save_html
+        courses_schedule, spread_points, capacity_points, lecture_points, mutual_course_malus = plan.points_to_print(schedule)
 
-        # DIT MOET OOK ECHT EVEN IN EEN APARTE FUNCTIE lol XOXOXO R
-        courses_schedule = Constraint.all_constraints(schedule, plan.courses)
-        Constraint.session_spread_check(schedule, plan.courses, courses_schedule)
-        spread_points = Constraint.session_spread_check(schedule, plan.courses, courses_schedule)[0]
-        # print(spread_points)
-        capacity_points = (Constraint.students_fit(schedule, plan.courses, courses_schedule))
-        lecture_points = Constraint.lecture_first(schedule, plan.courses, courses_schedule)
-        Constraint.lecture_first(schedule, plan.courses, courses_schedule)
-        mutual_course_malus = Constraint.mutual_courses_check(schedule, plan.courses)
-
-
-        overall_id = Constraint.session_points(schedule, plan.courses)[0]
-        Constraint.overall_id_points(schedule, plan.courses, overall_id)
-        Constraint.switch_session(schedule, 1, overall_id, plan.courses)
-
-        # # Print the end-text
-        # plan.end(schedule, courses_schedule)
-        # # Make a plot of the points
-        # try:
-        #     plan.makeplot(points)
-        # except:
-        #     print("No points to plot for now.")
+        # Print the end-text
+        plan.end(schedule, courses_schedule)
+        # Make a plot of the points
+        try:
+            plan.makeplot(points)
+        except:
+            print("No points to plot for now.")
 
         # Make a html file for the schedule
         plan.save_html(schedule, rooms, spread_points, capacity_points, lecture_points, mutual_course_malus)
