@@ -102,8 +102,10 @@ class Plan():
         # plan.fill_schedule(schedule, total, other_sessions, empty_sessions, courses)
         # print(session_list)
         # print(len(session_list))
+        counter_sessions = 0
         new_sched = False
-        while new_sched == False:
+
+        while not counter = 1000:
             new_sched = plan.fill_schedule(schedule, session_list, lecture_sessions, empty_sessions, courses)
             plan.schedule_counter +=1
             # if plan.schedule_counter % 100 == 0:
@@ -140,6 +142,7 @@ class Plan():
 
         # vertelt hoeveelste lecture van dit vak dit is
         passed_lectures = 0
+
 
         # found = False
         for e in range(len(lectures)):
@@ -416,6 +419,7 @@ class Plan():
         Generates a schedule by calling several helper functions and algorithms.
         """
 
+        point_list = []
         plan.then = time.time()
         print("Loading...")
         plan.random_numbers = []
@@ -489,13 +493,10 @@ class Plan():
         # genetic.get_points(schedule2, plan.courses)
 
         # test genetic Algorithm
-        # schedule1, lectures, other_sessions, empty_sessions = plan.initialize_schedule(plan.courses)
-        # schedule2, lectures, other_sessions, empty_sessions = plan.initialize_schedule(plan.courses)
-        # schedules = []
-        # for i in range(POPULATION):
-        #     schedules.append(plan.initialize_schedule(plan.courses)[0])
+        schedules = []
+        for i in range(POPULATION):
+            schedules.append(plan.initialize_schedule(plan.courses)[0])
 
-        # ALS JE GENETIC WIL TESTEN DEZE AANPASSEN
         # genetic.genetic_algortim(schedules, plan.courses)
 
         # Get all points to pass on to save_html
@@ -510,10 +511,10 @@ class Plan():
             print("No points to plot for now.")
 
         # Make a html file for the schedule
-        plan.save_html(schedule, rooms, spread_points, capacity_points, lecture_points, mutual_course_malus)
+        # plan.save_html(schedule, rooms, spread_points, capacity_points, lecture_points, mutual_course_malus)
 
 
 if __name__ == "__main__":
-
+    print("hoi")
     plan = Plan()
     plan.generate()
