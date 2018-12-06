@@ -27,11 +27,9 @@ def anneal(schedule, courses, schedule_counter):
     switcher = 1
     accept_counter = 0
     points = []
-    begin_temperature = 0.2
-    end_temperature = 0.01
-    total_iterations = 50000
-    # Ti=  T0(Tn/  T0)  (i/  N)
-    # Ti=  Tn+  (T0  -Tn)  /  (1  +  exp(0.3  (i-N/2)
+    begin_temperature = 2
+    end_temperature = 0.005
+    total_iterations = 30000
 
 
     for i in range(1, total_iterations):
@@ -42,6 +40,9 @@ def anneal(schedule, courses, schedule_counter):
         # temperatuur = begin_temperature / pow((0.05 / begin_temperature), (i/total_iterations))
         # Sigmodiaal:
         # temperatuur = end_temperature + (begin_temperature - end_temperature) / (1 + math.exp(0.3 * (i - total_iterations/2)))
+        # Exponentieel goed:
+        temperatuur = begin_temperature * math.pow((end_temperature/  begin_temperature),  (i/  total_iterations))
+
         points.append(get_points(schedule, courses))
         # Append points to show in a graph when the schedule is made
         # points.append(get_points(schedule, courses))
@@ -66,20 +67,22 @@ def anneal(schedule, courses, schedule_counter):
         if schedule2_points >= schedule1_points: # or schedule2_points - schedule1_points < verschil:
             schedule = schedule2
             accept_counter = 0
-        elif random_number < (math.exp(verkorting / temperatuur) * 100): # DIT IS DE ACCEPTATIEKANS
-            # acceptatiekans = math.exp(verkorting / temperatuur) * 100
-            # print("Accceptatiekans", acceptatiekans)
-            # print(points[-1], (math.exp(verkorting / temperatuur) * 100))
-            print("WAT IS DE WERELD TOCH MOOI MAAR OH JEE MINDER PUNTEN")
-            # BEREKEN HIER DE KANS OM DE SLECHTERE ALSNOG AAN TE NEMEN
-            # acceptatiekans = math.exp(-verschil / temperatuur)
-            # print(acceptatiekans, (get_points(schedule, courses)))
-            # random_number = randint(0, 100)
-            # if random_number < acceptatiekans * 100:
-            schedule = schedule2
         else:
             schedule = schedule1
             accept_counter += 1
+        # BIJ EEN OPTIMUM:
+        if accept_counter > 20:
+            if random_number < (math.exp(verkorting / temperatuur) * 100): # DIT IS DE ACCEPTATIEKANS
+                # acceptatiekans = math.exp(verkorting / temperatuur) * 100
+                # print("Accceptatiekans", acceptatiekans)
+                # print(points[-1], (math.exp(verkorting / temperatuur) * 100))
+                print("WAT IS DE WERELD TOCH MOOI MAAR OH JEE MINDER PUNTEN")
+                # BEREKEN HIER DE KANS OM DE SLECHTERE ALSNOG AAN TE NEMEN
+                # acceptatiekans = math.exp(-verschil / temperatuur)
+                # print(acceptatiekans, (get_points(schedule, courses)))
+                # random_number = randint(0, 100)
+                # if random_number < acceptatiekans * 100:
+                schedule = schedule2
 
     # Append last points of the new schedule to make a full plot of the points
     points.append(get_points(schedule, courses))

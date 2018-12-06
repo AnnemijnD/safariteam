@@ -461,11 +461,14 @@ class Plan():
         #     points = Constraint.get_points(schedule, plan.courses)
         # print("Running algorithm...")
         # plan.schedule_counter = 0
-        # # schedule, points, plan.schedule_counter = climbergreedy.climbergreedy(schedule, plan.courses, plan.schedule_counter)
-        # schedule, points, plan.schedule_counter = hillclimber.soft_constraints(schedule, plan.courses, plan.schedule_counter)
-        # # schedule, points, plan.schedule_counter = climbergreedy.soft_constraints(schedule, plan.courses, plan.schedule_counter)
 
+
+        # Zoek het beste rooster met een hill climber
+        # schedule, points, plan.schedule_counter = hillclimber.soft_constraints(schedule, plan.courses, plan.schedule_counter)
+        # Bij optimum: geef door aan simulated annealing
         # schedule, points, schedule_counter = annealing.anneal(schedule, plan.courses, plan.schedule_counter)
+
+
         # test all_constraints_linear
         # schedule1, lectures, other_sessions, empty_sessions = plan.initialize_schedule(plan.courses, rooms_list)
         # courses_schedule1 = Constraint.all_constraints(schedule1, plan.courses)
