@@ -29,6 +29,8 @@ import numpy as np
 import matplotlib
 matplotlib.use('TkAgg')
 import matplotlib.pyplot as plt
+from matplotlib.pyplot import figure
+
 
 SLOTS = 140
 TIME_SLOTS = 4
@@ -37,6 +39,7 @@ ROOMS = 7
 MAXMALUSPOINTS = 0
 MAXSCHEDULEPOINTS = 39
 POPULATION = 50
+SESSION_NUM = 129
 
 
 class Plan():
@@ -50,6 +53,7 @@ class Plan():
         """
 
         schedule = [[[[None] for i in range(ROOMS)] for i in range(TIME_SLOTS)] for i in range(DAYS)]
+        session_analysis = [0 for i in range(129)]
 
         sessions = []
         session_list = []
@@ -101,19 +105,52 @@ class Plan():
 
         # plan.fill_schedule(schedule, total, other_sessions, empty_sessions, courses)
         # print(session_list)
-        # print(len(session_list))
-        counter_sessions = 0
+                    # print(len(session_list))
+
+
+        # zorgt dat er een plot wordt gemaakt van alle vakken waar het fout gaat
         new_sched = False
+        counter_lala = 0
+        counter_2 = 0
+        lalalijst = []
+        if not bool(new_sched):
+            while not bool(new_sched) or not counter_2 >= 500:
+                new_sched, course_stop = plan.fill_schedule(schedule, session_list, lecture_sessions, empty_sessions, courses)
+                plan.schedule_counter += 1
 
-        while not counter = 1000:
-            new_sched = plan.fill_schedule(schedule, session_list, lecture_sessions, empty_sessions, courses)
-            plan.schedule_counter +=1
-            # if plan.schedule_counter % 100 == 0:
-            #     print(plan.schedule_counter)
-            if not new_sched == False:
-                break
+                if bool(new_sched):
+                    if counter_2 < 500:
+                        continue
+                    else:
+                        break
 
-        return schedule, total, other_sessions, empty_sessions
+                session_analysis[course_stop] += 1
+                counter_2 += 1
+
+        xAxis = []
+        yAxis = []
+
+        for k in range(len(session_analysis)):
+         if session_analysis[k] > 0:
+             for j in range(len(session_list)):
+                 if session_list[j].overall_id == k:
+                     xAxis.append(f"{session_list[j].name} {session_list[j].type} {session_list[j].overall_id}")
+                     yAxis.append(session_analysis[k])
+                     lalalijst.append([session_list[j], session_analysis[k]])
+                     # print(f"Vak {session_list[j]}: {session_analysis[k]}")
+
+        ax = plt.subplot(111)
+        pos1 = ax.get_position() # get the original position
+        pos2 = [pos1.x0, pos1.y0 + 0.2,  pos1.width , pos1.height - 0.2]
+        ax.set_position(pos2)
+        plt.bar(xAxis, yAxis)
+        plt.xticks(fontsize=6, rotation=89)
+        plt.title("Analysis of invalid schedules")
+        plt.ylabel("Sessions causing invalid schedule")
+        plt.show()
+
+        print(new_sched)
+        return new_sched, total, other_sessions, empty_sessions
 
 
     def fill_schedule(self, schedule, lectures, other_sessions, empty_sessions, courses):
@@ -122,7 +159,7 @@ class Plan():
         the lectures and will go on to fill other sessions.
         """
 
-        # Gebruik nested for loop om elke cel een session te gegen.
+        # Gebruik nested for loop om elke cel een session te geven.
         # Je geeft hierbij een lijst met sessies mee aan de functie get_session
         # De lijst met sessies is al gemaakt in initialize_schedule()
 
@@ -235,7 +272,7 @@ class Plan():
                     while not counter == prohibited_timeslots:
                         if not bool(location) or prohibited_timeslots >= len(location):
 
-                            return False
+                            return False, e
 
                         elif not location[-1][1] == location[-2][1]:
                             # print(location)
@@ -255,7 +292,7 @@ class Plan():
 
                 # plan.schedule_counter += 1
 
-                return False
+                return False, e
                 # return schedule
                 #plan.initialize_schedule(plan.courses)
                 # break
@@ -271,12 +308,12 @@ class Plan():
                             schedule[i][j][k].overall_id = overall_id_counter
                             overall_id_counter += 1
 
-            return schedule
+            return schedule, -1
 
         else:
             # plan.schedule_counter += 1
 
-            return False
+            return False, e
 
     # def random_schedule(self, schedule, sessions):
     #     """
@@ -399,7 +436,7 @@ class Plan():
         print("Succes! :-)")
         print("It took:", round(time.time() - plan.then, 3), "seconds, = ", round((time.time() - plan.then) / 60, 3), "minutes.")
         print("Made", plan.schedule_counter, "schedule(s).")
-        print("Points:", Constraint.session_spread_check(schedule, plan.courses, courses_schedule)[0] - Constraint.students_fit(schedule, plan.courses, courses_schedule), "out of 440.")
+        # print("Points:", Constraint.session_spread_check(schedule, plan.courses, courses_schedule)[0] - Constraint.students_fit(schedule, plan.courses, courses_schedule), "out of 440.")
 
     def generate(self):
         """
@@ -490,8 +527,10 @@ class Plan():
 
         # test genetic Algorithm
         schedules = []
-        for i in range(POPULATION):
-            schedules.append(plan.initialize_schedule(plan.courses)[0])
+        genetic_on = False
+        if genetic_on:
+            for i in range(POPULATION):
+                schedules.append(plan.initialize_schedule(plan.courses)[0])
 
         # genetic.genetic_algortim(schedules, plan.courses)
 
@@ -501,6 +540,7 @@ class Plan():
         # DIT MOET OOK ECHT EVEN IN EEN APARTE FUNCTIE lol XOXOXO R
         courses_schedule = Constraint.all_constraints(schedule, plan.courses)
         Constraint.session_spread_check(schedule, plan.courses, courses_schedule)
+        capacity_points = (Constraint.students_fit(schedule, plan.courses, courses_schedule))
         spread_points = Constraint.session_spread_check(schedule, plan.courses, courses_schedule)[0]
         # print(spread_points)
         capacity_points = (Constraint.students_fit(schedule, plan.courses, courses_schedule))
@@ -515,7 +555,7 @@ class Plan():
         # Constraint.switch_session(schedule, 1, overall_id, plan.courses)
 
         # # Print the end-text
-        # plan.end(schedule, courses_schedule)
+        plan.end(schedule, courses_schedule)
         # # Make a plot of the points
         # try:
         #     plan.makeplot(points)
@@ -523,7 +563,7 @@ class Plan():
         #     print("No points to plot for now.")
 
         # Make a html file for the schedule
-        # plan.save_html(schedule, rooms, spread_points, capacity_points, lecture_points, mutual_course_malus)
+        plan.save_html(schedule, rooms, spread_points, capacity_points, lecture_points, mutual_course_malus)
 
 
 if __name__ == "__main__":

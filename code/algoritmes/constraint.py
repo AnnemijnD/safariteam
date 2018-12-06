@@ -147,8 +147,8 @@ class Constraint():
                 for i in range(len(sessions)):
 
                     # print(courses_schedule[id]["day"], course.name)
-                    # print(i)
-                    # print(sessions[i])
+                    print(i)
+                    print(sessions[i])
 
                     # checks if the courses are on monday and thursday
                     if (courses_schedule[id]["day"][sessions[i][0]] == 0) and \
