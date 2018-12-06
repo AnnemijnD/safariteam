@@ -6,7 +6,7 @@ This script generates a schedule.
 
 import os, sys
 
-directory = os.path.dirname(os.path.realpath(_file_))
+directory = os.path.dirname(os.path.realpath(__file__))
 sys.path.append(os.path.join(directory, "code"))
 sys.path.append(os.path.join(directory, "code", "classes"))
 sys.path.append(os.path.join(directory, "code", "algoritmes"))
@@ -102,8 +102,10 @@ class Plan():
         # plan.fill_schedule(schedule, total, other_sessions, empty_sessions, courses)
         # print(session_list)
         # print(len(session_list))
+        counter_sessions = 0
         new_sched = False
-        while new_sched == False:
+
+        while not counter = 1000:
             new_sched = plan.fill_schedule(schedule, session_list, lecture_sessions, empty_sessions, courses)
             plan.schedule_counter +=1
             # if plan.schedule_counter % 100 == 0:
@@ -140,6 +142,7 @@ class Plan():
 
         # vertelt hoeveelste lecture van dit vak dit is
         passed_lectures = 0
+
 
         # found = False
         for e in range(len(lectures)):
@@ -403,6 +406,7 @@ class Plan():
         Generates a schedule by calling several helper functions and algorithms.
         """
 
+        point_list = []
         plan.then = time.time()
         print("Loading...")
         plan.random_numbers = []
@@ -414,22 +418,33 @@ class Plan():
         # runs the hillclimber hunderd times
         # point_list = []
         # for i in range(100):
+        #     print(f"i = {i}")
         #     schedule = plan.initialize_schedule(plan.courses)[0]
         #
-        #     points = Constraint.get_points(schedule, plan.courses)
+        #     # schedule_points = Constraint.get_points(schedule, plan.courses)
         #
-        #     while points < -200:
+        #
+        #     while Constraint.get_points(schedule, plan.courses) < -200:
+        #         plan.schedule_counter = 0
         #         schedule = plan.initialize_schedule(plan.courses)[0]
-        #         points = Constraint.get_points(schedule, plan.courses)
         #
+        #         # schedule_points = Constraint.get_points(schedule, plan.courses)
+        #     schedule, points, plan.schedule_counter = hillclimber.soft_constraints(schedule, plan.courses, plan.schedule_counter)
+        #     print("TEST VAN POINTS LIST", points)
+        #     point_list.append(max(points))
+        #     print(f"point_list: {point_list}")
+        #
+        #         # points = Constraint.get_points(schedule, plan.courses)
+        #     # schedule, points, plan.schedule_counter = hillclimber.soft_constraints(schedule, plan.courses, plan.schedule_counter)
+        #     # schedule, points, plan.schedule_counter = hillclimber.soft_constraints(schedule, plan.courses, plan.schedule_counter)
         #     # print("Runnig algorithm...")
         #     # Geef dit rooster mee aan de soft constraints
         #     # schedule, points, plan.schedule_counter = hillclimber.soft_constraints(schedule, plan.courses, plan.schedule_counter)
         #
         #     # schedule, points, plan.schedule_counter = climbergreedy.soft_constraints(schedule, plan.courses, plan.schedule_counter)
-        #     point_list.append(points[-1])
-        #     # print(i)
         #
+        # #     # print(i)
+        # #
         # print("the almighty lijst van 100 hillclimber resultaten")
         # print(point_list)
 
@@ -438,6 +453,7 @@ class Plan():
         spread_points = 0
         lecture_points = 0
         capacity_points = 0
+        schedule = plan.initialize_schedule(plan.courses)[0]
 
         # Geef dit rooster mee aan de soft constraints
         # schedule, points, plan.schedule_counter = hillclimber.soft_constraints(schedule, plan.courses, plan.schedule_counter)
@@ -448,10 +464,10 @@ class Plan():
         # print("Running algorithm...")
         # plan.schedule_counter = 0
         # # schedule, points, plan.schedule_counter = climbergreedy.climbergreedy(schedule, plan.courses, plan.schedule_counter)
-        # schedule, points, plan.schedule_counter = hillclimber.soft_constraints(schedule, plan.courses, plan.schedule_counter)
+
         # # schedule, points, plan.schedule_counter = climbergreedy.soft_constraints(schedule, plan.courses, plan.schedule_counter)
 
-        annealing.anneal(schedule, plan.courses, plan.schedule_counter)
+        # annealing.anneal(schedule, plan.courses, plan.schedule_counter)
 
         # test all_constraints_linear
         # schedule1, lectures, other_sessions, empty_sessions = plan.initialize_schedule(plan.courses, rooms_list)
@@ -477,7 +493,7 @@ class Plan():
         for i in range(POPULATION):
             schedules.append(plan.initialize_schedule(plan.courses)[0])
 
-        genetic.genetic_algortim(schedules, plan.courses)
+        # genetic.genetic_algortim(schedules, plan.courses)
 
         # test new constraint function
         # courses_schedule = Constraint.all_constraints(schedule, plan.courses)
@@ -510,7 +526,7 @@ class Plan():
         # plan.save_html(schedule, rooms, spread_points, capacity_points, lecture_points, mutual_course_malus)
 
 
-if _name_ == "_main_":
-
+if __name__ == "__main__":
+    print("hoi")
     plan = Plan()
     plan.generate()

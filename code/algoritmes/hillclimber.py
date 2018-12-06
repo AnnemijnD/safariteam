@@ -32,6 +32,7 @@ def soft_constraints(schedule, courses, schedule_counter):
     #         Constraint.session_spread_check(schedule, courses) < -200 or \
     #         Constraint.students_fit(schedule, courses) > 1300:
     while schedule_counter < CYCLES:
+        
         # Append points to show in a graph when the schedule is made
         points.append(get_points(schedule, courses))
         # Count the number of schedules made

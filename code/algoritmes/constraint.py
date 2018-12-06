@@ -371,7 +371,7 @@ class Constraint():
 
 
 
-        print(session_capacity)
+        # print(session_capacity)
 
         return maluspoints
 
