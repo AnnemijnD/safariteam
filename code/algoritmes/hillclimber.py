@@ -10,8 +10,8 @@ import matplotlib
 matplotlib.use('TkAgg')
 import matplotlib.pyplot as plt
 
-CYCLES = 30000
-OPTIMUM = 45
+CYCLES = 15000
+OPTIMUM = 50
 LIMIT = 500
 MAXPOINTS = 440
 
@@ -31,7 +31,7 @@ def soft_constraints(schedule, courses, schedule_counter):
     #         Constraint.mutual_courses_check(schedule, courses) > 0 or \
     #         Constraint.session_spread_check(schedule, courses) < -200 or \
     #         Constraint.students_fit(schedule, courses) > 1300:
-    while schedule_counter < CYCLES:
+    while accept_counter < OPTIMUM:
         # Append points to show in a graph when the schedule is made
         points.append(get_points(schedule, courses))
         # Count the number of schedules made
@@ -94,6 +94,7 @@ def get_points(schedule, courses):
     to ensure that a schedule fulfills these constraints.
     """
     course_schedule = Constraint.all_constraints(schedule, courses)
+
     points = Constraint.session_spread_check(schedule, courses, course_schedule)[0] - \
             (Constraint.lecture_first(schedule, courses, course_schedule) * 40) - \
             (Constraint.mutual_courses_check(schedule, courses) * 40) - \

@@ -3,6 +3,7 @@ import numpy as np
 import math
 import switch
 
+
 SLOTS = 140
 TIME_SLOTS = 4
 DAYS = 5
@@ -18,6 +19,21 @@ class Constraint():
     """
     A class with all the constraint functions.
     """
+
+# Hier even een lijst met alle constraints:
+# 1. hoorcelleges voor werkcolleges en practica HARD
+# 2. er mag geen overlap zijn (met college zelf) HARD
+# 3. er mag geen overlap zijn (met andere vakkken) HARD
+# 4. studenten moeten in de zalen passen (NOG NIET)
+# 5. colleges van hetzelfde vak moeten goed verspreid zijn over de week
+#
+# Een fix_hard_constraints functie maken voor als na het soft maken van een
+# aantal constraints er niet meer wordt voldaan aan de hard constraints.
+
+    def __init__(self):
+        self.bonus_malus = []
+        self.capacity = []
+
 
     def all_constraints(schedule, courses):
         """
@@ -207,12 +223,13 @@ class Constraint():
         # print(f"bonuspoints: {bonuspoints}")
         # print(f"maluspoints: {maluspoints}")
         spread_points = maluspoints + bonuspoints
+        Constraint.bonus_malus = course_bonus_malus
 
         # we moeten ook maluspoints returnen maar ik weet nog even niet waar
         # deze functie overal wordt aangeroepen dus daar wacht ik nog even mee
 
         # zelfde geldt voor de bonus_malus_points
-        return [spread_points, course_dict]
+        return [spread_points, course_dict, bonuspoints, maluspoints]
 
     def lecture_first(schedule, courses, courses_schedule):
         """
@@ -313,14 +330,17 @@ class Constraint():
         rooms = loaddata.load_rooms()
 
         maluspoints = 0
+        session_capacity = [0] * SESSION_NUM
         for course in courses:
 
             #  saves the room and type of the checked_course sessions
             checked_course = courses_schedule[course.course_id]
             room_ids = checked_course["room"]
             types = checked_course["type"]
+            session_overall_ids = checked_course["overall_id"]
 
-            for i in range(len(room_ids)):
+
+            for i in range(len(session_capacity)):
 
                 # saves the max amount of students for the session type
                 if types[i] is "lecture":
@@ -336,6 +356,22 @@ class Constraint():
                 # increases maluspoints with the nmbr of students that don't have a seat
                 if empty_seats < 0:
                     maluspoints += abs(empty_seats)
+                    # print(abs(empty_seats))
+                    # # print(session_capacity[session_overall_ids[i]][0])
+                    # print(session_capacity[session_overall_ids[i]])
+                    # session_capacity[session_overall_ids[i]] = session_capacity[session_overall_ids[i]].append(5)
+                    # print(session_capacity[session_overall_ids[i]])
+                    # print(session_capacity[session_overall_ids[i]])
+                    location = session_overall_ids[i]
+                    session_capacity[location] += abs(empty_seats)
+
+
+                if i == len(room_ids) - 1:
+                    break
+
+
+
+        # print(session_capacity)
 
         return maluspoints
 
