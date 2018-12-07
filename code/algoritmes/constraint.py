@@ -385,7 +385,6 @@ class Constraint():
 
         # Flatten schedule to get a 1D list to switch elements
         flatten = np.array(schedule).flatten()
-        # print(flatten)
 
         # If there is no specific session to switch, make a random switch
         if session_to_switch < 0:
@@ -563,19 +562,26 @@ class Constraint():
         Maximum of 'good points' of session_spread_check() = 440.
         Minimum of malus points of students_fit() = 0 and maxmimum = 1332.
 
-        Multiply the points of the hard constraints (lecture_first and mutual_courses)
-        to ensure that a schedule fulfills these constraints.
-
-        BEREKENING NOG NIET AF:
-        ALLE FUNCTIES 0 TOT 100 PUNTEN GEVEN
-        Alles delen door max aantal punten en vermenigvuldigen met 100,
-        hard constraints dan ook vermenigvuldigen met 2.
+        1332 / 3.027 = 440
         """
         course_schedule = Constraint.all_constraints(schedule, courses)
 
         points = Constraint.session_spread_check(schedule, courses, course_schedule)[0] - \
-                (Constraint.lecture_first(schedule, courses, course_schedule) * 40) - \
-                (Constraint.mutual_courses_check(schedule, courses) * 40) - \
-                (Constraint.students_fit(schedule, courses, course_schedule) / 4)
+                (Constraint.lecture_first(schedule, courses, course_schedule) * 100) - \
+                (Constraint.mutual_courses_check(schedule, courses) * 100) - \
+                (Constraint.students_fit(schedule, courses, course_schedule) / 3.027)
 
         return points
+
+
+    def get_points_final(schedule, courses):
+            """
+            Returns the final number of points. Only considering the real bonus and
+            malus points.
+            """
+            course_schedule = Constraint.all_constraints(schedule, courses)
+
+            points = Constraint.session_spread_check(schedule, courses, course_schedule)[0] - \
+                    (Constraint.students_fit(schedule, courses, course_schedule))
+
+            return points

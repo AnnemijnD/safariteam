@@ -27,26 +27,27 @@ def anneal(schedule, courses, schedule_counter):
     switcher = 1
     accept_counter = 0
     points = []
-    begin_temperature = 2
-    end_temperature = 0.005
+    begin_temperature = 4
+    end_temperature = 0.01
     total_iterations = 30000
 
 
-    for i in range(1, total_iterations):
+    for i in range(0, total_iterations):
+        # COOLING SCHEMES:
         # Geman:
-        temperatuur = begin_temperature / math.log(i + 2)
+        # temperatuur = begin_temperature / math.log(i + 2)
         # print(temperatuur)
-        # Exponential:
+        # Exponentieell:
         # temperatuur = begin_temperature / pow((0.05 / begin_temperature), (i/total_iterations))
         # Sigmodiaal:
         # temperatuur = end_temperature + (begin_temperature - end_temperature) / (1 + math.exp(0.3 * (i - total_iterations/2)))
         # Exponentieel goed:
-        temperatuur = begin_temperature * math.pow((end_temperature/  begin_temperature),  (i/  total_iterations))
+        temperatuur = begin_temperature * math.pow((end_temperature / begin_temperature),  (i / total_iterations))
 
         points.append(get_points(schedule, courses))
         # Append points to show in a graph when the schedule is made
         # points.append(get_points(schedule, courses))
-        print(points[-1])
+        # print(points[-1], i)
         # Count the number of schedules made
         schedule_counter += 1
         # Save the first schedule
@@ -61,22 +62,21 @@ def anneal(schedule, courses, schedule_counter):
         # Accept new schedule if it has more points that the old schedule.
         # Also accept schedules with equal number of points for a higher chance
         # of finding a solution.
-        verkorting = schedule2_points - schedule1_points
-
-        random_number = randint(0, 100)
         if schedule2_points >= schedule1_points: # or schedule2_points - schedule1_points < verschil:
             schedule = schedule2
             accept_counter = 0
-        else:
+        else: # deze else moet even anders
             schedule = schedule1
             accept_counter += 1
-        # BIJ EEN OPTIMUM:
-        if accept_counter > 20:
-            if random_number < (math.exp(verkorting / temperatuur) * 100): # DIT IS DE ACCEPTATIEKANS
+        # Bij vastlopen
+        if accept_counter > 25:
+            verkorting = schedule2_points - schedule1_points
+            # Pas simulated annealing toe
+            if randint(0, 100) < (math.exp(verkorting / temperatuur) * 100): # DIT IS DE ACCEPTATIEKANS
                 # acceptatiekans = math.exp(verkorting / temperatuur) * 100
                 # print("Accceptatiekans", acceptatiekans)
                 # print(points[-1], (math.exp(verkorting / temperatuur) * 100))
-                print("WAT IS DE WERELD TOCH MOOI MAAR OH JEE MINDER PUNTEN")
+                print("WAT IS DE WERELD TOCH MOOI MAAR OH JEE MINDER PUNTEN lololol")
                 # BEREKEN HIER DE KANS OM DE SLECHTERE ALSNOG AAN TE NEMEN
                 # acceptatiekans = math.exp(-verschil / temperatuur)
                 # print(acceptatiekans, (get_points(schedule, courses)))
@@ -86,11 +86,12 @@ def anneal(schedule, courses, schedule_counter):
 
     # Append last points of the new schedule to make a full plot of the points
     points.append(get_points(schedule, courses))
-    print(max(points))
+    print("Max points:", max(points))
 
     # Return the generated schedule and its points :-)
     return schedule, points, schedule_counter
 
+# MOET EVEN NIET IN annealing.py MAAR ja op een logische plek :)
 
 def get_points(schedule, courses):
     """
@@ -107,7 +108,7 @@ def get_points(schedule, courses):
     points = Constraint.session_spread_check(schedule, courses, course_schedule)[0] - \
             (Constraint.lecture_first(schedule, courses, course_schedule) * 40) - \
             (Constraint.mutual_courses_check(schedule, courses) * 40) - \
-            (Constraint.students_fit(schedule, courses, course_schedule) / 4)
+            (Constraint.students_fit(schedule, courses, course_schedule) / 3)
 
     return points
 

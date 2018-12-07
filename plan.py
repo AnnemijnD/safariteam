@@ -11,6 +11,8 @@ sys.path.append(os.path.join(directory, "code"))
 sys.path.append(os.path.join(directory, "code", "classes"))
 sys.path.append(os.path.join(directory, "code", "algoritmes"))
 
+from tkinter.ttk import Progressbar
+import tkinter as tk
 from constraint import Constraint
 import loaddata
 from session import Session
@@ -105,9 +107,10 @@ class Plan():
         counter_sessions = 0
         new_sched = False
 
-        while not counter = 1000:
+        while not bool(new_sched):
             new_sched = plan.fill_schedule(schedule, session_list, lecture_sessions, empty_sessions, courses)
             plan.schedule_counter +=1
+            counter_sessions += 1
             # if plan.schedule_counter % 100 == 0:
             #     print(plan.schedule_counter)
             if not new_sched == False:
@@ -278,33 +281,30 @@ class Plan():
 
             return False
 
-    # def random_schedule(self, schedule, sessions):
-    #     """
-    #     Generates a random schedule. Assigns every session to a random timeslot.
-    #     # Hou bij welke random nummers al geweest zijn. De while loop
-    #     # Zorgt ervoor dat er een random nummer wordt gemaakt die nog
-    #     # niet is geweest.
-    #     """
-    #
-    #     # Maak een 1D lijst van schedule
-    #     flatten = np.array(schedule, dtype=object).flatten()
-    #
-    #     random_numbers = []
-    #
-    #     for i in range(len(sessions)):
-    #         rand = random.randint(0, SLOTS - 1)
-    #         while rand in random_numbers:
-    #             rand = random.randint(0, SLOTS - 1)
-    #         random_numbers.append(rand)
-    #         flatten[rand] = sessions[i]
-    #
-    #     # Convert back to 3D list
-    #     schedule = flatten.reshape(DAYS, TIME_SLOTS, ROOMS).tolist()
-    #
-    #     # Keep track of how many schedules were made
-    #     plan.schedule_counter += 1
-    #
-    #     return schedule
+    def random_schedule(self, schedule, sessions):
+        """
+        Generates a random schedule. Assigns every session to a random timeslot.
+        """
+
+        # Maak een 1D lijst van schedule
+        flatten = np.array(schedule, dtype=object).flatten()
+
+        random_numbers = []
+
+        for i in range(len(sessions)):
+            rand = random.randint(0, SLOTS - 1)
+            while rand in random_numbers:
+                rand = random.randint(0, SLOTS - 1)
+            random_numbers.append(rand)
+            flatten[rand] = sessions[i]
+
+        # Convert back to 3D list
+        schedule = flatten.reshape(DAYS, TIME_SLOTS, ROOMS).tolist()
+
+        # Keep track of how many schedules were made
+        plan.schedule_counter += 1
+
+        return schedule
 
     def save_html(self, schedule, rooms, spread_points, capacity_points, lecture_points, mutual_course_malus):
         """
@@ -383,12 +383,13 @@ class Plan():
             f.write("Friday")
             f.write(html_string.format(table=friday.to_html(classes='style')))
 
-    def makeplot(self, points):
+    def makeplot(self, points, points2):
         """
         Plots a graph of all the points on the y-axis and number of schedules
         on the x-axis.
         """
-        plt.plot(points)
+        plt.plot(points, 'b') # annealing
+        plt.plot(points2, 'r') # hillclimber
         plt.ylabel("Points")
         plt.show()
 
@@ -414,10 +415,54 @@ class Plan():
 
         return courses_schedule, spread_points, capacity_points, lecture_points, mutual_course_malus
 
+    def gui(self):
+        window = tk.Tk()
+        window.geometry('650x300')
+        window.configure(bg='silver')
+        # Add title to GUI
+        window.title("Wat wil je nou doen????")
+
+
+        lbl = tk.Label(window, text="Uhmmmmmmmmmmmmm Genetisch algoritme???").grid()
+
+        def printen():
+            print("Hahah lol kijk hoe leuk dit is ieee jaaaa lekker klikken")
+        def printen2():
+            print("NU HEB JE WEL GENOEG GEKLIKT HE")
+        def magniet():
+            print("MAG NIET hahaheheheheheeh gna gna gna")
+
+        # Add button
+        tk.Button(window, text="Ja doe maar genetisch", command = printen).grid()
+        tk.Button(window, text="duizendmiljoen keer genetisch", command = printen).grid(column = 1, row = 1)
+        tk.Button(window, text="Hmmm ja doe maar hill climber", command = printen2).grid()
+        tk.Button(window, text="Oh nee toch niet doe maar simulated annealing", command = printen2).grid()
+
+        tk.Label(window, text="Ja en hoe vaak dan???!!").grid()
+        tk.Label(window, text="WIL JE PLOT!??!!!!!!!!!!").grid()
+        tk.Button(window, text="ja.", command = magniet).grid(column=0, row=8)
+        tk.Button(window, text="nee.", command = magniet).grid(column=0, row=8, columnspan = 2)
+
+        rad1 = tk.Radiobutton(window,text='Of misschien met radiobuttons', value=1)
+        rad2 = tk.Radiobutton(window,text='Algoritmes aaklikken', value=2)
+        rad3 = tk.Radiobutton(window,text='Enzo', value=3)
+        rad1.grid()
+        rad2.grid()
+        rad3.grid()
+
+        bar = Progressbar(window, length=400)
+        bar['value'] = 70
+        bar.grid(column =0,row =18)
+
+        window.mainloop()
+
+
     def generate(self):
         """
         Generates a schedule by calling several helper functions and algorithms.
         """
+
+        plan.gui()
 
         point_list = []
         plan.then = time.time()
@@ -428,16 +473,37 @@ class Plan():
         # Load all the courses, rooms and sessions
         plan.courses = loaddata.load_courses()
 
-        # # runs the hillclimber hunderd times
+        # Alle andere dingen laden jeeej
+        rooms = loaddata.load_rooms()
+        plan.own_session_points = 0
+
+        # Make random valid schedule
+        schedule = plan.initialize_schedule(plan.courses)[0]
+
+        # switch.switch_session(schedule, 1, -1)
+        # schedule, points, plan.schedule_counter = hillclimber.soft_constraints(schedule, plan.courses, plan.schedule_counter, True)
+
+        # Run both hill climber and simulated annealing next to each other
+        # save_sched = schedule
+        # Zoek het beste rooster met een hill climber
+        # schedule, points, plan.schedule_counter = annealing.anneal(schedule, plan.courses, plan.schedule_counter)
+        # points = hillclimber.soft_constraints(save_sched, plan.courses, plan.schedule_counter, True)[1]
+        # print("next algorithm")
+        # points2 = hillclimber.soft_constraints(save_sched, plan.courses, plan.schedule_counter, False)[1]
+        # print("next algorithm")
+        # points3 = annealing.anneal(save_sched, plan.courses, plan.schedule_counter)[1]
+
+        # plt.plot(points, 'r') # normale hillclimber
+        # plt.plot(points2, 'm') # acceptatie hillclimber
+        # plt.plot(points3, 'b') # simulated annealing
+        # plt.ylabel("Points")
+        # plt.xlabel("Iterations")
+        # plt.show()
+
+        # runs the hillclimber hunderd times
         # point_list = []
-        # for i in range(100):
+        # for i in range(30):
         #     schedule = plan.initialize_schedule(plan.courses)[0]
-        #
-        #     points = Constraint.get_points(schedule, plan.courses)
-        #
-        #     while points < -200:
-        #         schedule = plan.initialize_schedule(plan.courses)[0]
-        #         points = Constraint.get_points(schedule, plan.courses)
         #
         #     # print("Runnig algorithm...")
         #     # Geef dit rooster mee aan de soft constraints
@@ -446,6 +512,9 @@ class Plan():
         #     # schedule, points, plan.schedule_counter = climbergreedy.soft_constraints(schedule, plan.courses, plan.schedule_counter)
         #     point_list.append(points[-1])
         #     # print(i)
+
+
+
 
         # runs the hillclimber hunderd times
         # point_list = []
@@ -476,41 +545,11 @@ class Plan():
         #     # schedule, points, plan.schedule_counter = climbergreedy.soft_constraints(schedule, plan.courses, plan.schedule_counter)
         #
         # #     # print(i)
-        # #
->>>>>>> 8171bbdaea475b81b27b15899991e5f2e1961cb8
+
         # print("the almighty lijst van 100 hillclimber resultaten")
         # print(point_list)
 
-        rooms = loaddata.load_rooms()
-        plan.own_session_points = 0
-        spread_points = 0
-        lecture_points = 0
-        capacity_points = 0
-        schedule = plan.initialize_schedule(plan.courses)[0]
 
-        # Geef dit rooster mee aan de soft constraints
-        # schedule, points, plan.schedule_counter = hillclimber.soft_constraints(schedule, plan.courses, plan.schedule_counter)
-
-        # while points < -200:
-        #     schedule = plan.initialize_schedule(plan.courses)[0]
-        #     points = Constraint.get_points(schedule, plan.courses)
-        # print("Running algorithm...")
-        # plan.schedule_counter = 0
-<<<<<<< HEAD
-
-
-        # Zoek het beste rooster met een hill climber
-        # schedule, points, plan.schedule_counter = hillclimber.soft_constraints(schedule, plan.courses, plan.schedule_counter)
-        # Bij optimum: geef door aan simulated annealing
-        # schedule, points, schedule_counter = annealing.anneal(schedule, plan.courses, plan.schedule_counter)
-
-=======
-        # # schedule, points, plan.schedule_counter = climbergreedy.climbergreedy(schedule, plan.courses, plan.schedule_counter)
-
-        # # schedule, points, plan.schedule_counter = climbergreedy.soft_constraints(schedule, plan.courses, plan.schedule_counter)
-
-        # annealing.anneal(schedule, plan.courses, plan.schedule_counter)
->>>>>>> 8171bbdaea475b81b27b15899991e5f2e1961cb8
 
         # test all_constraints_linear
         # schedule1, lectures, other_sessions, empty_sessions = plan.initialize_schedule(plan.courses, rooms_list)
@@ -532,49 +571,29 @@ class Plan():
         # genetic.get_points(schedule2, plan.courses)
 
         # test genetic Algorithm
-        schedules = []
-        for i in range(POPULATION):
-            schedules.append(plan.initialize_schedule(plan.courses)[0])
+        # schedules = []
+        # for i in range(POPULATION):
+        #     schedules.append(plan.initialize_schedule(plan.courses)[0])
 
         # genetic.genetic_algortim(schedules, plan.courses)
 
-<<<<<<< HEAD
+
         # Get all points to pass on to save_html
         courses_schedule, spread_points, capacity_points, lecture_points, mutual_course_malus = plan.points_to_print(schedule)
-=======
-        # test new constraint function
-        # courses_schedule = Constraint.all_constraints(schedule, plan.courses)
-
-        # DIT MOET OOK ECHT EVEN IN EEN APARTE FUNCTIE lol XOXOXO R
-        courses_schedule = Constraint.all_constraints(schedule, plan.courses)
-        Constraint.session_spread_check(schedule, plan.courses, courses_schedule)
-        spread_points = Constraint.session_spread_check(schedule, plan.courses, courses_schedule)[0]
-        # print(spread_points)
-        capacity_points = (Constraint.students_fit(schedule, plan.courses, courses_schedule))
-        lecture_points = Constraint.lecture_first(schedule, plan.courses, courses_schedule)
-        Constraint.lecture_first(schedule, plan.courses, courses_schedule)
-        mutual_course_malus = Constraint.mutual_courses_check(schedule, plan.courses)
-
-
-        #
-        # overall_id = Constraint.session_points(schedule, plan.courses)[0]
-        # Constraint.overall_id_points(schedule, plan.courses, overall_id)
-        # Constraint.switch_session(schedule, 1, overall_id, plan.courses)
->>>>>>> 8171bbdaea475b81b27b15899991e5f2e1961cb8
 
         # Print the end-text
         plan.end(schedule, courses_schedule)
         # Make a plot of the points
         try:
-            plan.makeplot(points)
+            points2 = 0
+            plan.makeplot(points, points2)
         except:
             print("No points to plot for now.")
 
         # Make a html file for the schedule
-        # plan.save_html(schedule, rooms, spread_points, capacity_points, lecture_points, mutual_course_malus)
+        plan.save_html(schedule, rooms, spread_points, capacity_points, lecture_points, mutual_course_malus)
 
 
 if __name__ == "__main__":
-    print("hoi")
     plan = Plan()
     plan.generate()
