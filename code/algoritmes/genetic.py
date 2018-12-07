@@ -8,9 +8,10 @@ from random import randint
 
 CHILDREN = 2
 DAYS = 5
-GENERATIONS = 40
+GENERATIONS = 50
 K = 5
 MUTATIONS = 10
+PERCENTAGE = 52
 POPULATION = 50
 ROOMS = 7
 SLOTS = 140
@@ -29,24 +30,13 @@ def genetic_algortim(schedules, courses):
         points = Constraint.get_points(schedules[i], courses)
         population_points.append(points)
 
-    print(population_points)
-    print(max(population_points), min(population_points), sum(population_points) / len(population_points))
+    # print(population_points)
+    # print(max(population_points), min(population_points), sum(population_points) / len(population_points))
+    saved = max(population_points)
 
     population = schedules
 
     for generation in range(GENERATIONS):
-
-        # sorted_population = []
-        # for i in range(0, POPULATION):
-        #     points = Constraint.get_points(population[i], courses)
-        #     sorted_population.append([points, population[i]])
-        # sorted_population = sorted(sorted_population, key=itemgetter(0))
-
-        # "bewijs" van erg weinig diversiteit
-        # print_list = []
-        # for i in range(len(sorted_population)):
-        #     print_list.append(sorted_population[i][0])
-        # print(print_list)
 
         # choose the parents
         # if generation > 10:
@@ -81,50 +71,26 @@ def genetic_algortim(schedules, courses):
             children.append(child1)
             children.append(child2)
 
-        # dit ook in een losse functie doen?????
-        # mutate a random amount of children
-        mutations = randint(1, MUTATIONS)
-        for mutation in range(mutations):
-            switches = randint(1, SWITCHES)
-            child = random.choice(children)
-            children.remove(child)
-            child = switch.switch_session(child, switches, -1)
-            children.append(child)
+            # mutate children
+            children = mutate_children(children)
 
-        # shuffle entire population
+        # add children to population
         population += children
-        random.shuffle(population)
 
-        # sort the population
-        sorted_population = []
-        for i in range(POPULATION):
-            points = Constraint.get_points(population[i], courses)
-            sorted_population.append([points, population[i]])
-        sorted_population = sorted(sorted_population, key=itemgetter(0))
-
-        # dit ook in een losse functie doen??????
-        # pick pairs and let only the best one "survive"
-        # for i in range(0, POPULATION, 2):
-        #     battle = [sorted_population[i][1], sorted_population[i + 1][1]]
-        #     points1 = Constraint.get_points(battle[0], courses)
-        #     points2 = Constraint.get_points(battle[1], courses)
-        #     if points1 > points2:
-        #         population.remove(battle[1])
-        #     else:
-        #         population.remove(battle[0])
-
-        # pick the best half of the population
-        for i in range(POPULATION // 2):
-            population.remove(sorted_population[i][1])
+        # choose survivors
+        population = choose_parents_KWAY(population, courses)
 
     population_points = []
     for i in range(0, POPULATION):
         points = Constraint.get_points(population[i], courses)
         population_points.append(points)
 
-    print(population_points)
-    print(max(population_points), min(population_points), sum(population_points) / len(population_points))
+    # print(population_points)
+    # print(max(population_points), min(population_points), sum(population_points) / len(population_points))
+    # print(f"improvement {max(population_points) - saved}")
+
     # TODO: BESTE ROOSTER RETURNEN
+    return max(population_points) - saved
 
 
 def choose_parents_KWAY(population, courses):
@@ -142,7 +108,6 @@ def choose_parents_KWAY(population, courses):
 
             # choose random schedule, remove it from population, add to battlefield
             chosen = random.choice(population)
-            # print(chosen, type(chosen))
             population.remove(chosen)
             points = Constraint.get_points(chosen, courses)
             battlefield.append((chosen, points))
@@ -209,6 +174,33 @@ def choose_parents_rank(population, courses):
     return parents
 
 
+def choose_population(population, courses):
+    """
+    TODO
+    """
+    # # sort the population
+    # sorted_population = []
+    # for i in range(POPULATION):
+    #     points = Constraint.get_points(population[i], courses)
+    #     sorted_population.append([points, population[i]])
+    # sorted_population = sorted(sorted_population, key=itemgetter(0))
+
+    # # pick the best half of the population
+    # for i in range(POPULATION // 2):
+    #     population.remove(sorted_population[i][1])
+
+    # # pick pairs and let only the best one "survive"
+    # for i in range(0, POPULATION, 2):
+    #     battle = [sorted_population[i][1], sorted_population[i + 1][1]]
+    #     points1 = Constraint.get_points(battle[0], courses)
+    #     points2 = Constraint.get_points(battle[1], courses)
+    #     if points1 > points2:
+    #         population.remove(battle[1])
+    #     else:
+    #         population.remove(battle[0])
+
+
+
 def create_cycles(parent1_id, parent2_id):
     """
     Create cycles between the two parent schedules.
@@ -255,15 +247,42 @@ def make_children(cycles, parent1, parent1_id, parent2, parent2_id):
     child1 = copy.deepcopy(parent1)
     child2 = copy.deepcopy(parent2)
 
+    # len(cycles)
+
     # add every other cycle of parent_i to the child_j
+    cycle_len = []
+    cycles.sort(key=len)
+    # print(cycles)
     for index, cycle in enumerate(cycles):
-        if index // 2 == 0:
+        cycle_len += cycle
+        if len(cycle_len) <= PERCENTAGE:
+            # print(f"cycle length first {len(cycle_len)}")
+        # if index // 4 == 0:
             for overall_id in cycle:
                 child1[parent1_id.index(overall_id)] = parent2[parent2_id.index(overall_id)]
                 child2[parent2_id.index(overall_id)] = parent1[parent1_id.index(overall_id)]
+        # else:
+        #     print(f"cycle length after {len(cycle_len)}")
+
+
 
     # convert the children to 3D lists
     child1 = np.asarray(child1).reshape(DAYS, TIME_SLOTS, ROOMS).tolist()
     child2 = np.asarray(child2).reshape(DAYS, TIME_SLOTS, ROOMS).tolist()
 
     return(child1, child2)
+
+
+def mutate_children(children):
+    """
+    Mutate a random amount of children
+    """
+    mutations = randint(1, MUTATIONS)
+    for mutation in range(mutations):
+        switches = randint(1, SWITCHES)
+        child = random.choice(children)
+        children.remove(child)
+        child = switch.switch_session(child, switches, -1)
+        children.append(child)
+
+    return children

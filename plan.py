@@ -470,12 +470,20 @@ class Plan():
         #
         # genetic.get_points(schedule2, plan.courses)
 
-        # test genetic Algorithm
-        schedules = []
-        for i in range(POPULATION):
-            schedules.append(plan.initialize_schedule(plan.courses)[0])
-
-        genetic.genetic_algortim(schedules, plan.courses)
+        # averages = []
+        # for j in range(100):
+        # # test genetic Algorithm
+        #     schedules = []
+        #     for i in range(POPULATION):
+        #         schedules.append(plan.initialize_schedule(plan.courses)[0])
+        #
+        #     average = genetic.genetic_algortim(schedules, plan.courses)
+        # 
+        #     averages.append(average)
+        #
+        # # DIT ZIJN EIGENLIJK DE IMPROVEMENTS NIET DE AVERAGES!!!
+        # print(averages)
+        # hillclimber.makeplot(averages)
 
         # test new constraint function
         # courses_schedule = Constraint.all_constraints(schedule, plan.courses)
