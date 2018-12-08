@@ -507,7 +507,7 @@ class Plan():
         #
         #     # print("Runnig algorithm...")
         #     # Geef dit rooster mee aan de soft constraints
-        #     schedule, points, plan.schedule_counter = hillclimber.soft_constraints(schedule, plan.courses, plan.schedule_counter)
+        #     # schedule, points, plan.schedule_counter = hillclimber.soft_constraints(schedule, plan.courses, plan.schedule_counter)
         #
         #     # schedule, points, plan.schedule_counter = climbergreedy.soft_constraints(schedule, plan.courses, plan.schedule_counter)
         #     point_list.append(points[-1])
