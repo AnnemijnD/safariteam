@@ -11,13 +11,12 @@ sys.path.append(os.path.join(directory, "code"))
 sys.path.append(os.path.join(directory, "code", "classes"))
 sys.path.append(os.path.join(directory, "code", "algoritmes"))
 
-from tkinter.ttk import Progressbar
-import tkinter as tk
 from constraint import Constraint
 import loaddata
 from session import Session
 import switch
 import genetic
+import GUI
 import annealing
 import climbergreedy
 import hillclimber
@@ -415,54 +414,12 @@ class Plan():
 
         return courses_schedule, spread_points, capacity_points, lecture_points, mutual_course_malus
 
-    def gui(self):
-        window = tk.Tk()
-        window.geometry('650x300')
-        window.configure(bg='silver')
-        # Add title to GUI
-        window.title("Wat wil je nou doen????")
-
-
-        lbl = tk.Label(window, text="Uhmmmmmmmmmmmmm Genetisch algoritme???").grid()
-
-        def printen():
-            print("Hahah lol kijk hoe leuk dit is ieee jaaaa lekker klikken")
-        def printen2():
-            print("NU HEB JE WEL GENOEG GEKLIKT HE")
-        def magniet():
-            print("MAG NIET hahaheheheheheeh gna gna gna")
-
-        # Add button
-        tk.Button(window, text="Ja doe maar genetisch", command = printen).grid()
-        tk.Button(window, text="duizendmiljoen keer genetisch", command = printen).grid(column = 1, row = 1)
-        tk.Button(window, text="Hmmm ja doe maar hill climber", command = printen2).grid()
-        tk.Button(window, text="Oh nee toch niet doe maar simulated annealing", command = printen2).grid()
-
-        tk.Label(window, text="Ja en hoe vaak dan???!!").grid()
-        tk.Label(window, text="WIL JE PLOT!??!!!!!!!!!!").grid()
-        tk.Button(window, text="ja.", command = magniet).grid(column=0, row=8)
-        tk.Button(window, text="nee.", command = magniet).grid(column=0, row=8, columnspan = 2)
-
-        rad1 = tk.Radiobutton(window,text='Of misschien met radiobuttons', value=1)
-        rad2 = tk.Radiobutton(window,text='Algoritmes aaklikken', value=2)
-        rad3 = tk.Radiobutton(window,text='Enzo', value=3)
-        rad1.grid()
-        rad2.grid()
-        rad3.grid()
-
-        bar = Progressbar(window, length=400)
-        bar['value'] = 70
-        bar.grid(column =0,row =18)
-
-        window.mainloop()
-
-
     def generate(self):
         """
         Generates a schedule by calling several helper functions and algorithms.
         """
 
-        plan.gui()
+        GUI.gui()
 
         point_list = []
         plan.then = time.time()
