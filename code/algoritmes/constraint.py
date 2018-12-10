@@ -291,32 +291,25 @@ class Constraint():
                                 if own_session_counter > 1:
                                     minus_points += 1
 
+                        # DEZE LOOP MOET GECOMBINEERD WORDEN MET DE LOOP HIERBOVEN
+                        # ANDRS ONNODIGE LOOPS!!!
 
-                        # else:
-                        #     # Each slot has a course name and the courses' mutual courses
-                        #     # Mutual courses is a list of courses that can't be in the same timeslot
-                        #     mutual_courses = schedule[i][j][k].course_object.mutual_courses
-                        #     # For every mutual course in the mutual_courses list,
-                        #     # check if it is placed in the same timeslot.
-                        #     for mutual_course in range(len(mutual_courses)):
-                        #         for z in range(len(schedule[i][j])):
-                        #             # If this mutual course is placed in the same timeslot
-                        #             # (for example Bioinformatica and Compilerbouw),
-                        #             # count one minus point.
-                        #             if mutual_courses[mutual_course] in schedule[i][j][z].name:
-                        #                 minus_points += 1
+                        # If session is a pratical or tutorial, check if groups aren't
+                        # planned in at the same timeslot
+                        own_session_counter = 0
+                        # Check in every timeslot
+                        for z in range(len(schedule[i][j])):
+                            # DIT STUKJE MOET GECOMBINEERD MET DE FOR LOOP HIERBOVEN!
+                            if schedule[i][j][z].name == schedule[i][j][k].name:
+                                # Count one minuspoint if the same group_id is found for
+                                # this course in this timeslot.
 
-
-
-                        # HIER MOET NOG EEN MALUS PUNT KOMEN VOOR ALS TUTORIAL GROEP A
-                        # SAMEN MET PRACTICUM GROEP A ZIT!!!
-                        # else:
-                        #     # print(schedule[i][j][k])
-                        #     for z in range(len(schedule[i][j])):
-                        #         print(schedule[i][j][z])
-                        #     print(" ______________")
-
-
+                                if schedule[i][j][z].group_id is schedule[i][j][k].group_id:
+                                    own_session_counter += 1
+                        # own_session_counter will always be 1, so check if the counter
+                        # is higher than 1.
+                        if own_session_counter > 1:
+                            minus_points += 1
 
         return minus_points
 

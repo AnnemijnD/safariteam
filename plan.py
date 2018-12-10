@@ -120,8 +120,7 @@ class Plan():
 
     def fill_schedule(self, schedule, lectures, other_sessions, empty_sessions, courses):
         """
-        Fill empty schedule with sessions. This function will begin to fill all
-        the lectures and will go on to fill other sessions.
+        Fill empty schedule with sessions.
         """
 
         # Gebruik nested for loop om elke cel een session te gegen.
@@ -135,12 +134,8 @@ class Plan():
             for c in range(TIME_SLOTS):
                 for d in range(ROOMS):
                     schedule[b][c][d] = empty_sessions[session_counter]
+                    # Counter for number of sessions placed in the schedule
                     session_counter += 1
-
-
-
-
-        # Verdelen over slots als hard constraint
 
         # vertelt hoeveelste lecture van dit vak dit is
         passed_lectures = 0
@@ -419,7 +414,7 @@ class Plan():
         Generates a schedule by calling several helper functions and algorithms.
         """
 
-        GUI.gui()
+        # GUI.gui()
 
         point_list = []
         plan.then = time.time()
@@ -436,6 +431,9 @@ class Plan():
 
         # Make random valid schedule
         schedule = plan.initialize_schedule(plan.courses)[0]
+
+
+        # schedule = Constraint.switch_session(schedule, 10, -1, plan.courses)
 
         # switch.switch_session(schedule, 1, -1)
         # schedule, points, plan.schedule_counter = hillclimber.soft_constraints(schedule, plan.courses, plan.schedule_counter, True)

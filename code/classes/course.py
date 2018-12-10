@@ -26,22 +26,10 @@ class Course(object):
         self.max_students_practical = max_students_practical
         self.expected_students = expected_students
 
-        # self.mutual_courses_object = []
-
-        # Make an object for every course in the mutual_courses list
-        # for course in self.mutual_courses:
-        #     self.mutual_courses_object.append(Course())
-
 
     def load_sessions(self, int_session, type, max_students, expected_students):
         """
         Loads all the session types for every course.
-
-        -----
-        session_id is per vak, dus vak A heeft sessie 0, sessie 1 etc maar vak
-        B heeft ook sessie 0, sessie 1 etc
-        group_id is per sessie
-        -----
         """
 
         mutual_courses = []

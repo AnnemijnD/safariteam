@@ -56,8 +56,6 @@ def gui():
     mbtn = ttk.Menubutton(text='Of even lekker een dropdown!?? nee he')
     mbtn.grid()
 
-    # ttk.Label(window, text="Mooie lijn ook").grid()
-
     bar = Progressbar(window, length=400)
     bar['value'] = 70
     bar.grid(column =0,row =19)
