@@ -29,6 +29,7 @@ import pandas as pd
 from IPython.display import HTML
 import tkinter as tk
 from tkinter import *
+from tkinter import ttk
 import numpy as np
 import matplotlib
 matplotlib.use('TkAgg')
@@ -66,26 +67,57 @@ class Plan():
         n.grid(row=1, column=1)
         x.grid(row=2, column=1)
 
-        n.insert(10,"10")
-        x.insert(10,"1")
+        n.insert(10,"10000")
+        x.insert(10,"3")
 
-        def printresults():
+        def printresults(algorithm):
             print("Loading....")
             tk.Label(window, text="Resulted points (out of 440): ").place(x=360, y =10)
-            tk.Label(window, text=plan.runalgorithm("hill climber", int(n.get()), int(x.get()))[0]).place(x=360, y = 40)
+            if algorithm == "hc":
+                tk.Label(window, text=plan.runalgorithm("hill climber", int(n.get()), int(x.get()), 0, 0, 0)[0]).place(x=360, y = 40)
+            elif algorithm == "sa":
+                tk.Label(window, text=plan.runalgorithm("Simmulated annealing", int(n2.get()), int(x2.get()), float(t1.get()), float(t2.get()), type.get())[0]).place(x=360, y = 40)
 
-        n.bind('<Return>', lambda _: printresults())
-        x.bind('<Return>', lambda _: printresults())
+        n.bind('<Return>', lambda _: printresults("hc"))
+        x.bind('<Return>', lambda _: printresults("hc"))
 
-        lbl = tk.Label(window, text="Press enter to run. ").grid(column=1)
+        tk.Label(window, text="Simulated annealing: ", font="Arial 15 bold").grid(column=1)
 
-        tk.Button(window, text="Plot a hill climber run").place(x=100, y=200)
+        Label(window, text="Iterations: ").grid(row=6)
+        Label(window, text="Runs (n): ").grid(row=7)
+        Label(window, text="Begin temperature: ").grid(row=8)
+        Label(window, text="End temperature: ").grid(row=9)
+        Label(window, text="exponential | logaritmic").grid(row=10)
 
-        #command=plan.plot("hill climber")
+        n2 = Entry(window)
+        x2 = Entry(window)
+        t1 = Entry(window)
+        t2 = Entry(window)
+        type = Entry(window)
+
+        n2.grid(row=6, column=1)
+        x2.grid(row=7, column=1)
+        t1.grid(row=8, column=1)
+        t2.grid(row=9, column=1)
+        type.grid(row=10, column=1)
+
+        n2.insert(10,"1000")
+        x2.insert(10,"1")
+        t1.insert(10,"4")
+        t2.insert(10,"0.01")
+        type.insert(10,"exponential")
+
+        n2.bind('<Return>', lambda _: printresults("sa"))
+        x2.bind('<Return>', lambda _: printresults("sa"))
+        t1.bind('<Return>', lambda _: printresults("sa"))
+        t2.bind('<Return>', lambda _: printresults("sa"))
+        type.bind('<Return>', lambda _: printresults("sa"))
+
+        tk.Label(window, text="Press enter to run. ").grid(column=1)
+
+        tk.Button(window, text="Plot a hill climber run", command=lambda:plan.plot("hill climber")).place(x=140, y=350)
 
         window.mainloop()
-
-
 
 
     def initialize_schedule(self, courses):
@@ -437,9 +469,12 @@ class Plan():
         """
 
         # Set values to plot a hill climber
-        x = 100
+        x = 20000
         n = 1
-        points = plan.runalgorithm(algorithm, x, n)[2]
+
+        print("Generating a plot...")
+        print("May take a minute or 2...")
+        points = plan.runalgorithm(algorithm, x, n, 0, 0, 0)[2]
         plt.plot(points, 'b')
         plt.xlabel("Iterations")
         plt.ylabel("Points")
@@ -469,7 +504,7 @@ class Plan():
         return courses_schedule, spread_points, capacity_points, lecture_points, mutual_course_malus
 
 
-    def runalgorithm(self, algorithm, x, n):
+    def runalgorithm(self, algorithm, x, n, begin_temperature, end_temperature, type):
         """
         Run a certain algorithm for n number of times with x number of iterations.
         Algorithm input can be: "hill climber", "hill climber2" "genetic", "simulated annealing".
@@ -485,6 +520,8 @@ class Plan():
                 points = hillclimber.climb(schedule, plan.courses, plan.schedule_counter, x)[1]
             elif algorithm == "hill climber2":
                 points = hillclimberextended.climb(schedule, plan.courses, plan.schedule_counter, x)[1]
+            elif algorithm == "Simmulated annealing":
+                points = annealing.anneal(schedule, plan.courses, plan.schedule_counter, x, begin_temperature, end_temperature, type)[1]
             # Save max points to a list
             maxpoints.append(round(max(points)))
 
