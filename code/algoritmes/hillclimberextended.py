@@ -5,7 +5,6 @@ by accepting a schedule with higher points.
 """
 
 from constraint import Constraint
-import switch
 import matplotlib
 matplotlib.use('TkAgg')
 import matplotlib.pyplot as plt
@@ -19,13 +18,13 @@ def climb(schedule, courses, schedule_counter, iterations):
     """
 
     accept_counter = 0
-    counter = 0
     points = []
+    counter = 0
+    OPTIMUM = 45
 
-    while counter < iterations and accept_counter < 60:
+    while counter < iterations:
         # Append points to show in a graph when the schedule is made
-        points.append(Constraint.get_points(schedule, courses))
-        counter += 1
+        points.append(get_points(schedule, courses))
         # Count the number of schedules made
         schedule_counter += 1
         # Save the first schedule
@@ -47,9 +46,30 @@ def climb(schedule, courses, schedule_counter, iterations):
         else:
             schedule = schedule1
             accept_counter += 1
+        # If a limit is reached, change the number of switches to 1, resulting
+        # in a higher chance of finding schedule with more points. The disadvantage
+        # is that it (could) take longer to find a good schedule.
+        if schedule_counter == LIMIT:
+            if Constraint.get_points(schedule, courses) == MAXPOINTS:
+                return schedule, points, schedule_counter
+        # Make a forced switch if an optimum is reached for the number of times
+        # that a schedule was rejected.
+        if accept_counter > OPTIMUM:
+            schedule = Constraint.switch_session(schedule, 1, -1, courses)
+            accept_counter = 0
 
     # Append last points of the new schedule to make a full plot of the points
     points.append(Constraint.get_points(schedule, courses))
+    print("Max points:", max(points))
 
     # Return the generated schedule and its points :-)
     return schedule, points, schedule_counter
+
+
+def makeplot(points):
+    """
+    DEZE KAN WEGGEHAALD WORDEN ZODRA WE HET NIET MEER WILLEN TESTEN
+    """
+    plt.plot(points)
+    plt.ylabel("Points")
+    plt.show()

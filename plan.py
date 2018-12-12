@@ -16,9 +16,10 @@ import loaddata
 from session import Session
 import switch
 import genetic
-import GUI
+import gui
 import annealing
 import climbergreedy
+import hillclimberextended
 import hillclimber
 import csv
 import random
@@ -26,6 +27,8 @@ import copy
 import time
 import pandas as pd
 from IPython.display import HTML
+import tkinter as tk
+from tkinter import *
 import numpy as np
 import matplotlib
 matplotlib.use('TkAgg')
@@ -44,6 +47,46 @@ class Plan():
     """
     Main script to make a schedule.
     """
+
+    def gui(self, schedule, courses, schedule_counter, bool):
+        window = tk.Tk()
+        window.geometry('700x400')
+        window.configure(bg='white')
+        # Add title to GUI
+        window.title("GUI Safariteam")
+
+        tk.Label(window, text="Hill climber: ", font="Arial 15 bold").grid(column=1)
+
+        Label(window, text="Iterations: ").grid(row=1)
+        Label(window, text="Runs (n): ").grid(row=2)
+
+        n = Entry(window)
+        x = Entry(window)
+
+        n.grid(row=1, column=1)
+        x.grid(row=2, column=1)
+
+        n.insert(10,"10")
+        x.insert(10,"1")
+
+        def printresults():
+            print("Loading....")
+            tk.Label(window, text="Resulted points (out of 440): ").place(x=360, y =10)
+            tk.Label(window, text=plan.runalgorithm("hill climber", int(n.get()), int(x.get()))[0]).place(x=360, y = 40)
+
+        n.bind('<Return>', lambda _: printresults())
+        x.bind('<Return>', lambda _: printresults())
+
+        lbl = tk.Label(window, text="Press enter to run. ").grid(column=1)
+
+        tk.Button(window, text="Plot a hill climber run").place(x=100, y=200)
+
+        #command=plan.plot("hill climber")
+
+        window.mainloop()
+
+
+
 
     def initialize_schedule(self, courses):
         """
@@ -384,8 +427,24 @@ class Plan():
         """
         plt.plot(points, 'b') # annealing
         plt.plot(points2, 'r') # hillclimber
+        plt.xlabel("Iterations")
         plt.ylabel("Points")
         plt.show()
+
+    def plot(self, algorithm):
+        """
+        Returns a plot of 1 run (n = 1) of a certain algorithm.
+        """
+
+        # Set values to plot a hill climber
+        x = 100
+        n = 1
+        points = plan.runalgorithm(algorithm, x, n)[2]
+        plt.plot(points, 'b')
+        plt.xlabel("Iterations")
+        plt.ylabel("Points")
+        plt.show()
+
 
     def end(self, schedule, courses_schedule):
         """
@@ -409,12 +468,35 @@ class Plan():
 
         return courses_schedule, spread_points, capacity_points, lecture_points, mutual_course_malus
 
+
+    def runalgorithm(self, algorithm, x, n):
+        """
+        Run a certain algorithm for n number of times with x number of iterations.
+        Algorithm input can be: "hill climber", "hill climber2" "genetic", "simulated annealing".
+        Output is a list of maximum points that the algorithm reached.
+        """
+
+        maxpoints = []
+        for i in range(n):
+            # Make new random valid schedule
+            schedule = plan.initialize_schedule(plan.courses)[0]
+            # Call algorithm
+            if algorithm == "hill climber":
+                points = hillclimber.climb(schedule, plan.courses, plan.schedule_counter, x)[1]
+            elif algorithm == "hill climber2":
+                points = hillclimberextended.climb(schedule, plan.courses, plan.schedule_counter, x)[1]
+            # Save max points to a list
+            maxpoints.append(round(max(points)))
+
+        print(algorithm, "reached max points of: ", maxpoints)
+        return maxpoints, schedule, points
+
+
     def generate(self):
         """
         Generates a schedule by calling several helper functions and algorithms.
         """
 
-        # GUI.gui()
 
         point_list = []
         plan.then = time.time()
@@ -429,14 +511,12 @@ class Plan():
         rooms = loaddata.load_rooms()
         plan.own_session_points = 0
 
-        # Make random valid schedule
+        # # Make random valid schedule
         schedule = plan.initialize_schedule(plan.courses)[0]
 
+        plan.gui(schedule, plan.courses, plan.schedule_counter, True)
 
-        # schedule = Constraint.switch_session(schedule, 10, -1, plan.courses)
-
-        # switch.switch_session(schedule, 1, -1)
-        # schedule, points, plan.schedule_counter = hillclimber.soft_constraints(schedule, plan.courses, plan.schedule_counter, True)
+        # schedule = plan.runalgorithm("hill climber", 3, 1000)[1]
 
         # Run both hill climber and simulated annealing next to each other
         # save_sched = schedule
@@ -505,31 +585,11 @@ class Plan():
         # print(point_list)
 
 
-
-        # test all_constraints_linear
-        # schedule1, lectures, other_sessions, empty_sessions = plan.initialize_schedule(plan.courses, rooms_list)
-        # courses_schedule1 = Constraint.all_constraints(schedule1, plan.courses)
-        # schedule2 = np.array(schedule1).flatten().tolist()
-        # courses_schedule2 = Constraint.all_constraints_linear(schedule2, plan.courses)
-        #
-        # if courses_schedule1 == courses_schedule2:
-        #     print("CHILL")
-        # else:
-        #     print("huilon")
-        #
-        # for i in range(len(courses_schedule1)):
-        #     if courses_schedule1[i] != courses_schedule2[i]:
-        #         print(i)
-        #         print(courses_schedule1[i])
-        #         print(courses_schedule2[i])
-        #
-        # genetic.get_points(schedule2, plan.courses)
-
-        # test genetic Algorithm
+        # put 50 hillclimbers in genetic and run that 100 times
         # schedules = []
-        # for i in range(POPULATION):
+        # for i in range(100):
         #     schedules.append(plan.initialize_schedule(plan.courses)[0])
-
+        #
         # genetic.genetic_algortim(schedules, plan.courses)
 
 
@@ -537,16 +597,16 @@ class Plan():
         courses_schedule, spread_points, capacity_points, lecture_points, mutual_course_malus = plan.points_to_print(schedule)
 
         # Print the end-text
-        plan.end(schedule, courses_schedule)
-        # Make a plot of the points
-        try:
-            points2 = 0
-            plan.makeplot(points, points2)
-        except:
-            print("No points to plot for now.")
+        # plan.end(schedule, courses_schedule)
+        # # Make a plot of the points
+        # try:
+        #     points2 = 0
+        #     plan.makeplot(points, points2)
+        # except:
+        #     print("No points to plot for now.")
 
         # Make a html file for the schedule
-        plan.save_html(schedule, rooms, spread_points, capacity_points, lecture_points, mutual_course_malus)
+        # plan.save_html(schedule, rooms, spread_points, capacity_points, lecture_points, mutual_course_malus)
 
 
 if __name__ == "__main__":

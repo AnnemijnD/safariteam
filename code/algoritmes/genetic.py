@@ -90,7 +90,7 @@ def genetic_algortim(schedules, courses):
     # print(f"improvement {max(population_points) - saved}")
 
     # TODO: BESTE ROOSTER RETURNEN
-    return max(population_points) - saved
+    return max(population_points)
 
 
 def choose_parents_KWAY(population, courses):
@@ -124,7 +124,7 @@ def choose_parents_KWAY(population, courses):
     for i in range(len(parents)):
         print_list.append(Constraint.get_points(parents[i], courses))
 
-    print(max(print_list), min(print_list), sum(print_list) / len(print_list))
+    # print(max(print_list), min(print_list), sum(print_list) / len(print_list))
 
     return parents
 
@@ -169,7 +169,7 @@ def choose_parents_rank(population, courses):
     for i in range(len(parents)):
         print_list.append(Constraint.get_points(parents[i], courses))
 
-    print(max(print_list), min(print_list), sum(print_list) / len(print_list))
+    # print(max(print_list), min(print_list), sum(print_list) / len(print_list))
 
     return parents
 

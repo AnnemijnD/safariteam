@@ -17,19 +17,17 @@ LIMIT = 500
 MAXPOINTS = 440
 
 
-def anneal(schedule, courses, schedule_counter):
+def anneal(schedule, courses, schedule_counter, total_iterations, begin_temperature, end_temperature):
     """
     Generates a schedule using a hill climber algorithm.
     Input is a random schedule, output is a schedule that fulfills all hard-
     constraints and most soft constraints.
     """
 
-    switcher = 1
     accept_counter = 0
     points = []
-    begin_temperature = 4
-    end_temperature = 0.01
-    total_iterations = 30000
+    # begin_temperature = 4
+    # end_temperature = 0.01
 
 
     for i in range(0, total_iterations):
@@ -76,7 +74,6 @@ def anneal(schedule, courses, schedule_counter):
                 # acceptatiekans = math.exp(verkorting / temperatuur) * 100
                 # print("Accceptatiekans", acceptatiekans)
                 # print(points[-1], (math.exp(verkorting / temperatuur) * 100))
-                print("WAT IS DE WERELD TOCH MOOI MAAR OH JEE MINDER PUNTEN lololol")
                 # BEREKEN HIER DE KANS OM DE SLECHTERE ALSNOG AAN TE NEMEN
                 # acceptatiekans = math.exp(-verschil / temperatuur)
                 # print(acceptatiekans, (get_points(schedule, courses)))

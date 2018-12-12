@@ -2,17 +2,18 @@ import loaddata
 import numpy as np
 import math
 import switch
+from random import randint
 
 
-SLOTS = 140
 TIME_SLOTS = 4
 DAYS = 5
 ROOMS = 7
+SLOTS = DAYS * TIME_SLOTS * ROOMS
 SPREAD_BONUS = 20
 SESSION_LEN = 72
 SESSION_NUM = 129
 SLOTS_PER_DAY = 28
-from random import randint
+
 
 
 class Constraint():
@@ -363,7 +364,6 @@ class Constraint():
                     break
 
 
-
         # print(session_capacity)
 
         return maluspoints
@@ -371,9 +371,8 @@ class Constraint():
 
     def switch_session(schedule, number_of_switches, session_to_switch, courses):
         """
-        OJA NOOOOO, de Input van de Constraints functie is natuurlijk een 3D rooster aaah
-        verdorie!!
-        Dan moet het elke keer weer teruggezet worden naar 3D ?!?!?! STOM!!!! ANdere oplossing iemmand???
+        Returns a schedule with two randomly switched sessions.
+        number_of_switches determines how many switches have to be made.
         """
 
         # Flatten schedule to get a 1D list to switch elements
@@ -393,58 +392,6 @@ class Constraint():
                     random_switch_number = randint(0, SLOTS - 1)
                 # Make the switch
                 flatten[random_number], flatten[random_switch_number] = flatten[random_switch_number], flatten[random_number]
-
-        # If a specific session (with most maluspoints) has to be switched:
-        else:
-            # print(session_to_switch, "Dit is de overall_id van de sessie die geswitcht moet worden lololol!")
-            # print(Constraint.overall_id_points(schedule, courses, session_to_switch), "Dit is het aantal maluspunten van deze sessie aaah super hoog man!!")
-
-            # Sorrrry voor degene die deze code leest dit is echt meeeega slordig maar even haastig aahh
-            # Zat in de trein dus ja je moet wat he!!!!!!! :-)
-
-            # Iterate over every session in the schedule to get the session location
-            for location in range(len(flatten)):
-                # print(flatten[location].overall_id)
-
-                # If location of the session was found:
-                if flatten[location].overall_id == session_to_switch:
-                    # print(location, "YES!!!!!! DIt is de locatie waar deze sessie staat in het rooster")
-                    # Deze locatie moet dus 140 keer geswitcht worden en dan weer berekend wat het aantal
-                    # maluspunten zou zijn om de beste locatie te kiezen.
-                    # Sla deze locatie op
-                    locatie = location
-            # Nou super leuk hoor dan hebben we de locatie en deze moeten we gaan switchen whoee
-
-            # Maark switch niet in het echte rooster, switch in een kopie omdat het
-            # hypothetische switches zijn weetjewel ja weet niet hoe ik het anders moet zeggen
-            # maar jullie snappen het wel xxoxoxox
-            flattencopy = flatten
-            location_points = {}
-
-            # 140 keer switchen en punten berekenen jeeeetje dat zijn zoveel iteraties godsammie
-            for i in range(SLOTS - 1):
-                # PSEUDO
-                # Zorg ervoor dat de switch met eigen locatie wordt overgeslagen
-                if i != location:
-
-                    # WOOOW DIT STEEDS OMZETTEN VAN NP ARRAY NAAR 3D IS ECHT SUUUPER ONHANDIG
-                    # MOET ECHT ANDERS maar heb er nu echt even geen tijd voor sorry!! :((
-
-                    # Maak een switch
-                    # print(flattencopy[locatie])
-                    flattencopy[i], flattencopy[locatie] = flattencopy[locatie], flattencopy[i]
-                    flattencopy = flattencopy.reshape(DAYS, TIME_SLOTS, ROOMS).tolist()
-                    # print(Constraint.overall_id_points(flattencopy, courses, session_to_switch), "Dit zou het aantal maluspunten worden...!")
-                    location_points[i] = Constraint.get_points(flattencopy, courses)
-                    flattencopy = np.array(schedule).flatten()
-                    # Switch terug
-                    flattencopy[locatie], flattencopy[i] = flattencopy[i], flattencopy[locatie]
-            # Dit is een dictionary met alle mogelijke plaatsen (dus van 0 tot 138 als het goed is)
-            # en het aantal punten die de sessie zou krijgen als hij hier ingezet wordt.
-            best_location = list(location_points.keys())[list(location_points.values()).index(max(location_points.values()))]
-            # print(best_location, "Dit is de meest gunstige locatie voor deze session :)")
-            # OKE beste locatie gevonden dus switch nu met deze locatie.
-            flatten[locatie], flatten[best_location] = flatten[best_location], flatten[locatie]
 
         # Convert back to 3D list
         schedule = flatten.reshape(DAYS, TIME_SLOTS, ROOMS).tolist()
@@ -472,26 +419,19 @@ class Constraint():
         rooms = loaddata.load_rooms()
 
         spread_points = Constraint.session_spread_check(schedule, courses, courses_schedule)[1]
-        # print(spread_points)
 
         points_dict = {}
         # Loop over alle sessions om elke sessie een punt te geven jeej
         for i in range(DAYS):
             for j in range(TIME_SLOTS):
                 for k in range(ROOMS):
-                    # Even lekker de overall_id er uit halen want hierbij moet dus opgeteld worden he ja
-                    # Ben zo blij dat course_object bestaat wWOOOW echt meeeega handig
-                    # Dit is om te checken of de session niet leeg is.
+                    # Check if the slot isn't empty
                     if schedule[i][j][k].course_object:
-                        # print(schedule[i][j][k].course_object.course_id, "  ", schedule[i][j][k].course_object.name)
-                        # Dus voor elke overall_id moeten punten gegeven worden:
-                        # Nou dat gaan we eens even lekker doen
-                        # Deze moeten uit de points_dict gehaald worden,
-                        # daarin staan alle spread puntjes per vak. :-)
+                        # Get course_id
                         temp_id = schedule[i][j][k].course_object.course_id
-                        # Selecteer het vak uit de dictionary en geef de session de punten.
+                        # Select the course from dictionary and give points
+                        # to the current session.
                         points_dict[schedule[i][j][k].overall_id] = spread_points[temp_id]
-        # print(points_dict)
 
         session_points_dict = [{"session_id_ov": 0, "capacity_points":0, "spread_malus_points": 0,
                                 "spread_bonus_points": 0, "flex_points": 0, "points": 0} for i in range(SESSION_NUM)]
@@ -500,7 +440,7 @@ class Constraint():
         counter = 0
         points = 0
         for course in courses:
-            #  saves the room and type of the checked_course sessions
+            # Saves the room and type of the checked_course sessions
             checked_course = courses_schedule[course.course_id]
             room_ids = checked_course["room"]
             types = checked_course["type"]
@@ -535,8 +475,6 @@ class Constraint():
                 counter += 1
                 points = 0
 
-        # print(points_dict)
-        # Hieruit kunnen we de overall_id halen van de sessie met het meeste maluspunten
         try:
             malus_session_id = list(points_dict.keys())[list(points_dict.values()).index(max(points_dict.values()))]
         # If there are no malus points (for capacity_points)
