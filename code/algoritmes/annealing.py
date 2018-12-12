@@ -4,7 +4,7 @@ SIMULATED ANNEALING TEST
 """
 
 from constraint import Constraint
-import switch
+import schedulemaker
 import matplotlib
 import math
 from random import randint
@@ -36,7 +36,7 @@ def anneal(schedule, courses, schedule_counter, total_iterations, begin_temperat
 
 
     for i in range(0, total_iterations):
-        
+
         # Get cooling scheme
         if type == "exponential":
             temp = begin_temperature * math.pow((end_temperature / begin_temperature),  (i / total_iterations))
@@ -55,7 +55,7 @@ def anneal(schedule, courses, schedule_counter, total_iterations, begin_temperat
         schedule1_points = Constraint.get_points(schedule1, courses)
         # Make a new schedule by switching random sessions. Amount of sessions
         # switched starts high and ends low.
-        schedule2 = Constraint.switch_session(schedule, 1, -1, courses)
+        schedule2 = schedulemaker.switch_session(schedule, 1, -1)
         # Get points of the new (not yet accepted) schedule
         schedule2_points = Constraint.get_points(schedule2, courses)
         # Accept new schedule if it has more points that the old schedule.

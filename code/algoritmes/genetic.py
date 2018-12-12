@@ -1,7 +1,7 @@
 import copy
 import numpy as np
 import random
-import switch
+import schedulemaker
 from constraint import Constraint
 from operator import itemgetter
 from random import randint
@@ -282,7 +282,7 @@ def mutate_children(children):
         switches = randint(1, SWITCHES)
         child = random.choice(children)
         children.remove(child)
-        child = switch.switch_session(child, switches, -1)
+        child = schedulemaker.switch_session(child, switches, -1)
         children.append(child)
 
     return children

@@ -7,6 +7,7 @@ by accepting a schedule with higher points.
 from constraint import Constraint
 import matplotlib
 matplotlib.use('TkAgg')
+import schedulemaker
 import matplotlib.pyplot as plt
 
 
@@ -33,7 +34,7 @@ def climb(schedule, courses, schedule_counter, iterations):
         schedule1_points = Constraint.get_points(schedule1, courses)
         # Make a new schedule by switching random sessions. Amount of sessions
         # switched starts high and ends low.
-        schedule2 = Constraint.switch_session(schedule, 1, -1, courses)
+        schedule2 = schedulemaker.switch_session(schedule, 1, -1)
         # Get points of the new (not yet accepted) schedule
         schedule2_points = Constraint.get_points(schedule2, courses)
         # Accept new schedule if it has more points that the old schedule.
@@ -55,7 +56,7 @@ def climb(schedule, courses, schedule_counter, iterations):
         # Make a forced switch if an optimum is reached for the number of times
         # that a schedule was rejected.
         if accept_counter > OPTIMUM:
-            schedule = Constraint.switch_session(schedule, 1, -1, courses)
+            schedule = schedulemaker.switch_session(schedule, 1, -1)
             accept_counter = 0
 
     # Append last points of the new schedule to make a full plot of the points

@@ -1,7 +1,9 @@
+"""
+TODO
+"""
+
 import loaddata
-import numpy as np
 import math
-import switch
 from random import randint
 
 
@@ -367,37 +369,6 @@ class Constraint():
         # print(session_capacity)
 
         return maluspoints
-
-
-    def switch_session(schedule, number_of_switches, session_to_switch, courses):
-        """
-        Returns a schedule with two randomly switched sessions.
-        number_of_switches determines how many switches have to be made.
-        """
-
-        # Flatten schedule to get a 1D list to switch elements
-        flatten = np.array(schedule).flatten()
-
-        # If there is no specific session to switch, make a random switch
-        if session_to_switch < 0:
-
-            for i in range(number_of_switches):
-                # Get two random numbers
-                random_number = randint(0, SLOTS - 1)
-                random_switch_number = randint(0, SLOTS - 1)
-
-                # If the numbers are equal to each other, make another number
-                while random_number is random_switch_number:
-                    random_number = randint(0, SLOTS - 1)
-                    random_switch_number = randint(0, SLOTS - 1)
-                # Make the switch
-                flatten[random_number], flatten[random_switch_number] = flatten[random_switch_number], flatten[random_number]
-
-        # Convert back to 3D list
-        schedule = flatten.reshape(DAYS, TIME_SLOTS, ROOMS).tolist()
-
-        # Return 3D matrix of schedule
-        return schedule
 
 
     def overall_id_points(schedule, courses, overall_id):
