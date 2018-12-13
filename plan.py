@@ -58,7 +58,7 @@ class Plan():
         """
 
         window = tk.Tk()
-        window.geometry('920x600')
+        window.geometry('930x600')
         window.title("GUI Safariteam")
 
         def printresults(algorithm):
@@ -172,6 +172,7 @@ class Plan():
         n4.grid(row=17, column=1)
         n4.insert(10,"10")
         n4.bind('<Return>', lambda _: printresults("Random"))
+        # TODO: beginwaardes
 
         # Add choice to make a plot of certain algorithms
         Label(window, text="Algorithm").grid(row=20, column=5, sticky=W)
@@ -195,6 +196,7 @@ class Plan():
         tk.Label(window, text="View the schedule at 'results/schedule.html' by heading to the results folder.",\
             font="Arial 15 bold").place(x = 40, y = 580)
 
+        master = Tk()
         window.mainloop()
 
 
@@ -346,7 +348,9 @@ class Plan():
 
         maxpoints = []
         max_schedule = None
+
         for i in range(n):
+
             # Make new random valid schedule
             first_schedule = schedulemaker.initialize_schedule(plan.courses)[0]
             # Call algorithm
@@ -405,6 +409,7 @@ class Plan():
 
 
         print(algorithm, "reached max points of: ", maxpoints)
+
         return maxpoints, max_schedule, points
 
     def compare_algorithm(self, random_n, hillclimber_n, hillclimber_x,
@@ -418,47 +423,43 @@ class Plan():
         """
 
         # dict met alle data voor boxplot
-        boxplots = {"random": [], "hill climber": [], "hill climber2": [], "simulated": [], "genetic": []}
         boxplot_data = []
-        boxplot_x = []
-
+        boxplot_xaxis = []
+        points = 0
 
         if check_rand == 1:
-            max_points, max_schedule, points = plan.runalgorithm("random", random_x, 0, 0, 0, None)
-            boxplots["random"] = max_points
+            max_points, max_schedule, points = plan.runalgorithm("Random", 0, random_n, 0, 0, None)
+
             boxplot_data.append(max_points)
-            boxplot_x.append("Random")
+            boxplot_xaxis.append(f"Random \n n = {random_n}")
 
         if check_hill == 1:
             max_points, max_schedule, points = plan.runalgorithm("hill climber",
                                                 hillclimber_x, hillclimber_n, 0, 0, None)
-            boxplots["hill climber"] = max_points
             boxplot_data.append(max_points)
-            boxplot_x.append("Hillclimber")
+            boxplot_xaxis.append(f"Hillclimber \n n = {hillclimber_n}")
 
         if check_hill2 == 1:
             max_points, max_schedule, points = plan.runalgorithm("hill climber2", hillclimber2_x, hillclimber2_n, 0, 0, None)
-            boxplots["hill climber2"] = max_points
             boxplot_data.append(max_points)
-            boxplot_x.append("Hillclimber2")
+            boxplot_xaxis.append(f"Hillclimber2 \n n = {hillclimber2_n}")
 
         if check_sim == 1:
             max_points, max_schedule, points = plan.runalgorithm("Simmulated annealing",
                                                 sim_x, sim_n, begin_temp, end_temp, type)
-            boxplots["simulated"] = max_points
             boxplot_data.append(max_points)
-            boxplot_x.append("Simulated Annealing")
+            boxplot_xaxis.append(f"Simulated Annealing \n n = {sim_n}")
 
         ax = plt.subplot(111)
-        pos1 = ax.get_position()
-        pos2 = [pos1.x0, pos1.y0 + 0.2,  pos1.width , pos1.height - 0.2]
-        ax.set_position(pos2)
+        # pos1 = ax.get_position()
+        # pos2 = [pos1.x0, pos1.y0 + 0.2,  pos1.width , pos1.height - 0.2]
+        # ax.set_position(pos2)
         plt.boxplot(boxplot_data)
-        plt.xticks(fontsize=10)
-        ax.set_xticklabels(boxplot_x)
-        plt.title("Comparing the points")
+        plt.xticks(fontsize=8)
+        ax.set_xticklabels(boxplot_xaxis)
+        plt.title("Comparing schedule points of different algorithms")
         plt.ylabel("Points")
-        plt.xlabel("Algorithms")
+        plt.xlabel("Algorithms \n (n = runs)")
         plt.show()
 
 
@@ -508,6 +509,7 @@ class Plan():
 if __name__ == "__main__":
     plan = Plan()
     plan.generate()
+
     # plan.compare_algorithm('random', 0, 'hillclimber', 5, 100,
     #                     'hillclimber2', 5, 100, 'simulated', 0, 0, 0,
     #                     0, None, 0, 1, 1, 0)
