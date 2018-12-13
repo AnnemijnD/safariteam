@@ -23,6 +23,7 @@ De code kan gerund worden met de onderstaande code.
 ```
 python plan.py
 ```
+Vervolgens wordt verschijnt er een pop-up met mogelijke input. In de terminal wordt aangegeven wanneer er een functie geladen wordt. 
 
 ### Resultaat
 Het uiteindelijke resultaat staat in de folder 'resultaten' onder de naam 'schedule.html'.

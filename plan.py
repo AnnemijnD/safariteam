@@ -58,7 +58,7 @@ class Plan():
         """
 
         window = tk.Tk()
-        window.geometry('900x600')
+        window.geometry('920x600')
         window.title("GUI Safariteam")
 
         def printresults(algorithm):
@@ -135,7 +135,7 @@ class Plan():
         Label(window, text="Population: ").grid(row=12)
         Label(window, text="Gnerations: ").grid(row=13)
         Label(window, text="Runs (n): ").grid(row=14)
-        Label(window, text="k-way | ranked | random").grid(row=15)
+        Label(window, text="k-way | rank | random").grid(row=15)
         n3 = Entry(window)
         p3 = Entry(window)
         x3 = Entry(window)
@@ -167,35 +167,18 @@ class Plan():
         var1 = IntVar()
         Checkbutton(window, text="Hill climber", variable=var1).grid(row=21, column=5, sticky=W)
         var2 = IntVar()
-        Checkbutton(window, text="Simmulated Annealing", variable=var2).grid(row=22, column= 5,sticky=W)
-        Button(window, text="Make a plot!").grid(row=23, column=5, sticky=W, pady=4)
-        Button(window, text='Quit', command=window.quit).grid(row=23, column=7, sticky=W, pady=4)
-            # Button(window, text='Show', command=var_states).grid(row=4, sticky=W, pady=4)
+        Checkbutton(window, text="Hill climber extended", variable=var2).grid(row=22, column= 5,sticky=W)
+        var3 = IntVar()
+        Checkbutton(window, text="Simmulated Annealing", variable=var3).grid(row=23, column= 5,sticky=W)
+        Button(window, text="Make a plot!").grid(row=25, column=5, sticky=W, pady=4)
+        Button(window, text='Quit', command=window.quit).grid(row=25, column=7, sticky=W, pady=4)
 
-        tk.Label(window, text="Press enter to run. ").grid(column=1)
-
-        ttk.Button(window, text="Plot one hill climber run", \
-            command=lambda:plan.plot("hill climber"), padding=5).place(x=40, y=460)
-        ttk.Button(window, text="Plot one simmulated annealing run", \
-            command=lambda:plan.plot("Simmulated annealing"), padding=5).place(x=40, y=500)
+        tk.Label(window, text="Press enter to run. ").place(x=40, y =560)
 
         tk.Label(window, text="View the schedule at 'results/schedule.html' by heading to the results folder.",\
-            font="Arial 15 bold").place(x = 40, y = 530)
+            font="Arial 15 bold").place(x = 40, y = 580)
 
-        # tk.Label(window, text="Loading...", font="Arial 15 bold").place(x=20, y=440)
-
-
-
-        # def var_states():
-        Label(window, text="Your sex:").grid(row=20, column=5, sticky=W)
-        var1 = IntVar()
-        Checkbutton(window, text="male", variable=var1).grid(row=21, column=5, sticky=W)
-        var2 = IntVar()
-        Checkbutton(window, text="female", variable=var2).grid(row=22, column= 5,sticky=W)
-        Button(window, text='Quit', command=window.quit).grid(row=23, column=5, sticky=W, pady=4)
-            # Button(window, text='Show', command=var_states).grid(row=4, sticky=W, pady=4)
-            # mainloop()
-
+        master = Tk()
         window.mainloop()
 
 
@@ -363,9 +346,18 @@ class Plan():
                 elif Constraint.get_points(schedule_temp, plan.courses) > Constraint.get_points(max_schedule, plan.courses):
                     max_schedule = schedule_temp
 
+            if algorithm == "hill climber2":
+                schedule_temp, points, schedule_counter = hillclimberextended.climb(first_schedule, plan.courses, plan.schedule_counter, x)
+
+                if max_schedule == None:
+                    max_schedule = schedule_temp
+
+                # Save schedule with most points
+                elif Constraint.get_points(schedule_temp, plan.courses) > Constraint.get_points(max_schedule, plan.courses):
+                    max_schedule = schedule_temp
+
             elif algorithm == "Random":
-                points += Constraint.get_points(first_schedule, plan.courses)
-                print(points)
+                points = Constraint.get_points(first_schedule, plan.courses)
 
                 if max_schedule == None:
                     max_schedule = first_schedule
@@ -391,7 +383,6 @@ class Plan():
             if algorithm == "Random":
                 maxpoints.append(round(points))
             else:
-                print(f"points2: {points}")
                 maxpoints.append(round(max(points)))
 
         # Save schedule with highest points
@@ -405,8 +396,8 @@ class Plan():
 
 
 
-    def compare_algorithm(self, random, random_n, hillclimber, hillclimber_n, hillclimber_x,
-                        hillclimber2, hillclimber2_n, hillclimber2_x, simulated, sim_x, sim_n, begin_temp,
+    def compare_algorithm(self, random_n, hillclimber_n, hillclimber_x, hillclimber2_n,
+                        hillclimber2_x, sim_x, sim_n, begin_temp,
                         end_temp, type, check_rand, check_hill, check_hill2, check_sim):
         """
         Run certain algorithms with the intention to compare them in a boxplot.
@@ -417,41 +408,41 @@ class Plan():
 
         # dict met alle data voor boxplot
         boxplot_data = []
-        boxplot_x = []
+        boxplot_xaxis = []
         points = 0
 
         if check_rand:
-            max_points, max_schedule, points = plan.runalgorithm("random", random_x, 0, 0, 0, None)
+            max_points, max_schedule, points = plan.runalgorithm("Random", 0, random_n, 0, 0, None)
             boxplot_data.append(max_points)
-            boxplot_x.append("Random")
+            boxplot_xaxis.append(f"Random \n n = {random_n}")
 
         if check_hill:
             max_points, max_schedule, points = plan.runalgorithm("hill climber",
                                                 hillclimber_x, hillclimber_n, 0, 0, None)
             boxplot_data.append(max_points)
-            boxplot_x.append("Hillclimber")
+            boxplot_xaxis.append(f"Hillclimber \n n = {hillclimber_n}")
 
         if check_hill2:
             max_points, max_schedule, points = plan.runalgorithm("hill climber2", hillclimber2_x, hillclimber2_n, 0, 0, None)
             boxplot_data.append(max_points)
-            boxplot_x.append("Hillclimber2 \n ")
+            boxplot_xaxis.append(f"Hillclimber2 \n n = {hillclimber2_n}")
 
         if check_sim:
             max_points, max_schedule, points = plan.runalgorithm("Simmulated annealing",
                                                 sim_x, sim_n, begin_temp, end_temp, type)
             boxplot_data.append(max_points)
-            boxplot_x.append(f"Simulated Annealing \n n = {sim_n}")
+            boxplot_xaxis.append(f"Simulated Annealing \n n = {sim_n}")
 
         ax = plt.subplot(111)
-        pos1 = ax.get_position()
-        pos2 = [pos1.x0, pos1.y0 + 0.2,  pos1.width , pos1.height - 0.2]
-        ax.set_position(pos2)
+        # pos1 = ax.get_position()
+        # pos2 = [pos1.x0, pos1.y0 + 0.2,  pos1.width , pos1.height - 0.2]
+        # ax.set_position(pos2)
         plt.boxplot(boxplot_data)
-        plt.xticks(fontsize=10)
-        ax.set_xticklabels(boxplot_x)
-        plt.title("Comparing schedule points of different algorthims")
+        plt.xticks(fontsize=8)
+        ax.set_xticklabels(boxplot_xaxis)
+        plt.title("Comparing schedule points of different algorithms")
         plt.ylabel("Points")
-        plt.xlabel("Algorithms")
+        plt.xlabel("Algorithms \n (n = runs)")
         plt.show()
 
 
@@ -477,6 +468,8 @@ class Plan():
         # # Make random valid schedule
         schedule = schedulemaker.initialize_schedule(plan.courses)[0]
 
+        # chedule, points, plan.schedule_counter = hillclimberextended.climb(schedule, plan.courses, plan.schedule_counter, 10)
+
         plan.gui(schedule, plan.courses, plan.schedule_counter, True)
 
 
@@ -499,6 +492,6 @@ class Plan():
 if __name__ == "__main__":
     plan = Plan()
     plan.generate()
-    plan.compare_algorithm('random', 2, 'hillclimber', 5, 100,
-                        'hillclimber2', 5, 100, 'simulated', 0, 0, 0,
-                        0, None, False, True, True, False)
+    plan.compare_algorithm( 100, 5, 10,
+                         5, 10, 0, 0, 0,
+                        0, None, True, True, True, False)
