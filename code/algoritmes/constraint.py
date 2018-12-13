@@ -1,26 +1,19 @@
-"""
-TODO
-"""
-
 import loaddata
-import math
 from random import randint
-
 
 TIME_SLOTS = 4
 DAYS = 5
 ROOMS = 7
 SLOTS = DAYS * TIME_SLOTS * ROOMS
-SPREAD_BONUS = 20
-SESSION_LEN = 72
-SESSION_NUM = 129 #berekeningen
-SLOTS_PER_DAY = 28
-<<<<<<< HEAD
-# class die courses in zich heeft en hier iets over zegt
-from random import randint
-=======
+SLOTS_PER_DAY = ROOMS * TIME_SLOTS
 
->>>>>>> 173001b446590f9fdc455cb874f5bf75f76ea5ec
+# case specific
+EMPTY_SESSIONS = 11
+SPREAD_BONUS = 20
+SESSION_NUM = SLOTS - EMPTY_SESSIONS
+
+# STRAKS AAN ANNEMOIN VRAGEN WAT IK HIERMEE HAD KUNNEN BEDOELEN
+# TODO: class die courses in zich heeft en hier iets over zegt
 
 
 class Constraint():
@@ -30,13 +23,14 @@ class Constraint():
 
     def all_constraints(schedule, courses):
         """
-        Makes a list that contains lists of every course with the moment and
-        type of the courses in the schedule. The courses are in the list in
-        order of their course_id.
-        -----
-        herschrijven want quinten snapt het niet
-        i,j,k --> day,slot,room
-        [i, j, k]
+        Safes info of all the sessions of a course in a dictionary.
+
+        Input: schedule of which you want to check the constraints, list of all
+        courses
+        Output: list with for every course a dictionary that contains info of
+        the sessions of that course
+
+        TODO: vragen aan iemand of dit nu wel begrijpelijk is
         """
 
         courses_schedule = []
@@ -44,27 +38,26 @@ class Constraint():
             course_schedule = {"day": [], "slot": [], "room": [], "type": [],
                                "session_id": [], "group_id": [],
                                "overall_id": []}
-            for i in range(DAYS):
-                for j in range(TIME_SLOTS):
-                    for k in range(ROOMS):
-                        if schedule[i][j][k] is not None:
-                            if course.name == schedule[i][j][k].name:
-                                course_schedule["day"].append(i)
-                                course_schedule["slot"].append(j)
-                                course_schedule["room"].append(k)
+            for day in range(DAYS):
+                for slot in range(TIME_SLOTS):
+                    for room in range(ROOMS):
+                        if schedule[day][slot][room] is not None:
+                            if course.name == schedule[day][slot][room].name:
+                                course_schedule["day"].append(day)
+                                course_schedule["slot"].append(slot)
+                                course_schedule["room"].append(room)
                                 course_schedule["type"].append(
-                                                schedule[i][j][k].type)
+                                        schedule[day][slot][room].type)
                                 course_schedule["session_id"].append(
-                                                schedule[i][j][k].session_id)
+                                        schedule[day][slot][room].session_id)
                                 course_schedule["group_id"].append(
-                                                schedule[i][j][k].group_id)
+                                        schedule[day][slot][room].group_id)
                                 course_schedule["overall_id"].append(
-                                                schedule[i][j][k].overall_id)
+                                        schedule[day][slot][room].overall_id)
 
             courses_schedule.append(course_schedule)
 
         return courses_schedule
-
 
     def session_spread_check(schedule, courses, courses_schedule):
         """
