@@ -62,7 +62,6 @@ class Plan():
         window.title("GUI Safariteam")
 
         def printresults(algorithm):
-
             # Check for correct input:
             if n.get() and x.get() and n2.get() and x2.get() and t1.get() \
                     and t2.get() and type.get() and n3.get() and x3.get():
@@ -76,7 +75,7 @@ class Plan():
                 elif algorithm == "hc2":
                     print("TODO")
                 elif algorithm == "sa":
-                    tk.Label(window, text=plan.runalgorithm("Simmulated annealing", \
+                    tk.Label(window, text=plan.runalgorithm("Simulated annealing", \
                             int(n2.get()), int(x2.get()), float(t1.get()), \
                             float(t2.get()), type.get())[0], wraplength=70).place(x=600, y =50)
                 elif algorithm == "Random":
@@ -87,6 +86,18 @@ class Plan():
                     print("TODO")
             else:
                 print("Fill in all the fields.")
+
+        def boxplot():
+            # Check for input in all the fields
+            print("TEST")
+            if n.get() and x.get() and n2.get() and x2.get() and t1.get() \
+                    and t2.get() and type.get() and n3.get() and x3.get() \
+                    and p3.get() and t3.get() and n4.get():
+                print("test")
+                plan.compare_algorithm(int(n4.get()), int(n.get()), int(x.get()), \
+                                    5, 100, int(x2.get()), int(n2.get()), float(t1.get()),
+                                    float(t2.get()), type.get(), var3.get(), var1.get(), var2.get(), var4.get())
+
 
         # Add labels to the hill climber input
         tk.Label(window, text="Hill climber: ", font="Arial 15 bold").grid(column=1)
@@ -169,12 +180,18 @@ class Plan():
         var2 = IntVar()
         Checkbutton(window, text="Hill climber extended", variable=var2).grid(row=22, column= 5,sticky=W)
         var3 = IntVar()
-        Checkbutton(window, text="Simmulated Annealing", variable=var3).grid(row=23, column= 5,sticky=W)
-        Button(window, text="Make a plot!").grid(row=25, column=5, sticky=W, pady=4)
+        Checkbutton(window, text="Random", variable=var3).grid(row=23, column= 5,sticky=W)
+        var4 = IntVar()
+        Checkbutton(window, text="Simmulated Annealing", variable=var4).grid(row=24, column= 5,sticky=W)
+        Button(window, text="Make a boxplot!", command=lambda:boxplot()).grid(row=25, column=5, sticky=W, pady=4)
         Button(window, text='Quit', command=window.quit).grid(row=25, column=7, sticky=W, pady=4)
 
-        tk.Label(window, text="Press enter to run. ").place(x=40, y =560)
+        ttk.Button(window, text="Plot one hill climber run", \
+            command=lambda:plan.plot("hill climber"), padding=5).place(x=40, y=460)
+        ttk.Button(window, text="Plot one simmulated annealing run", \
+            command=lambda:plan.plot("Simmulated annealing"), padding=5).place(x=40, y=500)
 
+        tk.Label(window, text="Press enter to run. ").place(x=40, y =560)
         tk.Label(window, text="View the schedule at 'results/schedule.html' by heading to the results folder.",\
             font="Arial 15 bold").place(x = 40, y = 580)
 
@@ -390,8 +407,8 @@ class Plan():
         print(algorithm, "reached max points of: ", maxpoints)
         return maxpoints, max_schedule, points
 
-    def compare_algorithm(self, random, random_n, hillclimber, hillclimber_n, hillclimber_x,
-                        hillclimber2, hillclimber2_n, hillclimber2_x, simulated, sim_x, sim_n, begin_temp,
+    def compare_algorithm(self, random_n, hillclimber_n, hillclimber_x,
+                        hillclimber2_n, hillclimber2_x, sim_x, sim_n, begin_temp,
                         end_temp, type, check_rand, check_hill, check_hill2, check_sim):
         """
         Run certain algorithms with the intention to compare them in a boxplot.
@@ -406,26 +423,26 @@ class Plan():
         boxplot_x = []
 
 
-        if check_rand:
+        if check_rand == 1:
             max_points, max_schedule, points = plan.runalgorithm("random", random_x, 0, 0, 0, None)
             boxplots["random"] = max_points
             boxplot_data.append(max_points)
             boxplot_x.append("Random")
 
-        if check_hill:
+        if check_hill == 1:
             max_points, max_schedule, points = plan.runalgorithm("hill climber",
                                                 hillclimber_x, hillclimber_n, 0, 0, None)
             boxplots["hill climber"] = max_points
             boxplot_data.append(max_points)
             boxplot_x.append("Hillclimber")
 
-        if check_hill2:
+        if check_hill2 == 1:
             max_points, max_schedule, points = plan.runalgorithm("hill climber2", hillclimber2_x, hillclimber2_n, 0, 0, None)
             boxplots["hill climber2"] = max_points
             boxplot_data.append(max_points)
             boxplot_x.append("Hillclimber2")
 
-        if check_sim:
+        if check_sim == 1:
             max_points, max_schedule, points = plan.runalgorithm("Simmulated annealing",
                                                 sim_x, sim_n, begin_temp, end_temp, type)
             boxplots["simulated"] = max_points
@@ -493,4 +510,4 @@ if __name__ == "__main__":
     plan.generate()
     # plan.compare_algorithm('random', 0, 'hillclimber', 5, 100,
     #                     'hillclimber2', 5, 100, 'simulated', 0, 0, 0,
-    #                     0, None, False, True, True, False)
+    #                     0, None, 0, 1, 1, 0)
