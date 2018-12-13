@@ -37,6 +37,7 @@ ROOMS = 7
 MAXMALUSPOINTS = 0
 MAXSCHEDULEPOINTS = 39
 POPULATION = 50
+SESSION_NUM = 129
 
 
 class Plan():
@@ -130,10 +131,10 @@ class Plan():
         # Vul eerst met lege sessions
         # counter = 0
         session_counter = 0
-        for b in range(DAYS):
+        for day in range(DAYS):
             for c in range(TIME_SLOTS):
                 for d in range(ROOMS):
-                    schedule[b][c][d] = empty_sessions[session_counter]
+                    schedule[day][c][d] = empty_sessions[session_counter]
                     session_counter += 1
 
 
@@ -166,7 +167,7 @@ class Plan():
             else:
                 tut_or_prac = True
 
-            for b in range(DAYS):
+            for day in range(DAYS):
 
                 for c in range(TIME_SLOTS):
 
@@ -178,25 +179,25 @@ class Plan():
                         if not lectures_first:
 
 
-                            if lectures[e].name == schedule[b][c][d].name:
-                                if schedule[b][c][d].type == "lecture":
+                            if lectures[e].name == schedule[day][c][d].name:
+                                if schedule[day][c][d].type == "lecture":
 
                                     # alle eerdere locaties mogen weg want er mag niets voor een lecture
                                     location.clear()
                                     # print(location)
                                     break
-                                elif not lectures[e].session_id == schedule[b][c][d].session_id:
-                                    if lectures[e].group_id == schedule[b][c][d].group_id:
+                                elif not lectures[e].session_id == schedule[day][c][d].session_id:
+                                    if lectures[e].group_id == schedule[day][c][d].group_id:
                                         for k in range(len(location) - 1, -1, -1):
-                                            if location[k][1] == c and location[k][0] == b:
+                                            if location[k][1] == c and location[k][0] == day:
                                                 del location[k]
                                         break
 
 
-                            elif schedule[b][c][d].name in mutual_courses_session:
+                            elif schedule[day][c][d].name in mutual_courses_session:
                                 rooms_allowed = False
                                 for k in range(len(location) - 1, -1, -1):
-                                    if location[k][1] == c and location[k][0] == b:
+                                    if location[k][1] == c and location[k][0] == day:
                                         del location[k]
 
                                 break
@@ -204,11 +205,11 @@ class Plan():
 
 
                         # als het een lecture is
-                        elif lectures[e].name == schedule[b][c][d].name or schedule[b][c][d].name in mutual_courses_session:
+                        elif lectures[e].name == schedule[day][c][d].name or schedule[day][c][d].name in mutual_courses_session:
 
                             # achteruit itereren anders gaat het verwijderen niet goed
                             for k in range(len(location) - 1, -1, -1):
-                                if location[k][1] == c and location[k][0] == b:
+                                if location[k][1] == c and location[k][0] == day:
                                     del location[k]
                             rooms_allowed = False
 
@@ -216,8 +217,8 @@ class Plan():
                             break
 
                         # if the slot in the schedule is empty
-                        if schedule[b][c][d].name == ' ':
-                            location.append((b,c,d))
+                        if schedule[day][c][d].name == ' ':
+                            location.append((day,c,d))
 
             if bool(location):
                 counter = 0
@@ -263,7 +264,7 @@ class Plan():
         if found:
 
             # give the empty_sessions overall_ids
-            overall_id_counter = 129
+            overall_id_counter = SESSION_NUM
             for i in range(DAYS):
                 for j in range(TIME_SLOTS):
                     for k in range(ROOMS):
@@ -437,7 +438,7 @@ class Plan():
         #     points = Constraint.get_points(schedule, plan.courses)
         #
         #     while points < -200:
-        #         schedule = plan.initialize_schedule(plan.courses)[0]
+        schedule = plan.initialize_schedule(plan.courses)[0]
         #         points = Constraint.get_points(schedule, plan.courses)
         #
         #     # print("Runnig algorithm...")
@@ -448,38 +449,67 @@ class Plan():
         #     point_list.append(points[-1])
         #     # print(i)
 
-        # runs the hillclimber hunderd times
+        # runs the hillclimber fifty times
         # point_list = []
-        # for i in range(100):
-        #     print(f"i = {i}")
-        #     schedule = plan.initialize_schedule(plan.courses)[0]
+        schedules = []
+        for i in range(50):
+            print(f"i = {i}")
+            schedule = plan.initialize_schedule(plan.courses)[0]
+
+            # schedule_points = Constraint.get_points(schedule, plan.courses)
+            while Constraint.get_points(schedule, plan.courses) < -200:
+                plan.schedule_counter = 0
+                schedule = plan.initialize_schedule(plan.courses)[0]
+
+                # schedule_points = Constraint.get_points(schedule, plan.courses)
+            schedule, points, plan.schedule_counter = hillclimber.soft_constraints(schedule, plan.courses, plan.schedule_counter)
+            # print("TEST VAN POINTS LIST", points)
+            # point_list.append(max(points))
+            schedules.append(schedule)
+            # print(f"point_list: {point_list}")
+
+                # points = Constraint.get_points(schedule, plan.courses)
+            # schedule, points, plan.schedule_counter = hillclimber.soft_constraints(schedule, plan.courses, plan.schedule_counter)
+            # schedule, points, plan.schedule_counter = hillclimber.soft_constraints(schedule, plan.courses, plan.schedule_counter)
+            # print("Runnig algorithm...")
+            # Geef dit rooster mee aan de soft constraints
+            # schedule, points, plan.schedule_counter = hillclimber.soft_constraints(schedule, plan.courses, plan.schedule_counter)
+
+            # schedule, points, plan.schedule_counter = climbergreedy.soft_constraints(schedule, plan.courses, plan.schedule_counter)
+
+        #     # print(i)
         #
-        #     # schedule_points = Constraint.get_points(schedule, plan.courses)
-        #
-        #
-        #     while Constraint.get_points(schedule, plan.courses) < -200:
-        #         plan.schedule_counter = 0
-        #         schedule = plan.initialize_schedule(plan.courses)[0]
-        #
-        #         # schedule_points = Constraint.get_points(schedule, plan.courses)
-        #     schedule, points, plan.schedule_counter = hillclimber.soft_constraints(schedule, plan.courses, plan.schedule_counter)
-        #     print("TEST VAN POINTS LIST", points)
-        #     point_list.append(max(points))
-        #     print(f"point_list: {point_list}")
-        #
-        #         # points = Constraint.get_points(schedule, plan.courses)
-        #     # schedule, points, plan.schedule_counter = hillclimber.soft_constraints(schedule, plan.courses, plan.schedule_counter)
-        #     # schedule, points, plan.schedule_counter = hillclimber.soft_constraints(schedule, plan.courses, plan.schedule_counter)
-        #     # print("Runnig algorithm...")
-        #     # Geef dit rooster mee aan de soft constraints
-        #     # schedule, points, plan.schedule_counter = hillclimber.soft_constraints(schedule, plan.courses, plan.schedule_counter)
-        #
-        #     # schedule, points, plan.schedule_counter = climbergreedy.soft_constraints(schedule, plan.courses, plan.schedule_counter)
-        #
-        # #     # print(i)
-        # #
         # print("the almighty lijst van 100 hillclimber resultaten")
         # print(point_list)
+
+        point_list = []
+        for i in range(50):
+            point_list.append(genetic.genetic_algortim(schedules, plan.courses))
+        print("50x genetisch met als populatie 50 dezelfde hillclimbers")
+        print(point_list)
+
+# run random 100x
+        # points = []
+        # points_final = []
+        # for i in range(100):
+        #     print(i)
+        #     schedule = plan.initialize_schedule(plan.courses)[0]
+        #     points.append(Constraint.get_points(schedule, plan.courses))
+        #     points_final.append(Constraint.get_points_final(schedule, plan.courses))
+        #
+        # print(points)
+        # print(points_final)
+
+        # run genetic 50x met 50x dezelfde begin populatie
+        # schedules = []
+        # for i in range(POPULATION):
+            # schedules.append(plan.initialize_schedule(plan.courses)[0])
+        # improvements = []
+        # for i in range(50):
+        #     print(i)
+        #     improvements.append(genetic.genetic_algortim(schedules, plan.courses))
+        # print(improvements)
+
 
         rooms = loaddata.load_rooms()
         plan.own_session_points = 0
@@ -522,21 +552,6 @@ class Plan():
         #         print(courses_schedule2[i])
         #
         # genetic.get_points(schedule2, plan.courses)
-
-        # averages = []
-        # for j in range(100):
-        # # test genetic Algorithm
-        #     schedules = []
-        #     for i in range(POPULATION):
-        #         schedules.append(plan.initialize_schedule(plan.courses)[0])
-        #
-        #     average = genetic.genetic_algortim(schedules, plan.courses)
-        #
-        #     averages.append(average)
-        #
-        # # DIT ZIJN EIGENLIJK DE IMPROVEMENTS NIET DE AVERAGES!!!
-        # print(averages)
-        # hillclimber.makeplot(averages)
 
         # test new constraint function
         # courses_schedule = Constraint.all_constraints(schedule, plan.courses)

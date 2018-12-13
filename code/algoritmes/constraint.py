@@ -10,8 +10,9 @@ DAYS = 5
 ROOMS = 7
 SPREAD_BONUS = 20
 SESSION_LEN = 72
-SESSION_NUM = 129
+SESSION_NUM = 129 #berekeningen
 SLOTS_PER_DAY = 28
+# class die courses in zich heeft en hier iets over zegt
 from random import randint
 
 
@@ -20,33 +21,22 @@ class Constraint():
     A class with all the constraint functions.
     """
 
-# Hier even een lijst met alle constraints:
-# 1. hoorcelleges voor werkcolleges en practica HARD
-# 2. er mag geen overlap zijn (met college zelf) HARD
-# 3. er mag geen overlap zijn (met andere vakkken) HARD
-# 4. studenten moeten in de zalen passen (NOG NIET)
-# 5. colleges van hetzelfde vak moeten goed verspreid zijn over de week
-#
-# Een fix_hard_constraints functie maken voor als na het soft maken van een
-# aantal constraints er niet meer wordt voldaan aan de hard constraints.
-
-    def __init__(self):
-        self.bonus_malus = []
-        self.capacity = []
-
-
     def all_constraints(schedule, courses):
         """
         Makes a list that contains lists of every course with the moment and
         type of the courses in the schedule. The courses are in the list in
         order of their course_id.
         -----
+        herschrijven want quinten snapt het niet
+        i,j,k --> day,slot,room
+        [i, j, k]
         """
 
         courses_schedule = []
         for course in courses:
             course_schedule = {"day": [], "slot": [], "room": [], "type": [],
-                               "session_id": [], "group_id": [], "overall_id": []}
+                               "session_id": [], "group_id": [],
+                               "overall_id": []}
             for i in range(DAYS):
                 for j in range(TIME_SLOTS):
                     for k in range(ROOMS):
@@ -55,42 +45,19 @@ class Constraint():
                                 course_schedule["day"].append(i)
                                 course_schedule["slot"].append(j)
                                 course_schedule["room"].append(k)
-                                course_schedule["type"].append(schedule[i][j][k].type)
-                                course_schedule["session_id"].append(schedule[i][j][k].session_id)
-                                course_schedule["group_id"].append(schedule[i][j][k].group_id)
-                                course_schedule["overall_id"].append(schedule[i][j][k].overall_id)
+                                course_schedule["type"].append(
+                                                schedule[i][j][k].type)
+                                course_schedule["session_id"].append(
+                                                schedule[i][j][k].session_id)
+                                course_schedule["group_id"].append(
+                                                schedule[i][j][k].group_id)
+                                course_schedule["overall_id"].append(
+                                                schedule[i][j][k].overall_id)
 
             courses_schedule.append(course_schedule)
 
         return courses_schedule
 
-    def all_constraints_linear(schedule, courses):
-        """
-        Similar as all_constraints but then as a linear list instead of
-        a matrix.
-
-
-        HUH DIT IS BIJNA dezelfde functie als die hierboven,
-        kan het niet gewoon bij elkaar gedaan worden en dat de input veranderd?
-        """
-        courses_schedule = []
-        for course in courses:
-            course_schedule = {"day": [], "slot": [], "room": [], "type": [],
-                               "session_id": [], "group_id": [], "overall_id": []}
-            for i in range(SLOTS):
-                if schedule[i] is not None:
-                    if course.name == schedule[i].name:
-                        course_schedule["day"].append(math.floor(i / SLOTS_PER_DAY))
-                        course_schedule["slot"].append(math.floor(i / ROOMS) % TIME_SLOTS)
-                        course_schedule["room"].append(i % ROOMS)
-                        course_schedule["type"].append(schedule[i].type)
-                        course_schedule["session_id"].append(schedule[i].session_id)
-                        course_schedule["group_id"].append(schedule[i].group_id)
-                        course_schedule["overall_id"].append(schedule[i].overall_id)
-
-            courses_schedule.append(course_schedule)
-
-        return courses_schedule
 
     def session_spread_check(schedule, courses, courses_schedule):
         """
@@ -103,10 +70,13 @@ class Constraint():
 
         Maximum amount of bonuspoints is 440
         Maximum amount of maluspoints is 430
+        Dit is nu alleen zo voor onze functie!!
+
+        Doc string is schrijven wat de functie doet, welke arg die binnen
+        krijgt, en welke return waarden hij heeft.
 
         Returns a list of malus and bonuspoints per course as well.
         """
-        # courses_schedule = Constraint.all_constraints(schedule, courses)
         bonuspoints = 0
         maluspoints = 0
         course_dict = {}
@@ -127,7 +97,6 @@ class Constraint():
                     lectures.append(i)
 
             # checks if a course has groups
-            # print(courses_schedule[id]["group_id"], course.name)
             groups = max(courses_schedule[id]["group_id"])
             if groups > 0:
 
@@ -145,10 +114,6 @@ class Constraint():
 
                 #  loops over the amount of groups
                 for i in range(len(sessions)):
-
-                    # print(courses_schedule[id]["day"], course.name)
-                    # print(i)
-                    # print(sessions[i])
 
                     # checks if the courses are on monday and thursday
                     if (courses_schedule[id]["day"][sessions[i][0]] == 0) and \
@@ -219,16 +184,10 @@ class Constraint():
 
         bonuspoints = round(bonuspoints)
         maluspoints = round(maluspoints)
-        # print(course_bonus_malus)
-        # print(f"bonuspoints: {bonuspoints}")
-        # print(f"maluspoints: {maluspoints}")
+
         spread_points = maluspoints + bonuspoints
         Constraint.bonus_malus = course_bonus_malus
 
-        # we moeten ook maluspoints returnen maar ik weet nog even niet waar
-        # deze functie overal wordt aangeroepen dus daar wacht ik nog even mee
-
-        # zelfde geldt voor de bonus_malus_points
         return [spread_points, course_dict, bonuspoints, maluspoints]
 
     def lecture_first(schedule, courses, courses_schedule):
@@ -574,8 +533,21 @@ class Constraint():
         course_schedule = Constraint.all_constraints(schedule, courses)
 
         points = Constraint.session_spread_check(schedule, courses, course_schedule)[0] - \
-                (Constraint.lecture_first(schedule, courses, course_schedule) * 40) - \
-                (Constraint.mutual_courses_check(schedule, courses) * 40) - \
-                (Constraint.students_fit(schedule, courses, course_schedule) / 4)
+            (Constraint.lecture_first(schedule, courses, course_schedule) * 40) - \
+            (Constraint.mutual_courses_check(schedule, courses) * 40) - \
+            (Constraint.students_fit(schedule, courses, course_schedule) / 4)
+
+        return points
+
+
+    def get_points_final(schedule, courses):
+        """
+        Returns the final number of points. Only considering the real bonus and
+        malus points.
+        """
+        course_schedule = Constraint.all_constraints(schedule, courses)
+
+        points = Constraint.session_spread_check(schedule, courses, course_schedule)[0] - \
+                (Constraint.students_fit(schedule, courses, course_schedule))
 
         return points

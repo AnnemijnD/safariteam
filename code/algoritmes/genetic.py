@@ -90,7 +90,7 @@ def genetic_algortim(schedules, courses):
     # print(f"improvement {max(population_points) - saved}")
 
     # TODO: BESTE ROOSTER RETURNEN
-    return max(population_points) - saved
+    return max(population_points)
 
 
 def choose_parents_KWAY(population, courses):
@@ -120,11 +120,11 @@ def choose_parents_KWAY(population, courses):
         for j in range(K):
             population.append(battlefield[j][0])
 
-    print_list = []
-    for i in range(len(parents)):
-        print_list.append(Constraint.get_points(parents[i], courses))
-
-    print(max(print_list), min(print_list), sum(print_list) / len(print_list))
+    # print_list = []
+    # for i in range(len(parents)):
+    #     print_list.append(Constraint.get_points(parents[i], courses))
+    #
+    # print(max(print_list), min(print_list), sum(print_list) / len(print_list))
 
     return parents
 
@@ -165,40 +165,13 @@ def choose_parents_rank(population, courses):
 
     # print(parents)
 
-    print_list = []
-    for i in range(len(parents)):
-        print_list.append(Constraint.get_points(parents[i], courses))
+    # print_list = []
+    # for i in range(len(parents)):
+    #     print_list.append(Constraint.get_points(parents[i], courses))
 
-    print(max(print_list), min(print_list), sum(print_list) / len(print_list))
+    # print(max(print_list), min(print_list), sum(print_list) / len(print_list))
 
     return parents
-
-
-def choose_population(population, courses):
-    """
-    TODO
-    """
-    # # sort the population
-    # sorted_population = []
-    # for i in range(POPULATION):
-    #     points = Constraint.get_points(population[i], courses)
-    #     sorted_population.append([points, population[i]])
-    # sorted_population = sorted(sorted_population, key=itemgetter(0))
-
-    # # pick the best half of the population
-    # for i in range(POPULATION // 2):
-    #     population.remove(sorted_population[i][1])
-
-    # # pick pairs and let only the best one "survive"
-    # for i in range(0, POPULATION, 2):
-    #     battle = [sorted_population[i][1], sorted_population[i + 1][1]]
-    #     points1 = Constraint.get_points(battle[0], courses)
-    #     points2 = Constraint.get_points(battle[1], courses)
-    #     if points1 > points2:
-    #         population.remove(battle[1])
-    #     else:
-    #         population.remove(battle[0])
-
 
 
 def create_cycles(parent1_id, parent2_id):
