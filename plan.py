@@ -133,25 +133,30 @@ class Plan():
         Label(window, text="Population: ").grid(row=12)
         Label(window, text="Gnerations: ").grid(row=13)
         Label(window, text="Runs (n): ").grid(row=14)
+        Label(window, text="k-way | ranked | random").grid(row=15)
         n3 = Entry(window)
         p3 = Entry(window)
         x3 = Entry(window)
+        t3 = Entry(window)
         n3.grid(row=12, column=1)
         p3.grid(row=13, column=1)
         x3.grid(row=14, column=1)
+        t3.grid(row=15, column=1)
         n3.insert(10,"50")
         p3.insert(10,"10")
         x3.insert(10,"3")
+        t3.insert(10,"k-way")
         n3.bind('<Return>', lambda _: printresults("genetic"))
         p3.bind('<Return>', lambda _: printresults("genetic"))
         x3.bind('<Return>', lambda _: printresults("genetic"))
+        t3.bind('<Return>', lambda _: printresults("genetic"))
 
         # Add labels to random algorithm
         tk.Label(window, text="Random schedule:", \
             font="Arial 15 bold").grid(column=1)
-        Label(window, text="Runs(n): ").grid(row=16)
+        Label(window, text="Runs(n): ").grid(row=17)
         n4 = Entry(window)
-        n4.grid(row=16, column=1)
+        n4.grid(row=17, column=1)
         n4.insert(10,"10")
         n4.bind('<Return>', lambda _: printresults("Random"))
 
@@ -159,12 +164,12 @@ class Plan():
         tk.Label(window, text="Press enter to run. ").grid(column=1)
 
         ttk.Button(window, text="Plot one hill climber run", \
-            command=lambda:plan.plot("hill climber"), padding=5).place(x=40, y=440)
+            command=lambda:plan.plot("hill climber"), padding=5).place(x=40, y=460)
         ttk.Button(window, text="Plot one simmulated annealing run", \
-            command=lambda:plan.plot("sa"), padding=5).place(x=40, y=480)
+            command=lambda:plan.plot("sa"), padding=5).place(x=40, y=500)
 
         tk.Label(window, text="View the schedule at 'results/schedule.html' by heading to the results folder.",\
-            font="Arial 15 bold").place(x = 40, y = 520)
+            font="Arial 15 bold").place(x = 40, y = 530)
 
         # tk.Label(window, text="Loading...", font="Arial 15 bold").place(x=20, y=440)
 
