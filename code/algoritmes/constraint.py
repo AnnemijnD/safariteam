@@ -15,6 +15,8 @@ SPREAD_BONUS = 20
 SESSION_LEN = 72
 SESSION_NUM = 129
 SLOTS_PER_DAY = 28
+MAXMALUS_FIT = 1332
+MAXBONUS_SPREAD = 440
 
 
 
@@ -464,14 +466,13 @@ class Constraint():
         Maximum of 'good points' of session_spread_check() = 440.
         Minimum of malus points of students_fit() = 0 and maxmimum = 1332.
 
-        1332 / 3.027 = 440
         """
         course_schedule = Constraint.all_constraints(schedule, courses)
 
         points = Constraint.session_spread_check(schedule, courses, course_schedule)[0] - \
                 (Constraint.lecture_first(schedule, courses, course_schedule) * 100) - \
                 (Constraint.mutual_courses_check(schedule, courses) * 100) - \
-                (Constraint.students_fit(schedule, courses, course_schedule) / 3.027)
+                (Constraint.students_fit(schedule, courses, course_schedule) / (MAXMALUS_FIT / MAXBONUS_SPREAD))
 
         return points
 
