@@ -1,6 +1,7 @@
 
 import random
 import numpy as np
+import itertools
 
 from session import Session
 from random import randint
@@ -24,6 +25,7 @@ def initialize_schedule(courses):
     lecture_sessions = []
     other_sessions = []
     empty_sessions = []
+    session_list_2d = []
 
     # random.shuffle(courses)
 
@@ -33,11 +35,15 @@ def initialize_schedule(courses):
     for course in courses:
         session_list = session_list + course.sessions_total
 
+        # Make a list of lists for each course
+        session_list_2d.append(course.sessions_total)
+
     # adds overall id's to the sessions
     session_counter = 0
-    for i in range(len(session_list)):
-        session_list[i].overall_id = session_counter
-        session_counter += 1
+    for i in range(len(session_list_2d)):
+        for j in range(len(session_list_2d[i])):
+            session_list_2d[i][j].overall_id = session_counter
+            session_counter += 1
 
     # make #SLOTS empty sessions
     for i in range(SLOTS):
@@ -50,12 +56,14 @@ def initialize_schedule(courses):
         empty_session.overall_id = SLOTS
         empty_sessions.append(empty_session)
 
-    for i in range(len(session_list)):
+    for i in range(len(session_list_2d)):
+        for j in range(len(session_list_2d[i])):
         # Get all the lectures
-        if session_list[i].type == "lecture":
-            lecture_sessions.append(session_list[i])
-        elif session_list[i].type == "tutorial" or session_list[i].type == "practical":
-            other_sessions.append(session_list[i])
+            if session_list_2d[i][j].type == "lecture":
+                lecture_sessions.append(session_list_2d[i][j])
+            elif session_list_2d[i][j].type == "tutorial" or session_list_2d[i][j].type == "practical":
+                other_sessions.append(session_list_2d[i][j])
+
 
     # shuffle de lectures zodat ze random zijn
     # Make copy of sessions and shuffle
@@ -72,15 +80,16 @@ def initialize_schedule(courses):
     counter_sessions = 0
     new_sched = False
 
+
     # Ensures a valid schedule is created in fill schedule. If not, the process
     # is repeated.
     while not bool(new_sched):
 
         # Shuffle the courses each time a new schedule is made
-        print(session_list)
-        random.shuffle(session_list)
+        # print(session_list)
+        # random.shuffle(session_list)
         # print("done")
-        new_sched = fill_schedule(schedule, session_list, lecture_sessions, empty_sessions, courses)
+        new_sched = fill_schedule(schedule, session_list_2d, lecture_sessions, empty_sessions, courses)
         counter_sessions += 1
         if not new_sched == False:
             break
@@ -88,7 +97,7 @@ def initialize_schedule(courses):
     return schedule, total, other_sessions, empty_sessions
 
 
-def fill_schedule(schedule, sessions, other_sessions, empty_sessions, courses):
+def fill_schedule(schedule, sessions_2d, other_sessions, empty_sessions, courses):
     """
     Fill empty schedule with sessions.
     """
@@ -99,6 +108,12 @@ def fill_schedule(schedule, sessions, other_sessions, empty_sessions, courses):
 
     # Vul eerst met lege sessions
     # counter = 0
+
+    # shuffle the 2d list and flatten it back to linear list
+    random.shuffle(sessions_2d)
+    sessions = list(itertools.chain(*sessions_2d))
+
+
     session_counter = 0
     for b in range(DAYS):
         for c in range(TIME_SLOTS):
@@ -110,10 +125,8 @@ def fill_schedule(schedule, sessions, other_sessions, empty_sessions, courses):
     # vertelt hoeveelste lecture van dit vak dit is
     passed_lectures = 0
 
-
     # found = False
     for e in range(len(sessions)):
-        # print(sessions[e].name)
 
         lectures_first = False
         tut_or_prac = False
@@ -245,27 +258,27 @@ def fill_schedule(schedule, sessions, other_sessions, empty_sessions, courses):
 
         return False
 
-def random_schedule(schedule, sessions):
-    """
-    Generates a random schedule. Assigns every session to a random timeslot.
-    """
-
-    # Maak een 1D lijst van schedule
-    flatten = np.array(schedule, dtype=object).flatten()
-
-    random_numbers = []
-
-    for i in range(len(sessions)):
-        rand = random.randint(0, SLOTS - 1)
-        while rand in random_numbers:
-            rand = random.randint(0, SLOTS - 1)
-        random_numbers.append(rand)
-        flatten[rand] = sessions[i]
-
-    # Convert back to 3D list
-    schedule = flatten.reshape(DAYS, TIME_SLOTS, ROOMS).tolist()
-
-    return schedule
+# def random_schedule(schedule, sessions):
+#     """
+#     Generates a random schedule. Assigns every session to a random timeslot.
+#     """
+#
+#     # Maak een 1D lijst van schedule
+#     flatten = np.array(schedule, dtype=object).flatten()
+#
+#     random_numbers = []
+#
+#     for i in range(len(sessions)):
+#         rand = random.randint(0, SLOTS - 1)
+#         while rand in random_numbers:
+#             rand = random.randint(0, SLOTS - 1)
+#         random_numbers.append(rand)
+#         flatten[rand] = sessions[i]
+#
+#     # Convert back to 3D list
+#     schedule = flatten.reshape(DAYS, TIME_SLOTS, ROOMS).tolist()
+#
+#     return schedule
 
 def switch_session(schedule, number_of_switches, session_to_switch):
     """
