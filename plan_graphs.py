@@ -119,20 +119,20 @@ class Plan():
         lalalijst = []
         if not bool(new_sched):
 
-            while not bool(new_sched) or not counter_2 >= 5000:
+            while not bool(new_sched) or not counter_2 >= 1:
 
                 new_sched, course_stop, session_problems = plan.fill_schedule(schedule, session_list, lecture_sessions, empty_sessions, courses)
                 plan.schedule_counter += 1
 
                 if bool(new_sched):
-                    if counter_2 < 5000:
-
+                    if counter_2 < 1:
                         continue
+
                     else:
                         break
 
                 row1[course_stop] += session_problems[0]
-                row2[course_stop] += session_problems[1]
+                row2[course_stop] += session_problems[1ff]
                 row3[course_stop] += session_problems[2]
 
                 session_analysis[course_stop] += 1
@@ -196,7 +196,7 @@ class Plan():
 
         plt.show()
 
-        print(new_sched)
+
 
         return new_sched, total, other_sessions, empty_sessions
 
@@ -213,6 +213,8 @@ class Plan():
 
         # Vul eerst met lege sessions
         # counter = 0
+
+
         session_counter = 0
         for b in range(DAYS):
             for c in range(TIME_SLOTS):
@@ -239,7 +241,7 @@ class Plan():
 
             problems = [0,0,0]
 
-            # print(lectures[e].name)
+
 
             lectures_first = False
             tut_or_prac = False
@@ -277,7 +279,7 @@ class Plan():
 
                                     # alle eerdere locaties mogen weg want er mag niets voor een lecture
                                     location.clear()
-                                    # print(location)
+
 
                                     # lectures first
 
@@ -324,7 +326,7 @@ class Plan():
                                     del location[k]
                             rooms_allowed = False
 
-                            # print(location)
+
                             break
 
                         # if the slot in the schedule is empty
@@ -351,7 +353,7 @@ class Plan():
                             return False, e, problems
 
                         elif not location[-1][1] == location[-2][1]:
-                            # print(location)
+
                             counter +=1
 
                         # lectures have to go first
@@ -573,8 +575,8 @@ class Plan():
 
         #     # print(i)
         #
-        print("the almighty lijst van 100 hillclimber resultaten")
-        print(point_list)
+
+
 
         rooms = loaddata.load_rooms()
         plan.own_session_points = 0

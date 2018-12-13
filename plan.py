@@ -196,7 +196,7 @@ class Plan():
         tk.Label(window, text="View the schedule at 'results/schedule.html' by heading to the results folder.",\
             font="Arial 15 bold").place(x = 40, y = 580)
 
-        master = Tk()
+
         window.mainloop()
 
 
@@ -414,6 +414,7 @@ class Plan():
 
         return maxpoints, max_schedule, points
 
+
     def compare_algorithm(self, random_n, hillclimber_n, hillclimber_x,
                         hillclimber2_n, hillclimber2_x, sim_x, sim_n, begin_temp,
                         end_temp, type, check_rand, check_hill, check_hill2, check_sim):
@@ -424,40 +425,51 @@ class Plan():
         Returns a boxplot.
         """
 
-        # dict met alle data voor boxplot
+        # List to collect the data for the boxplot
         boxplot_data = []
+
+        # List to collect data for the X axis of the boxplot
         boxplot_xaxis = []
         points = 0
 
+        # Initialize schedule to ensure the algorithms start with the same schedule
         schedule = schedulemaker.initialize_schedule(plan.courses)[0]
 
+        # Run algorithms and add data to list if it the checkbox was checked by user,
+        # 1 means checked.
+        # Random Checkbox
         if check_rand == 1:
-            max_points, max_schedule, points = plan.runalgorithm("Random", 0, random_n, 0, 0, None, schedule)
-
+            max_points, max_schedule, points = plan.runalgorithm("Random", 0,
+                                                random_n, 0, 0, None, False)
             boxplot_data.append(max_points)
             boxplot_xaxis.append(f"Random \n n = {random_n}")
 
+        # Hillclimber Checkbox
         if check_hill == 1:
             max_points, max_schedule, points = plan.runalgorithm("hill climber",
-                                                hillclimber_x, hillclimber_n, 0, 0, None, schedule)
+                                                hillclimber_x, hillclimber_n, 0,
+                                                0, None, schedule)
             boxplot_data.append(max_points)
             boxplot_xaxis.append(f"Hillclimber \n n = {hillclimber_n}")
 
+        # Extended Hillclimber Checkbox
         if check_hill2 == 1:
-            max_points, max_schedule, points = plan.runalgorithm("hill climber2", hillclimber2_x, hillclimber2_n, 0, 0, None, schedule)
+            max_points, max_schedule, points = plan.runalgorithm("hill climber2",
+                                                hillclimber2_x, hillclimber2_n,
+                                                        0, 0, None, schedule)
             boxplot_data.append(max_points)
             boxplot_xaxis.append(f"Hillclimber2 \n n = {hillclimber2_n}")
 
+        # Simulated Annealing Checkbox
         if check_sim == 1:
             max_points, max_schedule, points = plan.runalgorithm("Simmulated annealing",
-                                                sim_x, sim_n, begin_temp, end_temp, type, schedule)
+                                                sim_x, sim_n, begin_temp, end_temp,
+                                                type, schedule)
             boxplot_data.append(max_points)
             boxplot_xaxis.append(f"Simulated Annealing \n n = {sim_n}")
 
+        # Make plot
         ax = plt.subplot(111)
-        # pos1 = ax.get_position()
-        # pos2 = [pos1.x0, pos1.y0 + 0.2,  pos1.width , pos1.height - 0.2]
-        # ax.set_position(pos2)
         plt.boxplot(boxplot_data)
         plt.xticks(fontsize=8)
         ax.set_xticklabels(boxplot_xaxis)
@@ -513,7 +525,3 @@ class Plan():
 if __name__ == "__main__":
     plan = Plan()
     plan.generate()
-
-    # plan.compare_algorithm('random', 0, 'hillclimber', 5, 100,
-    #                     'hillclimber2', 5, 100, 'simulated', 0, 0, 0,
-    #                     0, None, 0, 1, 1, 0)
