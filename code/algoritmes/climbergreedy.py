@@ -4,11 +4,9 @@ by accepting a schedule with higher points.
 """
 
 from constraint import Constraint
-import switch
 import matplotlib
 matplotlib.use('TkAgg')
 import matplotlib.pyplot as plt
-import copy
 
 CYCLES = 30000
 LIMIT = 50

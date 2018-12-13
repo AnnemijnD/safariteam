@@ -1,18 +1,19 @@
 import loaddata
-import numpy as np
-import math
-import switch
+from random import randint
 
-
-SLOTS = 140
 TIME_SLOTS = 4
 DAYS = 5
 ROOMS = 7
+SLOTS = DAYS * TIME_SLOTS * ROOMS
+SLOTS_PER_DAY = ROOMS * TIME_SLOTS
+
+# case specific
+EMPTY_SESSIONS = 11
 SPREAD_BONUS = 20
-SESSION_LEN = 72
-SESSION_NUM = 129
-SLOTS_PER_DAY = 28
-from random import randint
+SESSION_NUM = SLOTS - EMPTY_SESSIONS
+
+# STRAKS AAN ANNEMOIN VRAGEN WAT IK HIERMEE HAD KUNNEN BEDOELEN
+# TODO: class die courses in zich heeft en hier iets over zegt
 
 
 class Constraint():
@@ -20,74 +21,39 @@ class Constraint():
     A class with all the constraint functions.
     """
 
-# Hier even een lijst met alle constraints:
-# 1. hoorcelleges voor werkcolleges en practica HARD
-# 2. er mag geen overlap zijn (met college zelf) HARD
-# 3. er mag geen overlap zijn (met andere vakkken) HARD
-# 4. studenten moeten in de zalen passen (NOG NIET)
-# 5. colleges van hetzelfde vak moeten goed verspreid zijn over de week
-#
-# Een fix_hard_constraints functie maken voor als na het soft maken van een
-# aantal constraints er niet meer wordt voldaan aan de hard constraints.
-
-
-
     def all_constraints(schedule, courses):
         """
-        Makes a list that contains lists of every course with the moment and
-        type of the courses in the schedule. The courses are in the list in
-        order of their course_id.
+        Safes info of all the sessions of a course in a dictionary.
+
+        Input: schedule of which you want to check the constraints, list of all
+        courses
+        Output: list with for every course a dictionary that contains info of
+        the sessions of that course
+
+        TODO: vragen aan iemand of dit nu wel begrijpelijk is
         """
 
         courses_schedule = []
         for course in courses:
             course_schedule = {"day": [], "slot": [], "room": [], "type": [],
-                               "session_id": [], "group_id": [], "overall_id": []}
-
-            # maak er i, j, k van
-            for i in range(DAYS):
-                for j in range(TIME_SLOTS):
-                    for k in range(ROOMS):
-
-                        # maak er i, j, k van
-                        # enter na ( voor het beperken van karakters
-                        if schedule[i][j][k] is not None:
-                            if course.name == schedule[i][j][k].name:
-                                course_schedule["day"].append(i)
-                                course_schedule["slot"].append(j)
-                                course_schedule["room"].append(k)
-                                course_schedule["type"].append(schedule[i][j][k].type)
-                                course_schedule["session_id"].append(schedule[i][j][k].session_id)
-                                course_schedule["group_id"].append(schedule[i][j][k].group_id)
-                                course_schedule["overall_id"].append(schedule[i][j][k].overall_id)
-
-            courses_schedule.append(course_schedule)
-
-        return courses_schedule
-
-    def all_constraints_linear(schedule, courses):
-        """
-        Similar as all_constraints but then as a linear list instead of
-        a matrix.
-
-
-        HUH DIT IS BIJNA dezelfde functie als die hierboven,
-        kan het niet gewoon bij elkaar gedaan worden en dat de input veranderd?
-        """
-        courses_schedule = []
-        for course in courses:
-            course_schedule = {"day": [], "slot": [], "room": [], "type": [],
-                               "session_id": [], "group_id": [], "overall_id": []}
-            for i in range(SLOTS):
-                if schedule[i] is not None:
-                    if course.name == schedule[i].name:
-                        course_schedule["day"].append(math.floor(i / SLOTS_PER_DAY))
-                        course_schedule["slot"].append(math.floor(i / ROOMS) % TIME_SLOTS)
-                        course_schedule["room"].append(i % ROOMS)
-                        course_schedule["type"].append(schedule[i].type)
-                        course_schedule["session_id"].append(schedule[i].session_id)
-                        course_schedule["group_id"].append(schedule[i].group_id)
-                        course_schedule["overall_id"].append(schedule[i].overall_id)
+                               "session_id": [], "group_id": [],
+                               "overall_id": []}
+            for day in range(DAYS):
+                for slot in range(TIME_SLOTS):
+                    for room in range(ROOMS):
+                        if schedule[day][slot][room] is not None:
+                            if course.name == schedule[day][slot][room].name:
+                                course_schedule["day"].append(day)
+                                course_schedule["slot"].append(slot)
+                                course_schedule["room"].append(room)
+                                course_schedule["type"].append(
+                                        schedule[day][slot][room].type)
+                                course_schedule["session_id"].append(
+                                        schedule[day][slot][room].session_id)
+                                course_schedule["group_id"].append(
+                                        schedule[day][slot][room].group_id)
+                                course_schedule["overall_id"].append(
+                                        schedule[day][slot][room].overall_id)
 
             courses_schedule.append(course_schedule)
 
@@ -106,10 +72,13 @@ class Constraint():
         // ZIE ARRAY NP HELP ZOOI, COMMENT DIE FUNCTIE BESCHRIJFT IS OOK GOED
         Maximum amount of bonuspoints is 440
         Maximum amount of maluspoints is 430
+        Dit is nu alleen zo voor onze functie!!
+
+        Doc string is schrijven wat de functie doet, welke arg die binnen
+        krijgt, en welke return waarden hij heeft.
 
         Returns a list of malus and bonuspoints per course as well.
         """
-        # courses_schedule = Constraint.all_constraints(schedule, courses)
         bonuspoints = 0
         maluspoints = 0
         course_dict = {}
@@ -217,14 +186,11 @@ class Constraint():
 
         bonuspoints = round(bonuspoints)
         maluspoints = round(maluspoints)
+
         spread_points = maluspoints + bonuspoints
         Constraint.bonus_malus = course_bonus_malus
 
-        # we moeten ook maluspoints returnen maar ik weet nog even niet waar
-        # deze functie overal wordt aangeroepen dus daar wacht ik nog even mee
-
-        # zelfde geldt voor de bonus_malus_points
-        return [spread_points, course_dict]
+        return [spread_points, course_dict, bonuspoints, maluspoints]
 
     def lecture_first(schedule, courses, courses_schedule):
         """
@@ -286,32 +252,25 @@ class Constraint():
                                 if own_session_counter > 1:
                                     minus_points += 1
 
+                        # DEZE LOOP MOET GECOMBINEERD WORDEN MET DE LOOP HIERBOVEN
+                        # ANDRS ONNODIGE LOOPS!!!
 
-                        # else:
-                        #     # Each slot has a course name and the courses' mutual courses
-                        #     # Mutual courses is a list of courses that can't be in the same timeslot
-                        #     mutual_courses = schedule[i][j][k].course_object.mutual_courses
-                        #     # For every mutual course in the mutual_courses list,
-                        #     # check if it is placed in the same timeslot.
-                        #     for mutual_course in range(len(mutual_courses)):
-                        #         for z in range(len(schedule[i][j])):
-                        #             # If this mutual course is placed in the same timeslot
-                        #             # (for example Bioinformatica and Compilerbouw),
-                        #             # count one minus point.
-                        #             if mutual_courses[mutual_course] in schedule[i][j][z].name:
-                        #                 minus_points += 1
+                        # If session is a pratical or tutorial, check if groups aren't
+                        # planned in at the same timeslot
+                        own_session_counter = 0
+                        # Check in every timeslot
+                        for z in range(len(schedule[i][j])):
+                            # DIT STUKJE MOET GECOMBINEERD MET DE FOR LOOP HIERBOVEN!
+                            if schedule[i][j][z].name == schedule[i][j][k].name:
+                                # Count one minuspoint if the same group_id is found for
+                                # this course in this timeslot.
 
-
-
-                        # HIER MOET NOG EEN MALUS PUNT KOMEN VOOR ALS TUTORIAL GROEP A
-                        # SAMEN MET PRACTICUM GROEP A ZIT!!!
-                        # else:
-                        #     # print(schedule[i][j][k])
-                        #     for z in range(len(schedule[i][j])):
-                        #         print(schedule[i][j][z])
-                        #     print(" ______________")
-
-
+                                if schedule[i][j][z].group_id is schedule[i][j][k].group_id:
+                                    own_session_counter += 1
+                        # own_session_counter will always be 1, so check if the counter
+                        # is higher than 1.
+                        if own_session_counter > 1:
+                            minus_points += 1
 
         return minus_points
 
@@ -365,95 +324,9 @@ class Constraint():
                     break
 
 
-
         # print(session_capacity)
 
         return maluspoints
-
-
-    def switch_session(schedule, number_of_switches, session_to_switch, courses):
-        """
-        OJA NOOOOO, de Input van de Constraints functie is natuurlijk een 3D rooster aaah
-        verdorie!!
-        Dan moet het elke keer weer teruggezet worden naar 3D ?!?!?! STOM!!!! ANdere oplossing iemmand???
-        """
-
-        # Flatten schedule to get a 1D list to switch elements
-        flatten = np.array(schedule).flatten()
-        # print(flatten)
-
-        # If there is no specific session to switch, make a random switch
-        if session_to_switch < 0:
-
-            for i in range(number_of_switches):
-                # Get two random numbers
-                random_number = randint(0, SLOTS - 1)
-                random_switch_number = randint(0, SLOTS - 1)
-
-                # If the numbers are equal to each other, make another number
-                while random_number is random_switch_number:
-                    random_number = randint(0, SLOTS - 1)
-                    random_switch_number = randint(0, SLOTS - 1)
-                # Make the switch
-                flatten[random_number], flatten[random_switch_number] = flatten[random_switch_number], flatten[random_number]
-
-        # If a specific session (with most maluspoints) has to be switched:
-        else:
-            # print(session_to_switch, "Dit is de overall_id van de sessie die geswitcht moet worden lololol!")
-            # print(Constraint.overall_id_points(schedule, courses, session_to_switch), "Dit is het aantal maluspunten van deze sessie aaah super hoog man!!")
-
-            # Sorrrry voor degene die deze code leest dit is echt meeeega slordig maar even haastig aahh
-            # Zat in de trein dus ja je moet wat he!!!!!!! :-)
-
-            # Iterate over every session in the schedule to get the session location
-            for location in range(len(flatten)):
-                # print(flatten[location].overall_id)
-
-                # If location of the session was found:
-                if flatten[location].overall_id == session_to_switch:
-                    # print(location, "YES!!!!!! DIt is de locatie waar deze sessie staat in het rooster")
-                    # Deze locatie moet dus 140 keer geswitcht worden en dan weer berekend wat het aantal
-                    # maluspunten zou zijn om de beste locatie te kiezen.
-                    # Sla deze locatie op
-                    locatie = location
-            # Nou super leuk hoor dan hebben we de locatie en deze moeten we gaan switchen whoee
-
-            # Maark switch niet in het echte rooster, switch in een kopie omdat het
-            # hypothetische switches zijn weetjewel ja weet niet hoe ik het anders moet zeggen
-            # maar jullie snappen het wel xxoxoxox
-            flattencopy = flatten
-            location_points = {}
-
-            # 140 keer switchen en punten berekenen jeeeetje dat zijn zoveel iteraties godsammie
-            for i in range(SLOTS - 1):
-                # PSEUDO
-                # Zorg ervoor dat de switch met eigen locatie wordt overgeslagen
-                if i != location:
-
-                    # WOOOW DIT STEEDS OMZETTEN VAN NP ARRAY NAAR 3D IS ECHT SUUUPER ONHANDIG
-                    # MOET ECHT ANDERS maar heb er nu echt even geen tijd voor sorry!! :((
-
-                    # Maak een switch
-                    # print(flattencopy[locatie])
-                    flattencopy[i], flattencopy[locatie] = flattencopy[locatie], flattencopy[i]
-                    flattencopy = flattencopy.reshape(DAYS, TIME_SLOTS, ROOMS).tolist()
-                    # print(Constraint.overall_id_points(flattencopy, courses, session_to_switch), "Dit zou het aantal maluspunten worden...!")
-                    location_points[i] = Constraint.get_points(flattencopy, courses)
-                    flattencopy = np.array(schedule).flatten()
-                    # Switch terug
-                    flattencopy[locatie], flattencopy[i] = flattencopy[i], flattencopy[locatie]
-            # Dit is een dictionary met alle mogelijke plaatsen (dus van 0 tot 138 als het goed is)
-            # en het aantal punten die de sessie zou krijgen als hij hier ingezet wordt.
-            best_location = list(location_points.keys())[list(location_points.values()).index(max(location_points.values()))]
-            # print(best_location, "Dit is de meest gunstige locatie voor deze session :)")
-            # OKE beste locatie gevonden dus switch nu met deze locatie.
-            flatten[locatie], flatten[best_location] = flatten[best_location], flatten[locatie]
-
-        # Convert back to 3D list
-        schedule = flatten.reshape(DAYS, TIME_SLOTS, ROOMS).tolist()
-
-        # Return 3D matrix of schedule
-        return schedule
 
 
     def overall_id_points(schedule, courses, overall_id):
@@ -475,26 +348,19 @@ class Constraint():
         rooms = loaddata.load_rooms()
 
         spread_points = Constraint.session_spread_check(schedule, courses, courses_schedule)[1]
-        # print(spread_points)
 
         points_dict = {}
         # Loop over alle sessions om elke sessie een punt te geven jeej
         for i in range(DAYS):
             for j in range(TIME_SLOTS):
                 for k in range(ROOMS):
-                    # Even lekker de overall_id er uit halen want hierbij moet dus opgeteld worden he ja
-                    # Ben zo blij dat course_object bestaat wWOOOW echt meeeega handig
-                    # Dit is om te checken of de session niet leeg is.
+                    # Check if the slot isn't empty
                     if schedule[i][j][k].course_object:
-                        # print(schedule[i][j][k].course_object.course_id, "  ", schedule[i][j][k].course_object.name)
-                        # Dus voor elke overall_id moeten punten gegeven worden:
-                        # Nou dat gaan we eens even lekker doen
-                        # Deze moeten uit de points_dict gehaald worden,
-                        # daarin staan alle spread puntjes per vak. :-)
+                        # Get course_id
                         temp_id = schedule[i][j][k].course_object.course_id
-                        # Selecteer het vak uit de dictionary en geef de session de punten.
+                        # Select the course from dictionary and give points
+                        # to the current session.
                         points_dict[schedule[i][j][k].overall_id] = spread_points[temp_id]
-        # print(points_dict)
 
         session_points_dict = [{"session_id_ov": 0, "capacity_points":0, "spread_malus_points": 0,
                                 "spread_bonus_points": 0, "flex_points": 0, "points": 0} for i in range(SESSION_NUM)]
@@ -503,7 +369,7 @@ class Constraint():
         counter = 0
         points = 0
         for course in courses:
-            #  saves the room and type of the checked_course sessions
+            # Saves the room and type of the checked_course sessions
             checked_course = courses_schedule[course.course_id]
             room_ids = checked_course["room"]
             types = checked_course["type"]
@@ -538,8 +404,6 @@ class Constraint():
                 counter += 1
                 points = 0
 
-        # print(points_dict)
-        # Hieruit kunnen we de overall_id halen van de sessie met het meeste maluspunten
         try:
             malus_session_id = list(points_dict.keys())[list(points_dict.values()).index(max(points_dict.values()))]
         # If there are no malus points (for capacity_points)
@@ -558,19 +422,26 @@ class Constraint():
         Maximum of 'good points' of session_spread_check() = 440.
         Minimum of malus points of students_fit() = 0 and maxmimum = 1332.
 
-        Multiply the points of the hard constraints (lecture_first and mutual_courses)
-        to ensure that a schedule fulfills these constraints.
-
-        BEREKENING NOG NIET AF:
-        ALLE FUNCTIES 0 TOT 100 PUNTEN GEVEN
-        Alles delen door max aantal punten en vermenigvuldigen met 100,
-        hard constraints dan ook vermenigvuldigen met 2.
+        1332 / 3.027 = 440
         """
         course_schedule = Constraint.all_constraints(schedule, courses)
 
         points = Constraint.session_spread_check(schedule, courses, course_schedule)[0] - \
-                (Constraint.lecture_first(schedule, courses, course_schedule) * 40) - \
-                (Constraint.mutual_courses_check(schedule, courses) * 40) - \
-                (Constraint.students_fit(schedule, courses, course_schedule) / 4)
+                (Constraint.lecture_first(schedule, courses, course_schedule) * 100) - \
+                (Constraint.mutual_courses_check(schedule, courses) * 100) - \
+                (Constraint.students_fit(schedule, courses, course_schedule) / 3.027)
 
         return points
+
+
+    def get_points_final(schedule, courses):
+            """
+            Returns the final number of points. Only considering the real bonus and
+            malus points.
+            """
+            course_schedule = Constraint.all_constraints(schedule, courses)
+
+            points = Constraint.session_spread_check(schedule, courses, course_schedule)[0] - \
+                    (Constraint.students_fit(schedule, courses, course_schedule))
+
+            return points
