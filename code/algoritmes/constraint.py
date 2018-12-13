@@ -1,23 +1,21 @@
-"""
-TODO
-"""
-
 import loaddata
-import math
 from random import randint
-
 
 TIME_SLOTS = 4
 DAYS = 5
 ROOMS = 7
 SLOTS = DAYS * TIME_SLOTS * ROOMS
+SLOTS_PER_DAY = ROOMS * TIME_SLOTS
+
+# case specific
+EMPTY_SESSIONS = 11
 SPREAD_BONUS = 20
-SESSION_LEN = 72
-SESSION_NUM = 129
-SLOTS_PER_DAY = 28
+SESSION_NUM = SLOTS - EMPTY_SESSIONS
 MAXMALUS_FIT = 1332
 MAXBONUS_SPREAD = 440
 
+# STRAKS AAN ANNEMOIN VRAGEN WAT IK HIERMEE HAD KUNNEN BEDOELEN
+# TODO: class die courses in zich heeft en hier iets over zegt
 
 
 class Constraint():
@@ -25,73 +23,39 @@ class Constraint():
     A class with all the constraint functions.
     """
 
-# Hier even een lijst met alle constraints:
-# 1. hoorcelleges voor werkcolleges en practica HARD
-# 2. er mag geen overlap zijn (met college zelf) HARD
-# 3. er mag geen overlap zijn (met andere vakkken) HARD
-# 4. studenten moeten in de zalen passen (NOG NIET)
-# 5. colleges van hetzelfde vak moeten goed verspreid zijn over de week
-#
-# Een fix_hard_constraints functie maken voor als na het soft maken van een
-# aantal constraints er niet meer wordt voldaan aan de hard constraints.
-
-    def __init__(self):
-        self.bonus_malus = []
-        self.capacity = []
-
-
     def all_constraints(schedule, courses):
         """
-        Makes a list that contains lists of every course with the moment and
-        type of the courses in the schedule. The courses are in the list in
-        order of their course_id.
-        -----
+        Safes info of all the sessions of a course in a dictionary.
+
+        Input: schedule of which you want to check the constraints, list of all
+        courses
+        Output: list with for every course a dictionary that contains info of
+        the sessions of that course
+
+        TODO: vragen aan iemand of dit nu wel begrijpelijk is
         """
 
         courses_schedule = []
         for course in courses:
             course_schedule = {"day": [], "slot": [], "room": [], "type": [],
-                               "session_id": [], "group_id": [], "overall_id": []}
-            for i in range(DAYS):
-                for j in range(TIME_SLOTS):
-                    for k in range(ROOMS):
-                        if schedule[i][j][k] is not None:
-                            if course.name == schedule[i][j][k].name:
-                                course_schedule["day"].append(i)
-                                course_schedule["slot"].append(j)
-                                course_schedule["room"].append(k)
-                                course_schedule["type"].append(schedule[i][j][k].type)
-                                course_schedule["session_id"].append(schedule[i][j][k].session_id)
-                                course_schedule["group_id"].append(schedule[i][j][k].group_id)
-                                course_schedule["overall_id"].append(schedule[i][j][k].overall_id)
-
-            courses_schedule.append(course_schedule)
-
-        return courses_schedule
-
-    def all_constraints_linear(schedule, courses):
-        """
-        Similar as all_constraints but then as a linear list instead of
-        a matrix.
-
-
-        HUH DIT IS BIJNA dezelfde functie als die hierboven,
-        kan het niet gewoon bij elkaar gedaan worden en dat de input veranderd?
-        """
-        courses_schedule = []
-        for course in courses:
-            course_schedule = {"day": [], "slot": [], "room": [], "type": [],
-                               "session_id": [], "group_id": [], "overall_id": []}
-            for i in range(SLOTS):
-                if schedule[i] is not None:
-                    if course.name == schedule[i].name:
-                        course_schedule["day"].append(math.floor(i / SLOTS_PER_DAY))
-                        course_schedule["slot"].append(math.floor(i / ROOMS) % TIME_SLOTS)
-                        course_schedule["room"].append(i % ROOMS)
-                        course_schedule["type"].append(schedule[i].type)
-                        course_schedule["session_id"].append(schedule[i].session_id)
-                        course_schedule["group_id"].append(schedule[i].group_id)
-                        course_schedule["overall_id"].append(schedule[i].overall_id)
+                               "session_id": [], "group_id": [],
+                               "overall_id": []}
+            for day in range(DAYS):
+                for slot in range(TIME_SLOTS):
+                    for room in range(ROOMS):
+                        if schedule[day][slot][room] is not None:
+                            if course.name == schedule[day][slot][room].name:
+                                course_schedule["day"].append(day)
+                                course_schedule["slot"].append(slot)
+                                course_schedule["room"].append(room)
+                                course_schedule["type"].append(
+                                        schedule[day][slot][room].type)
+                                course_schedule["session_id"].append(
+                                        schedule[day][slot][room].session_id)
+                                course_schedule["group_id"].append(
+                                        schedule[day][slot][room].group_id)
+                                course_schedule["overall_id"].append(
+                                        schedule[day][slot][room].overall_id)
 
             courses_schedule.append(course_schedule)
 
@@ -108,10 +72,13 @@ class Constraint():
 
         Maximum amount of bonuspoints is 440
         Maximum amount of maluspoints is 430
+        Dit is nu alleen zo voor onze functie!!
+
+        Doc string is schrijven wat de functie doet, welke arg die binnen
+        krijgt, en welke return waarden hij heeft.
 
         Returns a list of malus and bonuspoints per course as well.
         """
-        # courses_schedule = Constraint.all_constraints(schedule, courses)
         bonuspoints = 0
         maluspoints = 0
         course_dict = {}
@@ -132,7 +99,6 @@ class Constraint():
                     lectures.append(i)
 
             # checks if a course has groups
-            # print(courses_schedule[id]["group_id"], course.name)
             groups = max(courses_schedule[id]["group_id"])
             if groups > 0:
 
@@ -150,10 +116,6 @@ class Constraint():
 
                 #  loops over the amount of groups
                 for i in range(len(sessions)):
-
-                    # print(courses_schedule[id]["day"], course.name)
-                    # print(i)
-                    # print(sessions[i])
 
                     # checks if the courses are on monday and thursday
                     if (courses_schedule[id]["day"][sessions[i][0]] == 0) and \
@@ -224,16 +186,10 @@ class Constraint():
 
         bonuspoints = round(bonuspoints)
         maluspoints = round(maluspoints)
-        # print(course_bonus_malus)
-        # print(f"bonuspoints: {bonuspoints}")
-        # print(f"maluspoints: {maluspoints}")
+
         spread_points = maluspoints + bonuspoints
         Constraint.bonus_malus = course_bonus_malus
 
-        # we moeten ook maluspoints returnen maar ik weet nog even niet waar
-        # deze functie overal wordt aangeroepen dus daar wacht ik nog even mee
-
-        # zelfde geldt voor de bonus_malus_points
         return [spread_points, course_dict, bonuspoints, maluspoints]
 
     def lecture_first(schedule, courses, courses_schedule):
