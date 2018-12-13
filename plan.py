@@ -33,6 +33,8 @@ import numpy as np
 import matplotlib
 matplotlib.use('TkAgg')
 import matplotlib.pyplot as plt
+from matplotlib.pyplot import figure
+
 
 
 TIME_SLOTS = 4
@@ -182,6 +184,18 @@ class Plan():
 
         # tk.Label(window, text="Loading...", font="Arial 15 bold").place(x=20, y=440)
 
+
+
+        # def var_states():
+        Label(window, text="Your sex:").grid(row=20, column=5, sticky=W)
+        var1 = IntVar()
+        Checkbutton(window, text="male", variable=var1).grid(row=21, column=5, sticky=W)
+        var2 = IntVar()
+        Checkbutton(window, text="female", variable=var2).grid(row=22, column= 5,sticky=W)
+        Button(window, text='Quit', command=window.quit).grid(row=23, column=5, sticky=W, pady=4)
+            # Button(window, text='Show', command=var_states).grid(row=4, sticky=W, pady=4)
+            # mainloop()
+
         window.mainloop()
 
 
@@ -330,6 +344,7 @@ class Plan():
         that reached max points.
         """
 
+
         maxpoints = []
         max_schedule = None
         for i in range(n):
@@ -379,8 +394,64 @@ class Plan():
         courses_schedule, spread_points, capacity_points, lecture_points, mutual_course_malus = plan.points_to_print(max_schedule)
         plan.save_html(max_schedule, plan.rooms, spread_points, capacity_points, lecture_points, mutual_course_malus)
 
+
         print(algorithm, "reached max points of: ", maxpoints)
         return maxpoints, max_schedule, points
+
+    def compare_algorithm(self, random, random_n, hillclimber, hillclimber_n, hillclimber_x,
+                        hillclimber2, hillclimber2_n, hillclimber2_x, simulated, sim_x, sim_n, begin_temp,
+                        end_temp, type, check_rand, check_hill, check_hill2, check_sim):
+        """
+        Run certain algorithms with the intention to compare them in a boxplot.
+        Takes all arguments necessary to make plot. The check-arguments show
+        whether a box for that type of algorithm was checked.
+        Returns a boxplot.
+        """
+
+        # dict met alle data voor boxplot
+        boxplots = {"random": [], "hill climber": [], "hill climber2": [], "simulated": [], "genetic": []}
+        boxplot_data = []
+        boxplot_x = []
+
+
+        if check_rand:
+            max_points, max_schedule, points = runalgorithm("random", random_x, 0, 0, 0, None)
+            boxplots["random"] = max_points
+            boxplot_data.append(max_points)
+            boxplot_x.append("Random")
+
+        if check_hill:
+            print("inif")
+            max_points, max_schedule, points = plan.runalgorithm("hill climber",
+                                                hillclimber_x, hillclimber_n, 0, 0, None)
+            boxplots["hill climber"] = max_points
+            boxplot_data.append(max_points)
+            boxplot_x.append("Hillclimber")
+
+        if check_hill2:
+            max_points, max_schedule, points = runalgorithm("hill climber2", hillclimber2_x, hillclimber2_n, 0, 0, None)
+            boxplots["hill climber2"] = max_points
+            boxplot_data.append(max_points)
+            boxplot_x.append("Hillclimber2")
+
+        if check_sim:
+            max_points, max_schedule, points = runalgorithm("Simmulated annealing",
+                                                sim_x, sim_n, begin_temp, end_temp, type)
+            boxplots["simulated"] = max_points
+            boxplot_data.append(max_points)
+            boxplot_x.append("Simulated Annealing")
+
+        ax = plt.subplot(111)
+        pos1 = ax.get_position()
+        pos2 = [pos1.x0, pos1.y0 + 0.2,  pos1.width , pos1.height - 0.2]
+        ax.set_position(pos2)
+        plt.boxplot(boxplot_data)
+        plt.xticks(fontsize=10)
+        ax.set_xticklabels(boxplot_x)
+        plt.title("Comparing the points")
+        plt.ylabel("Points")
+        plt.xlabel("Algorithms")
+        plt.show()
 
 
     def generate(self):
@@ -390,6 +461,7 @@ class Plan():
         print("Opening GUI...")
 
         point_list = []
+        final_point_list = []
         plan.then = time.time()
         plan.random_numbers = []
         plan.schedule_counter = 0
@@ -420,9 +492,12 @@ class Plan():
         #     print("No points to plot for now.")
 
         # Make a html file for the schedule
-        # plan.save_html(schedule, plan.rooms, spread_points, capacity_points, lecture_points, mutual_course_malus)
+        plan.save_html(schedule, plan.rooms, spread_points, capacity_points, lecture_points, mutual_course_malus)
 
 
 if __name__ == "__main__":
     plan = Plan()
     plan.generate()
+    plan.compare_algorithm('random', 0, 'hillclimber', 5, 100,
+                        'hillclimber2', 5, 100, 'simulated', 0, 0, 0,
+                        0, None, False, True, True, False)
