@@ -71,17 +71,17 @@ class Plan():
                     .grid(row=1, column=3)
                 if algorithm == "hc":
                     tk.Label(window, text=plan.runalgorithm("hill climber", \
-                        int(n.get()), int(x.get()), 0, 0, 0)[0], wraplength=70).place(x=600, y =50)
+                        int(n.get()), int(x.get()), 0, 0, 0, False)[0], wraplength=70).place(x=600, y =50)
                 elif algorithm == "hc2":
                     print("TODO")
                 elif algorithm == "sa":
                     tk.Label(window, text=plan.runalgorithm("Simulated annealing", \
                             int(n2.get()), int(x2.get()), float(t1.get()), \
-                            float(t2.get()), type.get())[0], wraplength=70).place(x=600, y =50)
+                            float(t2.get()), type.get(), False)[0], wraplength=70).place(x=600, y =50)
                 elif algorithm == "Random":
                     tk.Label(window, text=plan.runalgorithm("Random", \
                             0, int(n4.get()), \
-                            0, 0, 0)[0], wraplength=70).place(x=600, y =50)
+                            0, 0, 0, False)[0], wraplength=70).place(x=600, y =50)
                 elif algorithm == "genetic":
                     print("TODO")
             else:
@@ -305,7 +305,7 @@ class Plan():
         print("May take a minute or 2...")
         print("Or 4...")
         print("Exit at any moment using 'ctr + c'.")
-        points = plan.runalgorithm(algorithm, x, n, begin_temperature, end_temperature, type)[2]
+        points = plan.runalgorithm(algorithm, x, n, begin_temperature, end_temperature, type, False)[2]
         plt.plot(points, 'b')
         plt.xlabel("Iterations")
         plt.ylabel("Points")
@@ -336,7 +336,7 @@ class Plan():
         return courses_schedule, spread_points, capacity_points, lecture_points, mutual_course_malus
 
 
-    def runalgorithm(self, algorithm, x, n, begin_temperature, end_temperature, type):
+    def runalgorithm(self, algorithm, x, n, begin_temperature, end_temperature, type, input_sched):
         """
         Run a certain algorithm for n number of times with x number of iterations.
         Algorithm input can be: "hill climber", "hill climber2" "genetic", "simulated annealing",
@@ -351,8 +351,10 @@ class Plan():
 
         for i in range(n):
 
-            # Make new random valid schedule
-            first_schedule = schedulemaker.initialize_schedule(plan.courses)[0]
+            if not bool(input_sched):
+                first_schedule = schedulemaker.initialize_schedule(plan.courses)[0]
+            else:
+                first_schedule = input_sched
             # Call algorithm
             if algorithm == "hill climber":
                 schedule_temp, points, schedule_counter = hillclimber.climb(first_schedule, plan.courses, plan.schedule_counter, x)
@@ -427,26 +429,28 @@ class Plan():
         boxplot_xaxis = []
         points = 0
 
+        schedule = schedulemaker.initialize_schedule(plan.courses)[0]
+
         if check_rand == 1:
-            max_points, max_schedule, points = plan.runalgorithm("Random", 0, random_n, 0, 0, None)
+            max_points, max_schedule, points = plan.runalgorithm("Random", 0, random_n, 0, 0, None, schedule)
 
             boxplot_data.append(max_points)
             boxplot_xaxis.append(f"Random \n n = {random_n}")
 
         if check_hill == 1:
             max_points, max_schedule, points = plan.runalgorithm("hill climber",
-                                                hillclimber_x, hillclimber_n, 0, 0, None)
+                                                hillclimber_x, hillclimber_n, 0, 0, None, schedule)
             boxplot_data.append(max_points)
             boxplot_xaxis.append(f"Hillclimber \n n = {hillclimber_n}")
 
         if check_hill2 == 1:
-            max_points, max_schedule, points = plan.runalgorithm("hill climber2", hillclimber2_x, hillclimber2_n, 0, 0, None)
+            max_points, max_schedule, points = plan.runalgorithm("hill climber2", hillclimber2_x, hillclimber2_n, 0, 0, None, schedule)
             boxplot_data.append(max_points)
             boxplot_xaxis.append(f"Hillclimber2 \n n = {hillclimber2_n}")
 
         if check_sim == 1:
             max_points, max_schedule, points = plan.runalgorithm("Simmulated annealing",
-                                                sim_x, sim_n, begin_temp, end_temp, type)
+                                                sim_x, sim_n, begin_temp, end_temp, type, schedule)
             boxplot_data.append(max_points)
             boxplot_xaxis.append(f"Simulated Annealing \n n = {sim_n}")
 
