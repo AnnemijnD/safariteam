@@ -337,7 +337,9 @@ class Plan():
 
         maxpoints = []
         max_schedule = None
+
         for i in range(n):
+
             # Make new random valid schedule
             first_schedule = schedulemaker.initialize_schedule(plan.courses)[0]
             # Call algorithm
@@ -352,7 +354,8 @@ class Plan():
                     max_schedule = schedule_temp
 
             elif algorithm == "Random":
-                points = Constraint.get_points(first_schedule, plan.courses)
+                points += Constraint.get_points(first_schedule, plan.courses)
+                print(points)
 
                 if max_schedule == None:
                     max_schedule = first_schedule
@@ -378,6 +381,7 @@ class Plan():
             if algorithm == "Random":
                 maxpoints.append(round(points))
             else:
+                print(f"points2: {points}")
                 maxpoints.append(round(max(points)))
 
         # Save schedule with highest points
@@ -389,7 +393,10 @@ class Plan():
         plan.save_html(max_schedule, plan.rooms, spread_points, capacity_points, lecture_points, mutual_course_malus)
 
         print(algorithm, "reached max points of: ", maxpoints)
+
         return maxpoints, max_schedule, points
+
+
 
     def compare_algorithm(self, random, random_n, hillclimber, hillclimber_n, hillclimber_x,
                         hillclimber2, hillclimber2_n, hillclimber2_x, simulated, sim_x, sim_n, begin_temp,
@@ -405,10 +412,10 @@ class Plan():
         boxplots = {"random": [], "hill climber": [], "hill climber2": [], "simulated": [], "genetic": []}
         boxplot_data = []
         boxplot_x = []
-
+        points = 0
 
         if check_rand:
-            max_points, max_schedule, points = runalgorithm("random", random_x, 0, 0, 0, None)
+            max_points, max_schedule, points = plan.runalgorithm("random", random_x, 0, 0, 0, None)
             boxplots["random"] = max_points
             boxplot_data.append(max_points)
             boxplot_x.append("Random")
@@ -422,13 +429,13 @@ class Plan():
             boxplot_x.append("Hillclimber")
 
         if check_hill2:
-            max_points, max_schedule, points = runalgorithm("hill climber2", hillclimber2_x, hillclimber2_n, 0, 0, None)
+            max_points, max_schedule, points = plan.runalgorithm("hill climber2", hillclimber2_x, hillclimber2_n, 0, 0, None)
             boxplots["hill climber2"] = max_points
             boxplot_data.append(max_points)
             boxplot_x.append("Hillclimber2")
 
         if check_sim:
-            max_points, max_schedule, points = runalgorithm("Simmulated annealing",
+            max_points, max_schedule, points = plan.runalgorithm("Simmulated annealing",
                                                 sim_x, sim_n, begin_temp, end_temp, type)
             boxplots["simulated"] = max_points
             boxplot_data.append(max_points)
@@ -491,6 +498,6 @@ class Plan():
 if __name__ == "__main__":
     plan = Plan()
     plan.generate()
-    plan.compare_algorithm('random', 0, 'hillclimber', 5, 100,
+    plan.compare_algorithm('random', 2, 'hillclimber', 5, 100,
                         'hillclimber2', 5, 100, 'simulated', 0, 0, 0,
                         0, None, False, True, True, False)
