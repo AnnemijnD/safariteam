@@ -12,28 +12,34 @@ sys.path.append(os.path.join(directory, "code", "classes"))
 sys.path.append(os.path.join(directory, "code", "algoritmes"))
 
 from constraint import Constraint
-import loaddata
 from session import Session
-import switch
+import loaddata
+import schedulemaker
 import genetic
+import gui
 import annealing
 import climbergreedy
+import hillclimberextended
 import hillclimber
-import csv
+
 import random
 import copy
 import time
 import pandas as pd
 from IPython.display import HTML
+import tkinter as tk
+from tkinter import *
+from tkinter import ttk
 import numpy as np
 import matplotlib
 matplotlib.use('TkAgg')
 import matplotlib.pyplot as plt
 
-SLOTS = 140
+
 TIME_SLOTS = 4
 DAYS = 5
 ROOMS = 7
+SLOTS = TIME_SLOTS * DAYS * ROOMS
 MAXMALUSPOINTS = 0
 MAXSCHEDULEPOINTS = 39
 POPULATION = 50
@@ -45,268 +51,92 @@ class Plan():
     Main script to make a schedule.
     """
 
-    def initialize_schedule(self, courses):
+    def gui(self, schedule, courses, schedule_counter, bool):
         """
-        Initialize schedule using Session().
-        """
-
-        schedule = [[[[None] for i in range(ROOMS)] for i in range(TIME_SLOTS)] for i in range(DAYS)]
-
-        sessions = []
-        session_list = []
-        lecture_sessions = []
-        other_sessions = []
-        empty_sessions = []
-
-        # random.shuffle(courses)
-
-        # ANNEMIJN KAN JE HIER NOG EEN COMMENT BIJ ZETTEN, SNap niet wat je hier hebt gedaan
-
-        for course in courses:
-            session_list = session_list + course.sessions_total
-
-        session_counter = 0
-        for i in range(len(session_list)):
-            session_list[i].overall_id = session_counter
-            session_counter += 1
-
-        # make #SLOTS empty sessions
-        for i in range(SLOTS):
-            name = ' '
-            type = ' '
-            max_students = ' '
-            session_id = 'nvt2'
-            group_id = 'nvt2'
-            empty_session = Session(name, type, max_students, session_id, group_id)
-            empty_session.overall_id = SLOTS
-            empty_sessions.append(empty_session)
-
-        for i in range(len(session_list)):
-            # Get all the lectures
-            if session_list[i].type == "lecture":
-                lecture_sessions.append(session_list[i])
-            elif session_list[i].type == "tutorial" or session_list[i].type == "practical":
-                other_sessions.append(session_list[i])
-
-        # shuffle de lectures zodat ze random zijn
-        # Make copy of sessions and shuffle
-        lectures = lecture_sessions[:]
-        others = other_sessions[:]
-        # random.shuffle(lectures)
-        # random.shuffle(other_sessions)
-
-        # De lijst met totale sessies bestaat dus uit een lijst met eerst
-        # Hoorcolleges, daarna de andere sessies en is opgevuld tot 140 met lege sessies
-        total = []
-        total = lectures + other_sessions
-
-        # plan.fill_schedule(schedule, total, other_sessions, empty_sessions, courses)
-        # print(session_list)
-        # print(len(session_list))
-        counter_sessions = 0
-        new_sched = False
-
-        while not bool(new_sched):
-            new_sched = plan.fill_schedule(schedule, session_list, lecture_sessions, empty_sessions, courses)
-            plan.schedule_counter +=1
-            counter_sessions += 1
-            # if plan.schedule_counter % 100 == 0:
-            #     print(plan.schedule_counter)
-            if not new_sched == False:
-                break
-
-        return schedule, total, other_sessions, empty_sessions
-
-
-    def fill_schedule(self, schedule, lectures, other_sessions, empty_sessions, courses):
-        """
-        Fill empty schedule with sessions. This function will begin to fill all
-        the lectures and will go on to fill other sessions.
+        Starts a GUI when plan.py is runned.
         """
 
-        # Gebruik nested for loop om elke cel een session te gegen.
-        # Je geeft hierbij een lijst met sessies mee aan de functie get_session
-        # De lijst met sessies is al gemaakt in initialize_schedule()
+        window = tk.Tk()
+        window.geometry('700x500')
+        window.configure(bg='white')
+        # Add title to GUI
+        window.title("GUI Safariteam")
 
-        # Vul eerst met lege sessions
-        # counter = 0
-        session_counter = 0
-        for day in range(DAYS):
-            for c in range(TIME_SLOTS):
-                for d in range(ROOMS):
-                    schedule[day][c][d] = empty_sessions[session_counter]
-                    session_counter += 1
-
-
-
-
-        # Verdelen over slots als hard constraint
-
-        # vertelt hoeveelste lecture van dit vak dit is
-        passed_lectures = 0
+        def printresults(algorithm):
+            print("Loading....")
+            tk.Label(window, text="Resulted points (out of 440): ").place(x=360, y =10)
+            if algorithm == "hc":
+                tk.Label(window, text=plan.runalgorithm("hill climber", int(n.get()), int(x.get()), 0, 0, 0)[0]).place(x=360, y = 40)
+            elif algorithm == "hc2":
+                print("TODO")
+            elif algorithm == "sa":
+                tk.Label(window, text=plan.runalgorithm("Simmulated annealing", int(n2.get()), int(x2.get()), float(t1.get()), float(t2.get()), type.get())[0]).place(x=360, y = 40)
+            elif algorithm == "genetic":
+                print("TODO")
 
 
-        # found = False
-        for e in range(len(lectures)):
-            # print(lectures[e].name)
+        # Add labels to the hill climber input
+        tk.Label(window, text="Hill climber: ", font="Arial 15 bold").grid(column=1)
+        Label(window, text="Iterations: ").grid(row=1)
+        Label(window, text="Runs (n): ").grid(row=2)
+        n = Entry(window)
+        x = Entry(window)
+        n.grid(row=1, column=1)
+        x.grid(row=2, column=1)
+        n.insert(10,"10000")
+        x.insert(10,"3")
+        n.bind('<Return>', lambda _: printresults("hc"))
+        x.bind('<Return>', lambda _: printresults("hc"))
 
-            lectures_first = False
-            tut_or_prac = False
-            location = []
-            found = False
+        # Add labels to simmulated annealing input
+        tk.Label(window, text="Simulated annealing: ", font="Arial 15 bold").grid(column=1)
+        Label(window, text="Iterations: ").grid(row=6)
+        Label(window, text="Runs (n): ").grid(row=7)
+        Label(window, text="Begin temperature: ").grid(row=8)
+        Label(window, text="End temperature: ").grid(row=9)
+        Label(window, text="exponential | logaritmic").grid(row=10)
+        n2 = Entry(window)
+        x2 = Entry(window)
+        t1 = Entry(window)
+        t2 = Entry(window)
+        type = Entry(window)
+        n2.grid(row=6, column=1)
+        x2.grid(row=7, column=1)
+        t1.grid(row=8, column=1)
+        t2.grid(row=9, column=1)
+        type.grid(row=10, column=1)
+        n2.insert(10,"1000")
+        x2.insert(10,"1")
+        t1.insert(10,"4")
+        t2.insert(10,"0.01")
+        type.insert(10,"exponential")
+        n2.bind('<Return>', lambda _: printresults("sa"))
+        x2.bind('<Return>', lambda _: printresults("sa"))
+        t1.bind('<Return>', lambda _: printresults("sa"))
+        t2.bind('<Return>', lambda _: printresults("sa"))
+        type.bind('<Return>', lambda _: printresults("sa"))
 
-
-            for course in courses:
-                if lectures[e].name == course.name:
-                   lectures[e].course_object = course
-                   mutual_courses_session = lectures[e].course_object.mutual_courses
-
-            # is dit een hoorcollege?
-            if lectures[e].type == "lecture":
-                lectures_first = True
-            else:
-                tut_or_prac = True
-
-            for day in range(DAYS):
-
-                for c in range(TIME_SLOTS):
-
-                    rooms_allowed = True
-                    # availibility = True
-                    for d in range(ROOMS):
-
-                        # als het een tutorial of pracitcal is
-                        if not lectures_first:
-
-
-                            if lectures[e].name == schedule[day][c][d].name:
-                                if schedule[day][c][d].type == "lecture":
-
-                                    # alle eerdere locaties mogen weg want er mag niets voor een lecture
-                                    location.clear()
-                                    # print(location)
-                                    break
-                                elif not lectures[e].session_id == schedule[day][c][d].session_id:
-                                    if lectures[e].group_id == schedule[day][c][d].group_id:
-                                        for k in range(len(location) - 1, -1, -1):
-                                            if location[k][1] == c and location[k][0] == day:
-                                                del location[k]
-                                        break
-
-
-                            elif schedule[day][c][d].name in mutual_courses_session:
-                                rooms_allowed = False
-                                for k in range(len(location) - 1, -1, -1):
-                                    if location[k][1] == c and location[k][0] == day:
-                                        del location[k]
-
-                                break
+        # Add labels to genetic input
+        tk.Label(window, text="Genetic algorithm: SANNE WAT MOET HIER AAAH ", font="Arial 15 bold").grid(column=1)
+        Label(window, text="Population: ").grid(row=12)
+        Label(window, text="Runs (n): ").grid(row=13)
+        n3 = Entry(window)
+        x3 = Entry(window)
+        n3.grid(row=12, column=1)
+        x3.grid(row=13, column=1)
+        n3.insert(10,"10")
+        x3.insert(10,"3")
+        n3.bind('<Return>', lambda _: printresults("genetic"))
+        x3.bind('<Return>', lambda _: printresults("genetic"))
 
 
+        tk.Label(window, text="Press enter to run. ").grid(column=1)
 
-                        # als het een lecture is
-                        elif lectures[e].name == schedule[day][c][d].name or schedule[day][c][d].name in mutual_courses_session:
+        tk.Button(window, text="Plot one hill climber run", command=lambda:plan.plot("hill climber")).place(x=100, y=350)
+        tk.Button(window, text="Plot one simmulated annealing run", command=lambda:plan.plot("sa")).place(x=100, y=390)
 
-                            # achteruit itereren anders gaat het verwijderen niet goed
-                            for k in range(len(location) - 1, -1, -1):
-                                if location[k][1] == c and location[k][0] == day:
-                                    del location[k]
-                            rooms_allowed = False
+        window.mainloop()
 
-                            # print(location)
-                            break
-
-                        # if the slot in the schedule is empty
-                        if schedule[day][c][d].name == ' ':
-                            location.append((day,c,d))
-
-            if bool(location):
-                counter = 0
-
-                # als het een lecture was, verwijder het aantal potentiele locaties aan het einde van het rooster gelijk
-                # aan de hoeveelheid vakken die er nog moeten worden ingedeeld
-                if lectures_first:
-
-                    amount_sessions = lectures[e].course_object.lecture + lectures[e].course_object.tutorial + lectures[e].course_object.practical
-                    prohibited_timeslots = amount_sessions - 1 - passed_lectures
-
-                    # probleem: er moeten nu teveel plekken open worden gehouden
-                    passed_lectures += 1
-
-
-                    while not counter == prohibited_timeslots:
-                        if not bool(location) or prohibited_timeslots >= len(location):
-
-                            return False
-
-                        elif not location[-1][1] == location[-2][1]:
-                            # print(location)
-                            counter +=1
-                        location.remove(location[-1])
-
-                random_location = random.choice(location)
-                # print(random_location)
-                schedule[random_location[0]][random_location[1]][random_location[2]] = lectures[e]
-                found = True
-                # als dit het laatste lecture van het vak was of als er geen andere sessies meer zijn van dit vak:
-                if not e == len(lectures) - 1 and (not lectures[e + 1].type == "lecture" or not lectures[e].course_object == lectures[e + 1].course_object):
-                    passed_lectures = 0
-
-
-            else:
-
-                # plan.schedule_counter += 1
-
-                return False
-                # return schedule
-                #plan.initialize_schedule(plan.courses)
-                # break
-        if found:
-
-            # give the empty_sessions overall_ids
-            overall_id_counter = SESSION_NUM
-            for i in range(DAYS):
-                for j in range(TIME_SLOTS):
-                    for k in range(ROOMS):
-                        # checks if the session is empty
-                        if schedule[i][j][k].overall_id == SLOTS:
-                            schedule[i][j][k].overall_id = overall_id_counter
-                            overall_id_counter += 1
-
-            return schedule
-
-        else:
-            # plan.schedule_counter += 1
-
-            return False
-
-    # def random_schedule(self, schedule, sessions):
-    #     """
-    #     Generates a random schedule. Assigns every session to a random timeslot.
-    #     # Hou bij welke random nummers al geweest zijn. De while loop
-    #     # Zorgt ervoor dat er een random nummer wordt gemaakt die nog
-    #     # niet is geweest.
-    #     """
-    #
-    #     # Maak een 1D lijst van schedule
-    #     flatten = np.array(schedule, dtype=object).flatten()
-    #
-    #     random_numbers = []
-    #
-    #     for i in range(len(sessions)):
-    #         rand = random.randint(0, SLOTS - 1)
-    #         while rand in random_numbers:
-    #             rand = random.randint(0, SLOTS - 1)
-    #         random_numbers.append(rand)
-    #         flatten[rand] = sessions[i]
-    #
-    #     # Convert back to 3D list
-    #     schedule = flatten.reshape(DAYS, TIME_SLOTS, ROOMS).tolist()
-    #
-    #     # Keep track of how many schedules were made
-    #     plan.schedule_counter += 1
-    #
-    #     return schedule
 
     def save_html(self, schedule, rooms, spread_points, capacity_points, lecture_points, mutual_course_malus):
         """
@@ -385,14 +215,39 @@ class Plan():
             f.write("Friday")
             f.write(html_string.format(table=friday.to_html(classes='style')))
 
-    def makeplot(self, points):
+    def makeplot(self, points, points2):
         """
         Plots a graph of all the points on the y-axis and number of schedules
         on the x-axis.
         """
-        plt.plot(points)
+        plt.plot(points, 'b') # annealing
+        plt.plot(points2, 'r') # hillclimber
+        plt.xlabel("Iterations")
         plt.ylabel("Points")
         plt.show()
+
+    def plot(self, algorithm):
+        """
+        Returns a plot of 1 run (n = 1) of a certain algorithm.
+        """
+
+        # Set values to plot a hill climber
+        x = 20000
+        n = 1
+        begin_temperature = 4
+        end_temperature = 0.01
+        type = "exponential"
+
+        print("Generating a plot...")
+        print("May take a minute or 2...")
+        print("Or 4...")
+        print("Exit at any moment using 'ctr + c'.")
+        points = plan.runalgorithm(algorithm, x, n, begin_temperature, end_temperature, type)[2]
+        plt.plot(points, 'b')
+        plt.xlabel("Iterations")
+        plt.ylabel("Points")
+        plt.show()
+
 
     def end(self, schedule, courses_schedule):
         """
@@ -416,6 +271,34 @@ class Plan():
 
         return courses_schedule, spread_points, capacity_points, lecture_points, mutual_course_malus
 
+
+    def runalgorithm(self, algorithm, x, n, begin_temperature, end_temperature, type):
+        """
+        Run a certain algorithm for n number of times with x number of iterations.
+        Algorithm input can be: "hill climber", "hill climber2" "genetic", "simulated annealing".
+        Output is a list of maximum points that the algorithm reached.
+        """
+
+        maxpoints = []
+        for i in range(n):
+            # Make new random valid schedule
+            schedule = schedulemaker.initialize_schedule(plan.courses)[0]
+            # Call algorithm
+            if algorithm == "hill climber":
+                points = hillclimber.climb(schedule, plan.courses, plan.schedule_counter, x)[1]
+            elif algorithm == "hill climber2":
+                points = hillclimberextended.climb(schedule, plan.courses, plan.schedule_counter, x)[1]
+            elif algorithm == "Simmulated annealing":
+                points = annealing.anneal(schedule, plan.courses, plan.schedule_counter, x, begin_temperature, end_temperature, type)[1]
+            elif algorithm == "genetic":
+                print("TODO")
+            # Save max points to a list
+            maxpoints.append(round(max(points)))
+
+        print(algorithm, "reached max points of: ", maxpoints)
+        return maxpoints, schedule, points
+
+
     def generate(self):
         """
         Generates a schedule by calling several helper functions and algorithms.
@@ -430,179 +313,32 @@ class Plan():
         # Load all the courses, rooms and sessions
         plan.courses = loaddata.load_courses()
 
-        # # runs the hillclimber hunderd times
-        # point_list = []
-        # for i in range(100):
-        #     schedule = plan.initialize_schedule(plan.courses)[0]
-        #
-        #     points = Constraint.get_points(schedule, plan.courses)
-        #
-        #     while points < -200:
-        schedule = plan.initialize_schedule(plan.courses)[0]
-        #         points = Constraint.get_points(schedule, plan.courses)
-        #
-        #     # print("Runnig algorithm...")
-        #     # Geef dit rooster mee aan de soft constraints
-        #     # schedule, points, plan.schedule_counter = hillclimber.soft_constraints(schedule, plan.courses, plan.schedule_counter)
-        #
-        #     # schedule, points, plan.schedule_counter = climbergreedy.soft_constraints(schedule, plan.courses, plan.schedule_counter)
-        #     point_list.append(points[-1])
-        #     # print(i)
-
-        # runs the hillclimber fifty times
-        # point_list = []
-        schedules = []
-        for i in range(50):
-            print(f"i = {i}")
-            schedule = plan.initialize_schedule(plan.courses)[0]
-
-            # schedule_points = Constraint.get_points(schedule, plan.courses)
-            while Constraint.get_points(schedule, plan.courses) < -200:
-                plan.schedule_counter = 0
-                schedule = plan.initialize_schedule(plan.courses)[0]
-
-                # schedule_points = Constraint.get_points(schedule, plan.courses)
-            schedule, points, plan.schedule_counter = hillclimber.soft_constraints(schedule, plan.courses, plan.schedule_counter)
-            # print("TEST VAN POINTS LIST", points)
-            # point_list.append(max(points))
-            schedules.append(schedule)
-            # print(f"point_list: {point_list}")
-
-                # points = Constraint.get_points(schedule, plan.courses)
-            # schedule, points, plan.schedule_counter = hillclimber.soft_constraints(schedule, plan.courses, plan.schedule_counter)
-            # schedule, points, plan.schedule_counter = hillclimber.soft_constraints(schedule, plan.courses, plan.schedule_counter)
-            # print("Runnig algorithm...")
-            # Geef dit rooster mee aan de soft constraints
-            # schedule, points, plan.schedule_counter = hillclimber.soft_constraints(schedule, plan.courses, plan.schedule_counter)
-
-            # schedule, points, plan.schedule_counter = climbergreedy.soft_constraints(schedule, plan.courses, plan.schedule_counter)
-
-        #     # print(i)
-        #
-        # print("the almighty lijst van 100 hillclimber resultaten")
-        # print(point_list)
-
-        point_list = []
-        for i in range(50):
-            point_list.append(genetic.genetic_algortim(schedules, plan.courses))
-        print("50x genetisch met als populatie 50 dezelfde hillclimbers")
-        print(point_list)
-
-# run random 100x
-        # points = []
-        # points_final = []
-        # for i in range(100):
-        #     print(i)
-        #     schedule = plan.initialize_schedule(plan.courses)[0]
-        #     points.append(Constraint.get_points(schedule, plan.courses))
-        #     points_final.append(Constraint.get_points_final(schedule, plan.courses))
-        #
-        # print(points)
-        # print(points_final)
-
-        # run genetic 50x met 50x dezelfde begin populatie
-        # schedules = []
-        # for i in range(POPULATION):
-            # schedules.append(plan.initialize_schedule(plan.courses)[0])
-        # improvements = []
-        # for i in range(50):
-        #     print(i)
-        #     improvements.append(genetic.genetic_algortim(schedules, plan.courses))
-        # print(improvements)
-
-
+        # Alle andere dingen laden jeeej
         rooms = loaddata.load_rooms()
         plan.own_session_points = 0
-        spread_points = 0
-        lecture_points = 0
-        capacity_points = 0
-        schedule = plan.initialize_schedule(plan.courses)[0]
 
-        # Geef dit rooster mee aan de soft constraints
-        # schedule, points, plan.schedule_counter = hillclimber.soft_constraints(schedule, plan.courses, plan.schedule_counter)
+        # # Make random valid schedule
+        schedule = schedulemaker.initialize_schedule(plan.courses)[0]
 
-        # while points < -200:
-        #     schedule = plan.initialize_schedule(plan.courses)[0]
-        #     points = Constraint.get_points(schedule, plan.courses)
-        # print("Running algorithm...")
-        # plan.schedule_counter = 0
-        # # schedule, points, plan.schedule_counter = climbergreedy.climbergreedy(schedule, plan.courses, plan.schedule_counter)
-
-        # # schedule, points, plan.schedule_counter = climbergreedy.soft_constraints(schedule, plan.courses, plan.schedule_counter)
-        # mutual_course_malus = Constraint.mutual_courses_check(schedule, plan.courses)
+        plan.gui(schedule, plan.courses, plan.schedule_counter, True)
 
 
-        # annealing.anneal(schedule, plan.courses, plan.schedule_counter)
+        # Get all points to pass on to save_html
+        courses_schedule, spread_points, capacity_points, lecture_points, mutual_course_malus = plan.points_to_print(schedule)
 
-        # test all_constraints_linear
-        # schedule1, lectures, other_sessions, empty_sessions = plan.initialize_schedule(plan.courses, rooms_list)
-        # courses_schedule1 = Constraint.all_constraints(schedule1, plan.courses)
-        # schedule2 = np.array(schedule1).flatten().tolist()
-        # courses_schedule2 = Constraint.all_constraints_linear(schedule2, plan.courses)
-        #
-        # if courses_schedule1 == courses_schedule2:
-        #     print("CHILL")
-        # else:
-        #     print("huilon")
-        #
-        # for i in range(len(courses_schedule1)):
-        #     if courses_schedule1[i] != courses_schedule2[i]:
-        #         print(i)
-        #         print(courses_schedule1[i])
-        #         print(courses_schedule2[i])
-        #
-        # genetic.get_points(schedule2, plan.courses)
-
-        # test new constraint function
-        # courses_schedule = Constraint.all_constraints(schedule, plan.courses)
-
-        # DIT MOET OOK ECHT EVEN IN EEN APARTE FUNCTIE XOXOXO R
-        # courses_schedule = Constraint.all_constraints(schedule, plan.courses)
-        # Constraint.session_spread_check(schedule, plan.courses, courses_schedule)
-        # spread_points = Constraint.session_spread_check(schedule, plan.courses, courses_schedule)[0]
-        # # print(spread_points)
-        # capacity_points = (Constraint.students_fit(schedule, plan.courses, courses_schedule))
-        # lecture_points = Constraint.lecture_first(schedule, plan.courses, courses_schedule)
-        # Constraint.lecture_first(schedule, plan.courses, courses_schedule)
-
-
-        # DIT MOET OOK ECHT EVEN IN EEN APARTE FUNCTIE lol XOXOXO R
-        courses_schedule = Constraint.all_constraints(schedule, plan.courses)
-        Constraint.session_spread_check(schedule, plan.courses, courses_schedule)
-        spread_points = Constraint.session_spread_check(schedule, plan.courses, courses_schedule)[0]
-        # print(spread_points)
-        capacity_points = (Constraint.students_fit(schedule, plan.courses, courses_schedule))
-        lecture_points = Constraint.lecture_first(schedule, plan.courses, courses_schedule)
-        Constraint.lecture_first(schedule, plan.courses, courses_schedule)
-        mutual_course_malus = Constraint.mutual_courses_check(schedule, plan.courses)
-
-
-        #
-        # overall_id = Constraint.session_points(schedule, plan.courses)[0]
-        # Constraint.overall_id_points(schedule, plan.courses, overall_id)
-        # Constraint.switch_session(schedule, 1, overall_id, plan.courses)
-
-        # # Print the end-text
+        # Print the end-text
         # plan.end(schedule, courses_schedule)
         # # Make a plot of the points
         # try:
-        #     plan.makeplot(points)
+        #     points2 = 0
+        #     plan.makeplot(points, points2)
         # except:
         #     print("No points to plot for now.")
-
-        # Print the end-text
-        plan.end(schedule, courses_schedule)
-        # Make a plot of the points
-        try:
-            plan.makeplot(points)
-        except:
-            print("No points to plot for now.")
 
         # Make a html file for the schedule
         # plan.save_html(schedule, rooms, spread_points, capacity_points, lecture_points, mutual_course_malus)
 
 
 if __name__ == "__main__":
-    print("hoi")
     plan = Plan()
     plan.generate()

@@ -1,23 +1,17 @@
 
 """
-SIMULATED ANNEALING TEST
+Hill climber algorithm: generates a schedule that fulfills certain constraints
+by accepting a schedule with higher points.
 """
 
 from constraint import Constraint
-import schedulemaker
 import matplotlib
-import math
-from random import randint
 matplotlib.use('TkAgg')
+import schedulemaker
 import matplotlib.pyplot as plt
 
-CYCLES = 5
-OPTIMUM = 200
-LIMIT = 500
-MAXPOINTS = 440
 
-
-def anneal(schedule, courses, schedule_counter, total_iterations, begin_temperature, end_temperature, type):
+def climb(schedule, courses, schedule_counter, iterations):
     """
     Generates a schedule using a hill climber algorithm.
     Input is a random schedule, output is a schedule that fulfills all hard-
@@ -25,28 +19,13 @@ def anneal(schedule, courses, schedule_counter, total_iterations, begin_temperat
     """
 
     accept_counter = 0
-    accept_max = 25
     points = []
-    # begin_temperature = 4
-    # end_temperature = 0.01
+    counter = 0
+    OPTIMUM = 45
 
-    # Sigmodial:
-    # temp = end_temperature + (begin_temperature - end_temperature) / (1 + math.exp(0.3 * (i - total_iterations/2)))
-
-
-
-    for i in range(0, total_iterations):
-
-        # Get cooling scheme
-        if type == "exponential":
-            temp = begin_temperature * math.pow((end_temperature / begin_temperature),  (i / total_iterations))
-        else:
-            # Geman cooling scheme
-            temp = begin_temperature / math.log(i + 2)
-
-        points.append(Constraint.get_points(schedule, courses))
+    while counter < iterations:
         # Append points to show in a graph when the schedule is made
-        points.append(Constraint.get_points(schedule, courses))
+        points.append(get_points(schedule, courses))
         # Count the number of schedules made
         schedule_counter += 1
         # Save the first schedule
@@ -61,18 +40,24 @@ def anneal(schedule, courses, schedule_counter, total_iterations, begin_temperat
         # Accept new schedule if it has more points that the old schedule.
         # Also accept schedules with equal number of points for a higher chance
         # of finding a solution.
-        if schedule2_points >= schedule1_points: # or schedule2_points - schedule1_points < verschil:
+        if schedule2_points >= schedule1_points:
             schedule = schedule2
             accept_counter = 0
-        else: # deze else moet even anders
+        # If the second schedule has less points, go back to the old schedule.
+        else:
             schedule = schedule1
             accept_counter += 1
-        # Bij vastlopen
-        if accept_counter > accept_max:
-            diff = schedule2_points - schedule1_points
-            # Pas simulated annealing toe
-            if randint(0, 100) < (math.exp(diff / temp) * 100):
-                schedule = schedule2
+        # If a limit is reached, change the number of switches to 1, resulting
+        # in a higher chance of finding schedule with more points. The disadvantage
+        # is that it (could) take longer to find a good schedule.
+        if schedule_counter == LIMIT:
+            if Constraint.get_points(schedule, courses) == MAXPOINTS:
+                return schedule, points, schedule_counter
+        # Make a forced switch if an optimum is reached for the number of times
+        # that a schedule was rejected.
+        if accept_counter > OPTIMUM:
+            schedule = schedulemaker.switch_session(schedule, 1, -1)
+            accept_counter = 0
 
     # Append last points of the new schedule to make a full plot of the points
     points.append(Constraint.get_points(schedule, courses))
@@ -80,3 +65,12 @@ def anneal(schedule, courses, schedule_counter, total_iterations, begin_temperat
 
     # Return the generated schedule and its points :-)
     return schedule, points, schedule_counter
+
+
+def makeplot(points):
+    """
+    DEZE KAN WEGGEHAALD WORDEN ZODRA WE HET NIET MEER WILLEN TESTEN
+    """
+    plt.plot(points)
+    plt.ylabel("Points")
+    plt.show()

@@ -1,7 +1,7 @@
 import copy
 import numpy as np
 import random
-import switch
+import schedulemaker
 from constraint import Constraint
 from operator import itemgetter
 from random import randint
@@ -120,10 +120,17 @@ def choose_parents_KWAY(population, courses):
         for j in range(K):
             population.append(battlefield[j][0])
 
+<<<<<<< HEAD
     # print_list = []
     # for i in range(len(parents)):
     #     print_list.append(Constraint.get_points(parents[i], courses))
     #
+=======
+    print_list = []
+    for i in range(len(parents)):
+        print_list.append(Constraint.get_points(parents[i], courses))
+
+>>>>>>> 173001b446590f9fdc455cb874f5bf75f76ea5ec
     # print(max(print_list), min(print_list), sum(print_list) / len(print_list))
 
     return parents
@@ -255,7 +262,7 @@ def mutate_children(children):
         switches = randint(1, SWITCHES)
         child = random.choice(children)
         children.remove(child)
-        child = switch.switch_session(child, switches, -1)
+        child = schedulemaker.switch_session(child, switches, -1)
         children.append(child)
 
     return children
