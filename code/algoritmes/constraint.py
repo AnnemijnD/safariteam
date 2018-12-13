@@ -15,6 +15,7 @@ MAX_SPREAD = 440
 WEIGHT = MAX_FIT / MAX_SPREAD
 SESSION_NUM = SLOTS - EMPTY_SESSIONS  # kan weg als alle ongebruikte functies weg zijn
 
+
 # STRAKS AAN ANNEMOIN VRAGEN WAT IK HIERMEE HAD KUNNEN BEDOELEN
 # TODO: class die courses in zich heeft en hier iets over zegt
 
