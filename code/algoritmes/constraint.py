@@ -1,16 +1,19 @@
 import loaddata
-from random import randint
 
 TIME_SLOTS = 4
 DAYS = 5
 ROOMS = 7
 SLOTS = DAYS * TIME_SLOTS * ROOMS
 SLOTS_PER_DAY = ROOMS * TIME_SLOTS
+MPF = 10  # TODO willen we hier uitleg bij???????
 
 # case specific
-EMPTY_SESSIONS = 11
+EMPTY_SESSIONS = 11  # kan weg als SESSION_NUM weg is
 SPREAD_BONUS = 20
-SESSION_NUM = SLOTS - EMPTY_SESSIONS
+MAX_FIT = 1332
+MAX_SPREAD = 440
+WEIGHT = MAX_FIT / MAX_SPREAD
+SESSION_NUM = SLOTS - EMPTY_SESSIONS  # kan weg als alle ongebruikte functies weg zijn
 
 # STRAKS AAN ANNEMOIN VRAGEN WAT IK HIERMEE HAD KUNNEN BEDOELEN
 # TODO: class die courses in zich heeft en hier iets over zegt
@@ -23,18 +26,21 @@ class Constraint():
 
     def all_constraints(schedule, courses):
         """
-        Safes info of all the sessions of a course in a dictionary.
+        Saves info of all the sessions of a course in a dictionary.
 
-        Input: schedule of which you want to check the constraints, list of all
-        courses
+        Input: 3D schedule of which you want to check the constraints, list of
+        all courses
         Output: list with for every course a dictionary that contains info of
         the sessions of that course
 
-        TODO: vragen aan iemand of dit nu wel begrijpelijk is
+        TODO: [day, slot, room] werkt niet???????????
+        TODO: moet input elke keer?????
         """
 
         courses_schedule = []
         for course in courses:
+
+            # initialize dictionary with all the info you want to save
             course_schedule = {"day": [], "slot": [], "room": [], "type": [],
                                "session_id": [], "group_id": [],
                                "overall_id": []}
@@ -61,21 +67,15 @@ class Constraint():
 
     def session_spread_check(schedule, courses, courses_schedule):
         """
-        Calculates the amount of bonuspoints earned by correctly spreading the
-        courses over the week. Where a course with 2 sessions should be on
-        either monday and thursday or tuesday and friday. See the rest of the
-        constrains in the comments bellow.
-        A course can maximally get 20 points, this amount is spreaded over the
-        number of groups a course has.
+        Calculates the amount of bonuspoints and maluspoints earned by
+        spreading the sessions of a course.
 
-        Maximum amount of bonuspoints is 440
-        Maximum amount of maluspoints is 430
-        Dit is nu alleen zo voor onze functie!!
+        Input: schedule of which you want to check the constraints, list of all
+        courses, list of dictionaries with info of all the sessions of a course
+        Output: a list with the total amount of points, the amount of
+        bonuspoints, the amount of maluspoints.
 
-        Doc string is schrijven wat de functie doet, welke arg die binnen
-        krijgt, en welke return waarden hij heeft.
-
-        Returns a list of malus and bonuspoints per course as well.
+        TODO: ANNEMIJN verwijder alles wat we niet meer gebruiken
         """
         bonuspoints = 0
         maluspoints = 0
@@ -84,6 +84,7 @@ class Constraint():
         # list with course id, bonus points and malus points
         course_bonus_malus = []
 
+        # calculate bonus- and maluspoints per course
         for course in courses:
             id = course.course_id
             course_mal_points = 0
@@ -100,9 +101,11 @@ class Constraint():
             groups = max(courses_schedule[id]["group_id"])
             if groups > 0:
 
-                # saves indices of groups in courses_schedule together with lectures
+                # saves indices of groups together with lectures
                 for i in range(groups):
-                    same_group = [j for j, e in enumerate(courses_schedule[id]["group_id"]) if e == i + 1]
+                    same_group = [j for j,
+                                  e in enumerate(courses_schedule[id]["group_id"])
+                                  if e == i + 1]
                     sessions.append(lectures + same_group)
             else:
                 sessions = [lectures]
@@ -112,94 +115,96 @@ class Constraint():
 
             if course.sessions == 2:
 
-                #  loops over the amount of groups
-                for i in range(len(sessions)):
+                # increases bonuspoints if sessions are on monday and thursday
+                Constraint.spread_detail(sessions, [0, 3], courses_schedule,
+                                         id, bonuspoints, spread_bonus)
 
-                    # checks if the courses are on monday and thursday
-                    if (courses_schedule[id]["day"][sessions[i][0]] == 0) and \
-                       (courses_schedule[id]["day"][sessions[i][1]] == 3):
-                        bonuspoints += spread_bonus
-                        course_bon_points += spread_bonus
-
-
-                    # checks if the courses are on tuesday an friday
-                    elif (courses_schedule[id]["day"][sessions[i][0]] == 1) and \
-                         (courses_schedule[id]["day"][sessions[i][1]] == 4):
-                        bonuspoints += spread_bonus
-                        course_bon_points += spread_bonus
+                # increases bonuspoints if sessions are on tuesday and friday
+                Constraint.spread_detail(sessions, [1, 4], courses_schedule,
+                                         id, bonuspoints, spread_bonus)
 
             elif course.sessions == 3:
 
-                for i in range(len(sessions)):
-
-                    # checks if the courses are on monday, wednesday and friday
-                    if (courses_schedule[id]["day"][sessions[i][0]] == 0) and \
-                       (courses_schedule[id]["day"][sessions[i][1]] == 2) and \
-                       (courses_schedule[id]["day"][sessions[i][2]] == 4):
-                        bonuspoints += spread_bonus
-                        course_bon_points += spread_bonus
+                # increases bonuspoints if sessions are on mon, wed, fri
+                Constraint.spread_detail(sessions, [0, 2, 4], courses_schedule,
+                                         id, bonuspoints, spread_bonus)
 
             elif course.sessions == 4:
 
-                for i in range(len(sessions)):
-
-                    # checks if the courses are on monday, tuesday, thursday and friday
-                    if (courses_schedule[id]["day"][sessions[i][0]] == 0) and \
-                       (courses_schedule[id]["day"][sessions[i][1]] == 1) and \
-                       (courses_schedule[id]["day"][sessions[i][2]] == 3) and \
-                       (courses_schedule[id]["day"][sessions[i][3]] == 4):
-                        bonuspoints += spread_bonus
-                        course_bon_points += spread_bonus
+                # increases bonuspoints if sessions are on mon, tues, thurs, fri
+                Constraint.spread_detail(sessions, [0, 1, 3, 4],
+                                         courses_schedule, id, bonuspoints,
+                                         spread_bonus)
 
             elif course.sessions == 5:
 
-                for i in range(len(sessions)):
+                # increases bonuspoints if there's a session every day of the week
+                Constraint.spread_detail(sessions, [0, 1, 2, 3, 4],
+                                         courses_schedule, id, bonuspoints,
+                                         spread_bonus)
 
-                    # checks if the courses are spread out on the whole week (every day)
-                    if (courses_schedule[id]["day"][sessions[i][0]] == 0) and \
-                       (courses_schedule[id]["day"][sessions[i][1]] == 1) and \
-                       (courses_schedule[id]["day"][sessions[i][2]] == 2) and \
-                       (courses_schedule[id]["day"][sessions[i][3]] == 3) and \
-                       (courses_schedule[id]["day"][sessions[i][4]] == 4):
-                        bonuspoints += spread_bonus
-                        course_bon_points += spread_bonus
-
-            #  check the overall spread per group
+            # check the overall spread per group
             for i in range(len(sessions)):
-                days = []
 
-                # adds the days sessions are given to list days
+                # makes a list of the days of the sessions
+                days = []
                 for j in range(len(sessions[i])):
                     days.append(courses_schedule[id]["day"][sessions[i][j]])
 
-                # if the sessions aren't spread enough increase maluspoints
+                # if more sessions on a day, calculate and increase maluspoints
                 if len(days) - len(set(days)) > 0:
+
                     malusfactor = (course.sessions - len(days) - len(set(days)))
-                    maluspoints += (malusfactor * 10) / len(sessions)
-                    course_mal_points += (malusfactor * 10) / len(sessions)
+                    maluspoints += (malusfactor * MPF) / len(sessions)
+                    course_mal_points += (malusfactor * MPF) / len(sessions)
 
-
-            # course_bonus_malus.append([id, round(course_mal_points - course_bon_points)])
+            # TODO: wat doen we hier??? comment!!! (annemijn??)
             course_dict.update({id: (round(course_mal_points - course_bon_points))})
 
+        # calculate spread_points and update Constraint.bonus_malus
         bonuspoints = round(bonuspoints)
         maluspoints = round(maluspoints)
-
         spread_points = maluspoints + bonuspoints
         Constraint.bonus_malus = course_bonus_malus
 
+        # TODO: gebruiken we constraint.bonus_malus???????????
+
         return [spread_points, course_dict, bonuspoints, maluspoints]
+
+    def spread_detail(sessions, bonus_days, courses_schedule, id, bonuspoints,
+                      spread_bonus):
+        """
+        Increases bonuspoints when the sessions are spread over the days as
+        desired
+
+        Input: TODO
+        Output: increased amount of bonuspoints
+        """
+        for i in range(len(sessions)):
+
+            # makes a list of the days of the sessions
+            days = []
+            for j in range(len(sessions[i])):
+                days.append(courses_schedule[id]["day"][sessions[i][j]])
+
+            # checks if the courses are on the correct days
+            if (days == bonus_days):
+                bonuspoints += spread_bonus
+
+        return bonuspoints
 
     def lecture_first(schedule, courses, courses_schedule):
         """
-        Returns true if the lectures are before the tutorials and or
-        practicals, otherwise returns false.
+        Checks per course if the lectures are scheduled before the other
+        sessions
+
+        Input: TODO
+        Output: amount of lecture points
         """
         lecture_points = 0
-        # courses_schedule = Constraint.all_constraints(schedule, courses)
-
         for course in courses:
-            # checks for the number of lectures if the lectures are planned first
+
+            # checks for all lectures if the lectures are planned first
             for i in range(course.lecture):
                 if courses_schedule[course.course_id]["type"][i] != "lecture":
                     lecture_points += 1
@@ -208,6 +213,8 @@ class Constraint():
 
     def mutual_courses_check(schedule, courses):
         """
+        TODO: REBECCA
+
         Checks if same courses and  mutual courses aren't scheduled in the
         same timeslot. Iterates over every course in the schedule.
         Input is a schedule, output is the number of minus points calculated
@@ -217,32 +224,32 @@ class Constraint():
         minus_points = 0
 
         # Check every slot in the schedule
-        for i in range(DAYS):
-            for j in range(TIME_SLOTS):
-                for k in range(ROOMS):
+        for day in range(DAYS):
+            for slot in range(TIME_SLOTS):
+                for room in range(ROOMS):
                     # Check if this slot is filled (= check if not None)
-                    if schedule[i][j][k].course_object:
+                    if schedule[day][slot][room].course_object:
                         # Check if session in this slot is a lecture
-                        if schedule[i][j][k].type == "lecture":
+                        if schedule[day][slot][room].type == "lecture":
                             # Each slot has a course name and the courses' mutual courses
                             # Mutual courses is a list of courses that can't be in the same timeslot
-                            mutual_courses = schedule[i][j][k].course_object.mutual_courses
+                            mutual_courses = schedule[day][slot][room].course_object.mutual_courses
                             # For every mutual course in the mutual_courses list,
                             # check if it is placed in the same timeslot.
                             for mutual_course in range(len(mutual_courses)):    # DIT MOET ANDERS, DIT KAN IN MINDER LOOPS??!!
                                                                                 # Je kan toch zeggen: if 'name' in [name1, name2, name3 ...]???
-                                for z in range(len(schedule[i][j])):
+                                for z in range(len(schedule[day][slot])):
                                     # If this mutual course is placed in the same timeslot
                                     # (for example Bioinformatica and Compilerbouw),
                                     # count one minus point.
-                                    if mutual_courses[mutual_course] in schedule[i][j][z].name:
+                                    if mutual_courses[mutual_course] in schedule[day][slot][z].name:
                                         minus_points += 1
                             # Also, if this course has a session of its own in
                             # this timeslot (for example: Bioinformatica and Bioinformatica)
                             # count one minus point.
                             own_session_counter = 0
-                            for z in range(len(schedule[i][j])):
-                                if schedule[i][j][z].name == schedule[i][j][k].name:
+                            for z in range(len(schedule[day][slot])):
+                                if schedule[day][slot][z].name == schedule[day][slot][room].name:
                                     # Count how many own_sessions there are in this timeslot
                                     own_session_counter += 1
                                 # If own_session_counter is greater than 1, there is
@@ -257,13 +264,13 @@ class Constraint():
                         # planned in at the same timeslot
                         own_session_counter = 0
                         # Check in every timeslot
-                        for z in range(len(schedule[i][j])):
+                        for z in range(len(schedule[day][slot])):
                             # DIT STUKJE MOET GECOMBINEERD MET DE FOR LOOP HIERBOVEN!
-                            if schedule[i][j][z].name == schedule[i][j][k].name:
+                            if schedule[day][slot][z].name == schedule[day][slot][room].name:
                                 # Count one minuspoint if the same group_id is found for
                                 # this course in this timeslot.
 
-                                if schedule[i][j][z].group_id is schedule[i][j][k].group_id:
+                                if schedule[day][slot][z].group_id is schedule[day][slot][room].group_id:
                                     own_session_counter += 1
                         # own_session_counter will always be 1, so check if the counter
                         # is higher than 1.
@@ -274,104 +281,21 @@ class Constraint():
 
     def students_fit(schedule, courses, courses_schedule):
         """
-        Returns the number of maluspoints that are given for the number of
-        students that don't fit in the room of the session
-        max aantal malus punten voor deze functie = 1332
+        Calculates per session the number of students that don't fit in the
+        classroom (maluspoints)
+
+        Input: TODO
+        Output: amount of maluspoints
         """
-        # courses_schedule = Constraint.all_constraints(schedule, courses)
         rooms = loaddata.load_rooms()
 
         maluspoints = 0
-        session_capacity = [0] * SESSION_NUM
         for course in courses:
 
             #  saves the room and type of the checked_course sessions
             checked_course = courses_schedule[course.course_id]
             room_ids = checked_course["room"]
             types = checked_course["type"]
-            session_overall_ids = checked_course["overall_id"]
-
-
-            for i in range(len(session_capacity)):
-
-                # saves the max amount of students for the session type
-                if types[i] is "lecture":
-                    students = course.max_students_lecture
-                elif types[i] is "tutorial":
-                    students = course.max_students_tutorial
-                else:
-                    students = course.max_students_practical
-
-                # calculates how many empty seats there are
-                empty_seats = rooms[room_ids[i]].capacity - students
-
-                # increases maluspoints with the nmbr of students that don't have a seat
-                if empty_seats < 0:
-                    maluspoints += abs(empty_seats)
-                    # print(abs(empty_seats))
-                    # # print(session_capacity[session_overall_ids[i]][0])
-                    # print(session_capacity[session_overall_ids[i]])
-                    # session_capacity[session_overall_ids[i]] = session_capacity[session_overall_ids[i]].append(5)
-                    # print(session_capacity[session_overall_ids[i]])
-                    # print(session_capacity[session_overall_ids[i]])
-                    location = session_overall_ids[i]
-                    session_capacity[location] += abs(empty_seats)
-
-
-                if i == len(room_ids) - 1:
-                    break
-
-
-        # print(session_capacity)
-
-        return maluspoints
-
-
-    def overall_id_points(schedule, courses, overall_id):
-        """
-        Gets maluspoints for a specific session.
-        """
-
-        id = Constraint.session_points(schedule,courses)[1]
-        return id[overall_id]
-
-
-    def session_points(schedule, courses):
-        """
-        Calculates maluspoints for each session, using session_spread_check and
-        student_fit check. Output is a the overall_id of a session with highest
-        maluspoints.
-        """
-        courses_schedule = Constraint.all_constraints(schedule, courses)
-        rooms = loaddata.load_rooms()
-
-        spread_points = Constraint.session_spread_check(schedule, courses, courses_schedule)[1]
-
-        points_dict = {}
-        # Loop over alle sessions om elke sessie een punt te geven jeej
-        for i in range(DAYS):
-            for j in range(TIME_SLOTS):
-                for k in range(ROOMS):
-                    # Check if the slot isn't empty
-                    if schedule[i][j][k].course_object:
-                        # Get course_id
-                        temp_id = schedule[i][j][k].course_object.course_id
-                        # Select the course from dictionary and give points
-                        # to the current session.
-                        points_dict[schedule[i][j][k].overall_id] = spread_points[temp_id]
-
-        session_points_dict = [{"session_id_ov": 0, "capacity_points":0, "spread_malus_points": 0,
-                                "spread_bonus_points": 0, "flex_points": 0, "points": 0} for i in range(SESSION_NUM)]
-
-        maluspoints = 0
-        counter = 0
-        points = 0
-        for course in courses:
-            # Saves the room and type of the checked_course sessions
-            checked_course = courses_schedule[course.course_id]
-            room_ids = checked_course["room"]
-            types = checked_course["type"]
-            session_overall_ids = checked_course["overall_id"]
 
             for i in range(len(room_ids)):
 
@@ -386,60 +310,126 @@ class Constraint():
                 # calculates how many empty seats there are
                 empty_seats = rooms[room_ids[i]].capacity - students
 
-                # increases maluspoints with the number of students that don't have a seat
+                # increases maluspoints with nmbr of students that don't fit
                 if empty_seats < 0:
                     maluspoints += abs(empty_seats)
-                    points = abs(empty_seats)
+        return maluspoints
 
-                    # print(session_overall_ids[i])
-                    # print(abs(empty_seats))
-                    # print(session_points_dict[session_overall_ids[i]])
-                    session_points_dict[session_overall_ids[i]]["capacity_points"] += abs(empty_seats)
+    # TODO: ANNEMIJN als je zeker weet dat die weg kan, verwijderen!
+    # def overall_id_points(schedule, courses, overall_id):
+    #     """
+    #     Gets maluspoints for a specific session.
+    #     """
+    #
+    #     id = Constraint.session_points(schedule,courses)[1]
+    #     return id[overall_id]
 
-                # Tel de maluspunten op
-                points_dict[counter] += points
-                # Set points back to 0
-                counter += 1
-                points = 0
-
-        try:
-            malus_session_id = list(points_dict.keys())[list(points_dict.values()).index(max(points_dict.values()))]
-        # If there are no malus points (for capacity_points)
-        except ValueError:
-            print(points_dict)
-            malus_session_id = randint(0, SLOTS - 1)
-
-        return [malus_session_id, points_dict]
+    # TODO: ANNEMIJN als je zeker weet dat die weg kan, verwijderen!
+    # def session_points(schedule, courses):
+    #     """
+    #     Calculates maluspoints for each session, using session_spread_check and
+    #     student_fit check. Output is a the overall_id of a session with highest
+    #     maluspoints.
+    #     """
+    #     courses_schedule = Constraint.all_constraints(schedule, courses)
+    #     rooms = loaddata.load_rooms()
+    #
+    #     spread_points = Constraint.session_spread_check(schedule, courses, courses_schedule)[1]
+    #
+    #     points_dict = {}
+    #     # Loop over alle sessions om elke sessie een punt te geven jeej
+    #     for i in range(DAYS):
+    #         for j in range(TIME_SLOTS):
+    #             for k in range(ROOMS):
+    #                 # Check if the slot isn't empty
+    #                 if schedule[i][j][k].course_object:
+    #                     # Get course_id
+    #                     temp_id = schedule[i][j][k].course_object.course_id
+    #                     # Select the course from dictionary and give points
+    #                     # to the current session.
+    #                     points_dict[schedule[i][j][k].overall_id] = spread_points[temp_id]
+    #
+    #     session_points_dict = [{"session_id_ov": 0, "capacity_points":0, "spread_malus_points": 0,
+    #                             "spread_bonus_points": 0, "flex_points": 0, "points": 0} for i in range(SESSION_NUM)]
+    #
+    #     maluspoints = 0
+    #     counter = 0
+    #     points = 0
+    #     for course in courses:
+    #         # Saves the room and type of the checked_course sessions
+    #         checked_course = courses_schedule[course.course_id]
+    #         room_ids = checked_course["room"]
+    #         types = checked_course["type"]
+    #         session_overall_ids = checked_course["overall_id"]
+    #
+    #         for i in range(len(room_ids)):
+    #
+    #             # saves the max amount of students for the session type
+    #             if types[i] is "lecture":
+    #                 students = course.max_students_lecture
+    #             elif types[i] is "tutorial":
+    #                 students = course.max_students_tutorial
+    #             else:
+    #                 students = course.max_students_practical
+    #
+    #             # calculates how many empty seats there are
+    #             empty_seats = rooms[room_ids[i]].capacity - students
+    #
+    #             # increases maluspoints with the number of students that don't have a seat
+    #             if empty_seats < 0:
+    #                 maluspoints += abs(empty_seats)
+    #                 points = abs(empty_seats)
+    #
+    #                 # print(session_overall_ids[i])
+    #                 # print(abs(empty_seats))
+    #                 # print(session_points_dict[session_overall_ids[i]])
+    #                 session_points_dict[session_overall_ids[i]]["capacity_points"] += abs(empty_seats)
+    #
+    #             # Tel de maluspunten op
+    #             points_dict[counter] += points
+    #             # Set points back to 0
+    #             counter += 1
+    #             points = 0
+    #
+    #     try:
+    #         malus_session_id = list(points_dict.keys())[list(points_dict.values()).index(max(points_dict.values()))]
+    #     # If there are no malus points (for capacity_points)
+    #     except ValueError:
+    #         print(points_dict)
+    #         malus_session_id = randint(0, SLOTS - 1)
+    #
+    #     return [malus_session_id, points_dict]
 
     def get_points(schedule, courses):
         """
-        Returns the points of a given schedule. Some constraint checks return
-        negative points, so these are substracted in stead of added to the points.
-        Minimum minus points for lecture_first = 0, maxmimum = 39.
-        Minimum of 'minus points' of mutual_course() = 0.
-        Maximum of 'good points' of session_spread_check() = 440.
-        Minimum of malus points of students_fit() = 0 and maxmimum = 1332.
+        Calculates the point of a given schedule. Including the lecture- and
+        mutualpoints to make sure validness of a schedule is considered.
 
-        1332 / 3.027 = 440
+        Input:
+        Output: total amount of points of a schedule
         """
         course_schedule = Constraint.all_constraints(schedule, courses)
 
-        points = Constraint.session_spread_check(schedule, courses, course_schedule)[0] - \
-                (Constraint.lecture_first(schedule, courses, course_schedule) * 100) - \
-                (Constraint.mutual_courses_check(schedule, courses) * 100) - \
-                (Constraint.students_fit(schedule, courses, course_schedule) / 3.027)
+        points = Constraint.session_spread_check(schedule, courses,
+                                                 course_schedule)[0] - \
+            (Constraint.lecture_first(schedule, courses, course_schedule) * 100) - \
+            (Constraint.mutual_courses_check(schedule, courses) * 100) - \
+            (Constraint.students_fit(schedule, courses, course_schedule) / WEIGHT)
 
         return points
 
-
     def get_points_final(schedule, courses):
-            """
-            Returns the final number of points. Only considering the real bonus and
-            malus points.
-            """
-            course_schedule = Constraint.all_constraints(schedule, courses)
+        """
+        Calculates the points of a schedule only considering the 'real' bonus-
+        and maluspoints
 
-            points = Constraint.session_spread_check(schedule, courses, course_schedule)[0] - \
-                    (Constraint.students_fit(schedule, courses, course_schedule))
+        Input: TODO
+        Output: total amount of points of a schedule
+        """
+        course_schedule = Constraint.all_constraints(schedule, courses)
 
-            return points
+        points = Constraint.session_spread_check(schedule, courses,
+                                                 course_schedule)[0] - \
+            Constraint.students_fit(schedule, courses, course_schedule)
+
+        return points
