@@ -160,13 +160,22 @@ class Plan():
         n4.insert(10,"10")
         n4.bind('<Return>', lambda _: printresults("Random"))
 
+        # Add choice to make a plot of certain algorithms
+        Label(window, text="Algorithm").grid(row=20, column=5, sticky=W)
+        var1 = IntVar()
+        Checkbutton(window, text="Hill climber", variable=var1).grid(row=21, column=5, sticky=W)
+        var2 = IntVar()
+        Checkbutton(window, text="Simmulated Annealing", variable=var2).grid(row=22, column= 5,sticky=W)
+        Button(window, text="Make a plot!").grid(row=23, column=5, sticky=W, pady=4)
+        Button(window, text='Quit', command=window.quit).grid(row=23, column=7, sticky=W, pady=4)
+            # Button(window, text='Show', command=var_states).grid(row=4, sticky=W, pady=4)
 
         tk.Label(window, text="Press enter to run. ").grid(column=1)
 
         ttk.Button(window, text="Plot one hill climber run", \
             command=lambda:plan.plot("hill climber"), padding=5).place(x=40, y=460)
         ttk.Button(window, text="Plot one simmulated annealing run", \
-            command=lambda:plan.plot("sa"), padding=5).place(x=40, y=500)
+            command=lambda:plan.plot("Simmulated annealing"), padding=5).place(x=40, y=500)
 
         tk.Label(window, text="View the schedule at 'results/schedule.html' by heading to the results folder.",\
             font="Arial 15 bold").place(x = 40, y = 530)
@@ -178,18 +187,18 @@ class Plan():
 
     def save_html(self, schedule, rooms, spread_points, capacity_points, lecture_points, mutual_course_malus):
         """
-        Print into html to visualize schedule.
-        MOET NOG EEN TABEL KOMEN MET HOEVEEL PUNTEN DIT ROOSTER IS EN WAAROP GEBASEERD.
+        Save the schedule and its points to a html to visualize schedule.
         """
-        # Bewaar dit schedule voor andere visualisatie van het rooster
+        # Save schedule for a different schedule visualisation
         schedule1 = copy.copy(schedule)
 
-        # Maak een grafiek van alle punten
+        # Make a table for all the schedule points
         d = pd.Series([lecture_points, -mutual_course_malus, "", spread_points, capacity_points, spread_points - capacity_points])
         d = pd.DataFrame(d)
         d.columns = ["Points"]
         d.index = ["Incorrectly placed lectures", "Incorrectly placed courses with 'mutual' courses", "", "Spread bonus points (out of 440)", "Capacity malus points (out of 1332)", "Total points"]
 
+        # Add rooms to every timeslot
         flatten = np.array(schedule).flatten()
         counter = 0
         for i in range(len(flatten)):
@@ -197,10 +206,10 @@ class Plan():
                 flatten[i] = str(flatten[i]) + " : " + str(rooms[counter])
             counter += 1
             counter = counter % 7
-        # Zet terug naar een 3D lijst
+        # Convert back to 1D list
         schedule = flatten.reshape(DAYS, TIME_SLOTS, ROOMS).tolist()
 
-        # Dit is voor het eerste rooster van de hele week
+        # Make a big schedule for the whole week
         df = pd.DataFrame(schedule1)
         pd.set_option('display.max_colwidth', 600)
         df.columns = ['9:00 - 11:00', '11:00 - 13:00', '13:00 - 15:00', '15:00 - 17:00']
@@ -208,7 +217,7 @@ class Plan():
         # Transpose rows and columns
         df = df.T
 
-        # Dit is voor de kleinere roosters
+        # Make seperate schedules for every day in the week
         test = pd.DataFrame(schedule)
         pd.set_option('display.max_colwidth', 600)
         test.columns = ['9:00 - 11:00', '11:00 - 13:00', '13:00 - 15:00', '15:00 - 17:00']
@@ -216,7 +225,7 @@ class Plan():
         # Transpose rows and columns
         test = test.T
 
-        # Stel de column namen vast
+        # Determine column names
         tags = df['Monday'].apply(pd.Series)
         tags.columns = [rooms[0], rooms[1], rooms[2], rooms[3], rooms[4], rooms[5], rooms[6]]
         tuesday = df['Tuesday'].apply(pd.Series)
@@ -228,6 +237,7 @@ class Plan():
         friday = df['Friday'].apply(pd.Series)
         friday.columns = [rooms[0], rooms[1], rooms[2], rooms[3], rooms[4], rooms[5], rooms[6]]
 
+        # dataframes will be added to the html_string
         html_string = '''
         <html>
           <head><title>Schedule</title></head>
@@ -266,11 +276,11 @@ class Plan():
 
     def plot(self, algorithm):
         """
-        Returns a plot of 1 run (n = 1) of a certain algorithm.
+        Returns a plot of 1 run (n = 1) of a given algorithm.
         """
 
         # Set values to plot a hill climber
-        x = 20000
+        x = 15000
         n = 1
         begin_temperature = 4
         end_temperature = 0.01
@@ -347,7 +357,7 @@ class Plan():
                     max_schedule = first_schedule
 
             elif algorithm == "Simmulated annealing":
-                points = annealing.anneal(schedule, plan.courses, plan.schedule_counter, x, begin_temperature, end_temperature, type)[1]
+                schedule_temp, points, schedule_counter = annealing.anneal(first_schedule, plan.courses, plan.schedule_counter, x, begin_temperature, end_temperature, type)
 
                 if max_schedule == None:
                     max_schedule = schedule_temp
