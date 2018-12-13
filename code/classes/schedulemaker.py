@@ -59,8 +59,8 @@ def initialize_schedule(courses):
     # Make copy of sessions and shuffle
     lectures = lecture_sessions[:]
     others = other_sessions[:]
-    # random.shuffle(lectures)
-    # random.shuffle(other_sessions)
+    random.shuffle(lectures)
+    random.shuffle(other_sessions)
 
     # De lijst met totale sessies bestaat dus uit een lijst met eerst
     # Hoorcolleges, daarna de andere sessies en is opgevuld tot 140 met lege sessies
@@ -239,27 +239,27 @@ def fill_schedule(schedule, lectures, other_sessions, empty_sessions, courses):
 
         return False
 
-def random_schedule(schedule, sessions):
-    """
-    Generates a random schedule. Assigns every session to a random timeslot.
-    """
-
-    # Maak een 1D lijst van schedule
-    flatten = np.array(schedule, dtype=object).flatten()
-
-    random_numbers = []
-
-    for i in range(len(sessions)):
-        rand = random.randint(0, SLOTS - 1)
-        while rand in random_numbers:
-            rand = random.randint(0, SLOTS - 1)
-        random_numbers.append(rand)
-        flatten[rand] = sessions[i]
-
-    # Convert back to 3D list
-    schedule = flatten.reshape(DAYS, TIME_SLOTS, ROOMS).tolist()
-
-    return schedule
+# def random_schedule(schedule, sessions):
+#     """
+#     Generates a random schedule. Assigns every session to a random timeslot.
+#     """
+#
+#     # Maak een 1D lijst van schedule
+#     flatten = np.array(schedule, dtype=object).flatten()
+#
+#     random_numbers = []
+#
+#     for i in range(len(sessions)):
+#         rand = random.randint(0, SLOTS - 1)
+#         while rand in random_numbers:
+#             rand = random.randint(0, SLOTS - 1)
+#         random_numbers.append(rand)
+#         flatten[rand] = sessions[i]
+#
+#     # Convert back to 3D list
+#     schedule = flatten.reshape(DAYS, TIME_SLOTS, ROOMS).tolist()
+#
+#     return schedule
 
 def switch_session(schedule, number_of_switches, session_to_switch):
     """
