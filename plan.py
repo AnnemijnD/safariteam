@@ -16,7 +16,7 @@ from session import Session
 import loaddata
 import schedulemaker
 import genetic
-import gui
+# import gui
 import annealing
 import climbergreedy
 import hillclimberextended
@@ -136,6 +136,18 @@ class Plan():
 
         tk.Button(window, text="Plot one hill climber run", command=lambda:plan.plot("hill climber")).place(x=100, y=350)
         tk.Button(window, text="Plot one simmulated annealing run", command=lambda:plan.plot("sa")).place(x=100, y=390)
+
+
+
+        # def var_states():
+        Label(window, text="Your sex:").grid(row=20, column=5, sticky=W)
+        var1 = IntVar()
+        Checkbutton(window, text="male", variable=var1).grid(row=21, column=5, sticky=W)
+        var2 = IntVar()
+        Checkbutton(window, text="female", variable=var2).grid(row=22, column= 5,sticky=W)
+        Button(window, text='Quit', command=window.quit).grid(row=23, column=5, sticky=W, pady=4)
+            # Button(window, text='Show', command=var_states).grid(row=4, sticky=W, pady=4)
+            # mainloop()
 
         window.mainloop()
 
@@ -281,24 +293,96 @@ class Plan():
         Output is a list of maximum points that the algorithm reached.
         """
 
+
         maxpoints = []
+        points = 0
+        max_schedule = None
         for i in range(n):
             # Make new random valid schedule
-            schedule = schedulemaker.initialize_schedule(plan.courses)[0]
+            first_schedule = schedulemaker.initialize_schedule(plan.courses)[0]
             # Call algorithm
             if algorithm == "hill climber":
-                points = hillclimber.climb(schedule, plan.courses, plan.schedule_counter, x)[1]
+                schedule_temp, points, schedule_counter = hillclimber.climb(first_schedule, plan.courses, plan.schedule_counter, x)
+
+                if max_schedule == None:
+                    max_schedule = schedule_temp
+
+                # Save schedule with most points
+                elif Constraint.get_points(schedule_temp, plan.courses) > Constraint.get_points(max_schedule, plan.courses):
+                    max_schedule = schedule_temp
+
             elif algorithm == "hill climber2":
                 points = hillclimberextended.climb(schedule, plan.courses, plan.schedule_counter, x)[1]
             elif algorithm == "Simmulated annealing":
                 points = annealing.anneal(schedule, plan.courses, plan.schedule_counter, x, begin_temperature, end_temperature, type)[1]
             elif algorithm == "genetic":
                 print("TODO")
+            elif algorithm == "random":
+                points = Constraint.get_points(first_schedule, plan.courses)
             # Save max points to a list
             maxpoints.append(round(max(points)))
 
+        # Save schedule with highest points
+        courses_schedule, spread_points, capacity_points, lecture_points, mutual_course_malus = plan.points_to_print(max_schedule)
+        plan.save_html(max_schedule, plan.rooms, spread_points, capacity_points, lecture_points, mutual_course_malus)
+
         print(algorithm, "reached max points of: ", maxpoints)
-        return maxpoints, schedule, points
+        return maxpoints, max_schedule, points
+
+    def compare_algorithm(self, random, random_n, hillclimber, hillclimber_n, hillclimber_x,
+                        hillclimber2, hillclimber2_n, hillclimber2_x, simulated, sim_x, sim_n, begin_temp,
+                        end_temp, type, check_rand, check_hill, check_hill2, check_sim):
+        """
+        Run certain algorithms with the intention to compare them in a boxplot.
+        Takes all arguments necessary to make plot. The check-arguments show
+        whether a box for that type of algorithm was checked.
+        Returns a boxplot.
+        """
+
+        # dict met alle data voor boxplot
+        boxplots = {"random": [], "hill climber": [], "hill climber2": [], "simulated": [], "genetic": []}
+        boxplot_data = []
+        boxplot_x = []
+
+
+        if check_rand:
+            max_points, max_schedule, points = runalgorithm("random", random_x, 0, 0, 0, None)
+            boxplots["random"] = max_points
+            boxplot_data.append(max_points)
+            boxplot_x.append("Random")
+
+        if check_hill:
+            print("inif")
+            max_points, max_schedule, points = plan.runalgorithm("hill climber",
+                                                hillclimber_x, hillclimber_n, 0, 0, None)
+            boxplots["hill climber"] = max_points
+            boxplot_data.append(max_points)
+            boxplot_x.append("Hillclimber")
+
+        if check_hill2:
+            max_points, max_schedule, points = runalgorithm("hill climber2", hillclimber2_x, hillclimber2_n, 0, 0, None)
+            boxplots["hill climber2"] = max_points
+            boxplot_data.append(max_points)
+            boxplot_x.append("Hillclimber2")
+
+        if check_sim:
+            max_points, max_schedule, points = runalgorithm("Simmulated annealing",
+                                                sim_x, sim_n, begin_temp, end_temp, type)
+            boxplots["simulated"] = max_points
+            boxplot_data.append(max_points)
+            boxplot_x.append("Simulated Annealing")
+
+        ax = plt.subplot(111)
+        pos1 = ax.get_position()
+        pos2 = [pos1.x0, pos1.y0 + 0.2,  pos1.width , pos1.height - 0.2]
+        ax.set_position(pos2)
+        plt.boxplot(boxplot_data)
+        plt.xticks(fontsize=10)
+        ax.set_xticklabels(boxplot_x)
+        plt.title("Comparing the points")
+        plt.ylabel("Points")
+        plt.xlabel("Algorithms")
+        plt.show()
 
 
     def generate(self):
@@ -317,7 +401,7 @@ class Plan():
         plan.courses = loaddata.load_courses()
 
         # Alle andere dingen laden jeeej
-        rooms = loaddata.load_rooms()
+        plan.rooms = loaddata.load_rooms()
         plan.own_session_points = 0
 
         # # Make random valid schedule
@@ -339,9 +423,12 @@ class Plan():
         #     print("No points to plot for now.")
 
         # Make a html file for the schedule
-        plan.save_html(schedule, rooms, spread_points, capacity_points, lecture_points, mutual_course_malus)
+        plan.save_html(schedule, plan.rooms, spread_points, capacity_points, lecture_points, mutual_course_malus)
 
 
 if __name__ == "__main__":
     plan = Plan()
     plan.generate()
+    plan.compare_algorithm('random', 0, 'hillclimber', 5, 100,
+                        'hillclimber2', 5, 100, 'simulated', 0, 0, 0,
+                        0, None, False, True, True, False)
