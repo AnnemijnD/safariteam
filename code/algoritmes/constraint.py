@@ -30,9 +30,6 @@ class Constraint():
 # Een fix_hard_constraints functie maken voor als na het soft maken van een
 # aantal constraints er niet meer wordt voldaan aan de hard constraints.
 
-    def __init__(self):
-        self.bonus_malus = []
-        self.capacity = []
 
 
     def all_constraints(schedule, courses):
@@ -40,16 +37,20 @@ class Constraint():
         Makes a list that contains lists of every course with the moment and
         type of the courses in the schedule. The courses are in the list in
         order of their course_id.
-        -----
         """
 
         courses_schedule = []
         for course in courses:
             course_schedule = {"day": [], "slot": [], "room": [], "type": [],
                                "session_id": [], "group_id": [], "overall_id": []}
+
+            # maak er i, j, k van
             for i in range(DAYS):
                 for j in range(TIME_SLOTS):
                     for k in range(ROOMS):
+
+                        # maak er i, j, k van
+                        # enter na ( voor het beperken van karakters
                         if schedule[i][j][k] is not None:
                             if course.name == schedule[i][j][k].name:
                                 course_schedule["day"].append(i)
@@ -101,6 +102,8 @@ class Constraint():
         A course can maximally get 20 points, this amount is spreaded over the
         number of groups a course has.
 
+        // DIT NIET DOEN, DOCSTRING ALLEEN WAT ERIN, WAT GEBEURT ER, WAT ERUIT.
+        // ZIE ARRAY NP HELP ZOOI, COMMENT DIE FUNCTIE BESCHRIJFT IS OOK GOED
         Maximum amount of bonuspoints is 440
         Maximum amount of maluspoints is 430
 
@@ -127,7 +130,6 @@ class Constraint():
                     lectures.append(i)
 
             # checks if a course has groups
-            # print(courses_schedule[id]["group_id"], course.name)
             groups = max(courses_schedule[id]["group_id"])
             if groups > 0:
 
@@ -145,10 +147,6 @@ class Constraint():
 
                 #  loops over the amount of groups
                 for i in range(len(sessions)):
-
-                    # print(courses_schedule[id]["day"], course.name)
-                    print(i)
-                    print(sessions[i])
 
                     # checks if the courses are on monday and thursday
                     if (courses_schedule[id]["day"][sessions[i][0]] == 0) and \
@@ -219,9 +217,6 @@ class Constraint():
 
         bonuspoints = round(bonuspoints)
         maluspoints = round(maluspoints)
-        # print(course_bonus_malus)
-        # print(f"bonuspoints: {bonuspoints}")
-        # print(f"maluspoints: {maluspoints}")
         spread_points = maluspoints + bonuspoints
         Constraint.bonus_malus = course_bonus_malus
 

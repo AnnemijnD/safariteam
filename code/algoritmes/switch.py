@@ -36,6 +36,7 @@ def switch_session(schedule, number_of_switches, session_to_switch):
                 random_number = randint(0, SLOTS - 1)
                 random_switch_number = randint(0, SLOTS - 1)
             # Make the switch
+            print(flatten[random_number].overall_id)
             flatten[random_number], flatten[random_switch_number] = flatten[random_switch_number], flatten[random_number]
 
     # If a specific session (with most maluspoints) has to be switched:
