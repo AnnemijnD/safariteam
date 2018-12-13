@@ -16,7 +16,6 @@ from session import Session
 import loaddata
 import schedulemaker
 import genetic
-# import gui
 import annealing
 import climbergreedy
 import hillclimberextended
@@ -59,23 +58,35 @@ class Plan():
         """
 
         window = tk.Tk()
-        window.geometry('700x500')
-        window.configure(bg='white')
-        # Add title to GUI
+        window.geometry('900x600')
         window.title("GUI Safariteam")
 
         def printresults(algorithm):
-            print("Loading....")
-            tk.Label(window, text="Resulted points (out of 440): ").place(x=360, y =10)
-            if algorithm == "hc":
-                tk.Label(window, text=plan.runalgorithm("hill climber", int(n.get()), int(x.get()), 0, 0, 0)[0]).place(x=360, y = 40)
-            elif algorithm == "hc2":
-                print("TODO")
-            elif algorithm == "sa":
-                tk.Label(window, text=plan.runalgorithm("Simmulated annealing", int(n2.get()), int(x2.get()), float(t1.get()), float(t2.get()), type.get())[0]).place(x=360, y = 40)
-            elif algorithm == "genetic":
-                print("TODO")
 
+            # Check for correct input:
+            if n.get() and x.get() and n2.get() and x2.get() and t1.get() \
+                    and t2.get() and type.get() and n3.get() and x3.get():
+                print("Loading....")
+
+                tk.Label(window, text="Resulted points (out of 440): ") \
+                    .grid(row=1, column=3)
+                if algorithm == "hc":
+                    tk.Label(window, text=plan.runalgorithm("hill climber", \
+                        int(n.get()), int(x.get()), 0, 0, 0)[0], wraplength=70).place(x=600, y =50)
+                elif algorithm == "hc2":
+                    print("TODO")
+                elif algorithm == "sa":
+                    tk.Label(window, text=plan.runalgorithm("Simmulated annealing", \
+                            int(n2.get()), int(x2.get()), float(t1.get()), \
+                            float(t2.get()), type.get())[0], wraplength=70).place(x=600, y =50)
+                elif algorithm == "Random":
+                    tk.Label(window, text=plan.runalgorithm("Random", \
+                            0, int(n4.get()), \
+                            0, 0, 0)[0], wraplength=70).place(x=600, y =50)
+                elif algorithm == "genetic":
+                    print("TODO")
+            else:
+                print("Fill in all the fields.")
 
         # Add labels to the hill climber input
         tk.Label(window, text="Hill climber: ", font="Arial 15 bold").grid(column=1)
@@ -85,8 +96,8 @@ class Plan():
         x = Entry(window)
         n.grid(row=1, column=1)
         x.grid(row=2, column=1)
-        n.insert(10,"10000")
-        x.insert(10,"3")
+        n.insert(10,"10")
+        x.insert(10,"1")
         n.bind('<Return>', lambda _: printresults("hc"))
         x.bind('<Return>', lambda _: printresults("hc"))
 
@@ -107,7 +118,7 @@ class Plan():
         t1.grid(row=8, column=1)
         t2.grid(row=9, column=1)
         type.grid(row=10, column=1)
-        n2.insert(10,"1000")
+        n2.insert(10,"20000")
         x2.insert(10,"1")
         t1.insert(10,"4")
         t2.insert(10,"0.01")
@@ -119,23 +130,50 @@ class Plan():
         type.bind('<Return>', lambda _: printresults("sa"))
 
         # Add labels to genetic input
-        tk.Label(window, text="Genetic algorithm: SANNE WAT MOET HIER AAAH ", font="Arial 15 bold").grid(column=1)
+        tk.Label(window, text="Genetic algorithm:", \
+            font="Arial 15 bold").grid(column=1)
         Label(window, text="Population: ").grid(row=12)
-        Label(window, text="Runs (n): ").grid(row=13)
+        Label(window, text="Gnerations: ").grid(row=13)
+        Label(window, text="Runs (n): ").grid(row=14)
+        Label(window, text="k-way | ranked | random").grid(row=15)
         n3 = Entry(window)
+        p3 = Entry(window)
         x3 = Entry(window)
+        t3 = Entry(window)
         n3.grid(row=12, column=1)
-        x3.grid(row=13, column=1)
-        n3.insert(10,"10")
+        p3.grid(row=13, column=1)
+        x3.grid(row=14, column=1)
+        t3.grid(row=15, column=1)
+        n3.insert(10,"50")
+        p3.insert(10,"10")
         x3.insert(10,"3")
+        t3.insert(10,"k-way")
         n3.bind('<Return>', lambda _: printresults("genetic"))
+        p3.bind('<Return>', lambda _: printresults("genetic"))
         x3.bind('<Return>', lambda _: printresults("genetic"))
+        t3.bind('<Return>', lambda _: printresults("genetic"))
+
+        # Add labels to random algorithm
+        tk.Label(window, text="Random schedule:", \
+            font="Arial 15 bold").grid(column=1)
+        Label(window, text="Runs(n): ").grid(row=17)
+        n4 = Entry(window)
+        n4.grid(row=17, column=1)
+        n4.insert(10,"10")
+        n4.bind('<Return>', lambda _: printresults("Random"))
 
 
         tk.Label(window, text="Press enter to run. ").grid(column=1)
 
-        tk.Button(window, text="Plot one hill climber run", command=lambda:plan.plot("hill climber")).place(x=100, y=350)
-        tk.Button(window, text="Plot one simmulated annealing run", command=lambda:plan.plot("sa")).place(x=100, y=390)
+        ttk.Button(window, text="Plot one hill climber run", \
+            command=lambda:plan.plot("hill climber"), padding=5).place(x=40, y=460)
+        ttk.Button(window, text="Plot one simmulated annealing run", \
+            command=lambda:plan.plot("sa"), padding=5).place(x=40, y=500)
+
+        tk.Label(window, text="View the schedule at 'results/schedule.html' by heading to the results folder.",\
+            font="Arial 15 bold").place(x = 40, y = 530)
+
+        # tk.Label(window, text="Loading...", font="Arial 15 bold").place(x=20, y=440)
 
 
 
@@ -215,7 +253,7 @@ class Plan():
         </html>.
         '''
 
-        with open('resultaten/schedule.html', 'w') as f:
+        with open('results/schedule.html', 'w') as f:
             f.write(html_string.format(table=d.to_html(classes='points')))
             f.write(html_string.format(table=test.to_html(classes='style')))
             f.write("Monday")
@@ -270,7 +308,8 @@ class Plan():
         print("Succes! :-)")
         print("It took:", round(time.time() - plan.then, 3), "seconds, = ", round((time.time() - plan.then) / 60, 3), "minutes.")
         print("Made", plan.schedule_counter, "schedule(s).")
-        # print("Points:", Constraint.session_spread_check(schedule, plan.courses, courses_schedule)[0] - Constraint.students_fit(schedule, plan.courses, courses_schedule), "out of 440.")
+        print("Points:", Constraint.session_spread_check(schedule, plan.courses, courses_schedule)[0] \
+              - Constraint.students_fit(schedule, plan.courses, courses_schedule), "out of 440.")
 
     def points_to_print(self, schedule):
         """
@@ -289,13 +328,14 @@ class Plan():
     def runalgorithm(self, algorithm, x, n, begin_temperature, end_temperature, type):
         """
         Run a certain algorithm for n number of times with x number of iterations.
-        Algorithm input can be: "hill climber", "hill climber2" "genetic", "simulated annealing".
-        Output is a list of maximum points that the algorithm reached.
+        Algorithm input can be: "hill climber", "hill climber2" "genetic", "simulated annealing",
+        or "Random".
+        Output is a list of maximum points that the algorithm reached or the schedule
+        that reached max points.
         """
 
 
         maxpoints = []
-        points = 0
         max_schedule = None
         for i in range(n):
             # Make new random valid schedule
@@ -311,16 +351,38 @@ class Plan():
                 elif Constraint.get_points(schedule_temp, plan.courses) > Constraint.get_points(max_schedule, plan.courses):
                     max_schedule = schedule_temp
 
-            elif algorithm == "hill climber2":
-                points = hillclimberextended.climb(schedule, plan.courses, plan.schedule_counter, x)[1]
+            elif algorithm == "Random":
+                points = Constraint.get_points(first_schedule, plan.courses)
+
+                if max_schedule == None:
+                    max_schedule = first_schedule
+
+                # Save schedule with most points
+                elif Constraint.get_points(first_schedule, plan.courses) > Constraint.get_points(max_schedule, plan.courses):
+                    max_schedule = first_schedule
+
             elif algorithm == "Simmulated annealing":
                 points = annealing.anneal(schedule, plan.courses, plan.schedule_counter, x, begin_temperature, end_temperature, type)[1]
+
+                if max_schedule == None:
+                    max_schedule = schedule_temp
+
+                # Save schedule with most points
+                elif Constraint.get_points(schedule_temp, plan.courses) > Constraint.get_points(max_schedule, plan.courses):
+                    max_schedule = schedule_temp
+
             elif algorithm == "genetic":
                 print("TODO")
-            elif algorithm == "random":
-                points = Constraint.get_points(first_schedule, plan.courses)
+
             # Save max points to a list
-            maxpoints.append(round(max(points)))
+            if algorithm == "Random":
+                maxpoints.append(round(points))
+            else:
+                maxpoints.append(round(max(points)))
+
+        # Save schedule with highest points
+        courses_schedule, spread_points, capacity_points, lecture_points, mutual_course_malus = plan.points_to_print(max_schedule)
+        plan.save_html(max_schedule, plan.rooms, spread_points, capacity_points, lecture_points, mutual_course_malus)
 
         # Save schedule with highest points
         courses_schedule, spread_points, capacity_points, lecture_points, mutual_course_malus = plan.points_to_print(max_schedule)
@@ -389,11 +451,11 @@ class Plan():
         """
         Generates a schedule by calling several helper functions and algorithms.
         """
+        print("Opening GUI...")
 
         point_list = []
         final_point_list = []
         plan.then = time.time()
-        print("Loading...")
         plan.random_numbers = []
         plan.schedule_counter = 0
 

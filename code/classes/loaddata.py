@@ -1,6 +1,6 @@
 # Loads original data from heuristieken.nl
 # November 5
-from pathlib import Path
+
 import csv
 from course import Course
 from room import Room
@@ -65,9 +65,6 @@ def load_rooms():
             room = Room(row[0], room_id, int(row[1]))
             roomnumbers.append(room)
             room_id += 1
-            #
-            # string = f'{row[0]} (max: {row[1]})'
-            # roomnumbers.append(string)
 
     return roomnumbers
 

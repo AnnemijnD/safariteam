@@ -6,27 +6,26 @@ from constraint import Constraint
 from operator import itemgetter
 from random import randint
 
-CHILDREN = 2
 DAYS = 5
-GENERATIONS = 50
+ROOMS = 7
+TIME_SLOTS = 4
+SLOTS = DAYS * ROOMS * TIME_SLOTS
+
+CHILDREN = 2
 K = 5
 MUTATIONS = 10
 PERCENTAGE = 52
-POPULATION = 50
-ROOMS = 7
-SLOTS = 140
 SWITCHES = 3
-TIME_SLOTS = 4
 
 
-def genetic_algortim(schedules, courses):
+def genetic_algortim(schedules, courses, population_size, generations):
     """
     Genetic algorithm in which the two bes, the two second best, ...,
     the two worst schedules in the population generate children. After
     generating children the best half of the population survives.
     """
     population_points = []
-    for i in range(0, POPULATION):
+    for i in range(0, population_size):
         points = Constraint.get_points(schedules[i], courses)
         population_points.append(points)
 
@@ -36,7 +35,7 @@ def genetic_algortim(schedules, courses):
 
     population = schedules
 
-    for generation in range(GENERATIONS):
+    for generation in range(generations):
 
         # choose the parents
         # if generation > 10:
@@ -47,7 +46,7 @@ def genetic_algortim(schedules, courses):
         parents = choose_parents_rank(population, courses)
 
         children = []
-        for i in range(0, POPULATION, 2):
+        for i in range(0, population_size, 2):
             parent_pair = [parents[i], parents[i + 1]]
 
             # transform the schedule in a linear list
@@ -78,10 +77,10 @@ def genetic_algortim(schedules, courses):
         population += children
 
         # choose survivors
-        population = choose_parents_KWAY(population, courses)
+        population = choose_parents_KWAY(population, courses, population_size)
 
     population_points = []
-    for i in range(0, POPULATION):
+    for i in range(0, population_size):
         points = Constraint.get_points(population[i], courses)
         population_points.append(points)
 
@@ -93,14 +92,14 @@ def genetic_algortim(schedules, courses):
     return max(population_points)
 
 
-def choose_parents_KWAY(population, courses):
+def choose_parents_KWAY(population, courses, population_size):
     """
     Choose parents with a K-way tournamentself.
 
     PRESTEERT WEL AL EEN BEETJE MAAR ERG WEINIG DIVERSITEIT TUSSEN DE OUDERS
     """
     parents = []
-    for i in range(POPULATION):
+    for i in range(population_size):
 
         # choose K schedules that will enter the tournament
         battlefield = []
@@ -129,17 +128,17 @@ def choose_parents_KWAY(population, courses):
     return parents
 
 
-def choose_parents_random(population):
+def choose_parents_random(population, population_size):
     """
     Choose the parents randomly
     """
     parents = []
-    for i in range(POPULATION):
+    for i in range(population_size):
         parents.append(random.choice(population))
     return parents
 
 
-def choose_parents_rank(population, courses):
+def choose_parents_rank(population, courses, population_size):
     """
     When the population isn't very diverse rank the schedules. The best
     schedules have a bigger chance to be a parent.
@@ -148,19 +147,19 @@ def choose_parents_rank(population, courses):
 
     # get points of all the schedules in the population
     population_points = []
-    for i in range(POPULATION):
+    for i in range(population_size):
         points = Constraint.get_points(population[i], courses)
         population_points.append([population[i], points])
 
     # create a list with high ranked schedules in there more than low ranked ones
     ranking = sorted(population_points, key=itemgetter(1))
     chances = []
-    for i in range(POPULATION):
+    for i in range(population_size):
         for j in range(i):
             chances.append(ranking[i][0])
 
     # choose the parents from the chances list
-    for i in range(POPULATION):
+    for i in range(population_size):
         parents.append(random.choice(chances))
 
     # print(parents)
