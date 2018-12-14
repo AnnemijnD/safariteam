@@ -138,6 +138,7 @@ class Plan():
             elif algorithm == "genetic":
                 print("TODO")
                 schedules = []
+                print("population:", pop, "generations", gen)
                 for i in range(pop):
                     schedules.append(schedulemaker.initialize_schedule(plan.courses))
                 schedule_temp, points = genetic.genetic_algorithm(schedules, plan.courses, pop, gen, gen_type)
@@ -192,13 +193,13 @@ class Plan():
 
         if check_hill == 1:
             max_points, max_schedule, points = plan.runalgorithm("hill climber",
-                            hillclimber_x, hillclimber_n, 0, 0, None, 0, 0, 0, schedule)
+                            hillclimber_n, hillclimber_x, 0, 0, None, 0, 0, 0, schedule)
             boxplot_data.append(max_points)
             boxplot_xaxis.append(f"Hillclimber \n n = {hillclimber_n}")
 
         if check_hill2 == 1:
             max_points, max_schedule, points = plan.runalgorithm("hill climber ext",
-                            hillclimber2_x, hillclimber2_n, 0, 0, None, 0, 0, 0, schedule)
+                            hillclimber2_n, hillclimber2_x, 0, 0, None, 0, 0, 0, schedule)
             boxplot_data.append(max_points)
             boxplot_xaxis.append(f"Hillclimber extended \n n = {hillclimber2_n}")
 
@@ -271,15 +272,12 @@ class Plan():
             GUI FUNCTION.
             Returns a boxplot for a given algorithm of x iterations and n runs.
             """
-            # Check for input in all the fields
-            if n.get() and x.get() and n2.get() and x2.get() and t1.get() \
-                    and t2.get() and type.get() and n3.get() and x3.get() \
-                    and p3.get() and t3.get() and n4.get():
-                plan.compare_algorithm(int(n4.get()), int(x.get()), int(n.get()),
-                                    int(hc2n.get()), int(hc2x.get()),
-                                    int(x2.get()), int(n2.get()), float(t1.get()),
-                                    float(t2.get()), type.get(), var3.get(),
-                                    var1.get(), var2.get(), var4.get())
+
+            plan.compare_algorithm(int(n4.get()), int(x.get()), int(n.get()),
+                                int(hc2n.get()), int(hc2x.get()),
+                                int(x2.get()), int(n2.get()), float(t1.get()),
+                                float(t2.get()), type.get(), var3.get(),
+                                var1.get(), var2.get(), var4.get())
 
         def plot(algorithm):
             """
@@ -403,18 +401,18 @@ class Plan():
         popupMenu = OptionMenu(mainframe_gen, t3, *choices_gen)
         popupMenu.grid(row = 2, column =1)
 
-        x3 = Entry(window)
         p3 = Entry(window)
+        x3 = Entry(window)
         n3 = Entry(window)
-        x3.grid(row=14, column=1)
-        p3.grid(row=15, column=1)
+        p3.grid(row=14, column=1)
+        x3.grid(row=15, column=1)
         n3.grid(row=16, column=1)
-        x3.insert(10,"50")
-        p3.insert(10,"10")
+        p3.insert(10,"50")
+        x3.insert(10,"10")
         n3.insert(10,"3")
         t3.set('k-way')
-        x3.bind('<Return>', lambda _: printresults("genetic"))
         p3.bind('<Return>', lambda _: printresults("genetic"))
+        x3.bind('<Return>', lambda _: printresults("genetic"))
         n3.bind('<Return>', lambda _: printresults("genetic"))
 
 
