@@ -54,5 +54,8 @@ def climb(schedule, courses, iterations):
     # Append last points of the new schedule to make a full plot of the points
     points.append(Constraint.get_points(schedule, courses))
 
+    # TODO: DIT MOET WEG ALS WE GAAN INLEVEREN EN WEER GEWOON POINTS RETURNEN
+    point = max(points)
+
     # Return the generated schedule and its points :-)
-    return schedule, points
+    return schedule, point

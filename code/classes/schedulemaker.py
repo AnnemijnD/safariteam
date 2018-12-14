@@ -50,7 +50,11 @@ def initialize_schedule(courses):
 
     # make SLOTS empty sessions
     for i in range(SLOTS):
-        name, type, max_students, session_id, group_id = " ", " ", " ", " ", " "
+        name = ' '
+        type = ' '
+        max_students = ' '
+        session_id = 'nvt2'
+        group_id = 'nvt2'
         empty_session = Session(name, type, max_students, session_id, group_id)
         empty_session.overall_id = SLOTS
         empty_sessions.append(empty_session)

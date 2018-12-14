@@ -78,6 +78,8 @@ class Plan():
         the schedule that reached max points.
         """
 
+        print("x = ", x, "n = ", n)
+
         maxpoints = []
         max_schedule = None
 
@@ -140,9 +142,9 @@ class Plan():
                 schedules = []
                 for i in range(pop):
                     schedules.append(schedulemaker.initialize_schedule(plan.courses))
-                # Run the algorithm
-                # schedule_temp, points = genetic.genetic_algorithm(schedules, plan.courses, pop, gen, gen_type)
-                points = genetic.genetic_algorithm(schedules, plan.courses, pop, gen, gen_type)
+                    # Run the algorithm
+                    schedule_temp, points = genetic.genetic_algorithm(schedules, plan.courses, pop, gen, gen_type)
+                points = genetic.genetic_algorithm(schedules, plan.courses, pop, gen, gen_type)[1]
 
                 if max_schedule is None:
                     max_schedule = schedule_temp
@@ -153,10 +155,12 @@ class Plan():
                     max_schedule = schedule_temp
 
             # Save max points to a list
-            if algorithm == "Random":
+            if algorithm == "Random" or algorithm == "genetic":
                 maxpoints.append(round(points))
+                print(maxpoints)
             else:
                 maxpoints.append(round(max(points)))
+                print(maxpoints)
 
         # Save schedule with highest points
         courses_schedule, spread_points, capacity_points, lecture_points, \
@@ -275,7 +279,7 @@ class Plan():
             """
 
             plan.compare_algorithm(int(n4.get()), int(x.get()), int(n.get()),
-                                int(hc2n.get()), int(hc2x.get()),
+                                int(hc2x.get()), int(hc2n.get()),
                                 int(x2.get()), int(n2.get()), float(t1.get()),
                                 float(t2.get()), type.get(), var3.get(),
                                 var1.get(), var2.get(), var4.get())
@@ -372,7 +376,7 @@ class Plan():
         x2.insert(10,"20000")
         n2.insert(10,"1")
         t1.insert(10,"5")
-        t2.insert(10,"0.05")
+        t2.insert(10,"0.1")
         # type.insert(10,"exponential")
         x2.bind('<Return>', lambda _: printresults("sa"))
         n2.bind('<Return>', lambda _: printresults("sa"))
@@ -383,8 +387,8 @@ class Plan():
         # Add labels to genetic input
         Label(window, text="Genetic algorithm:", \
             font="Arial 15 bold").grid(column=1)
-        Label(window, text="Population: ").grid(row=14)
-        Label(window, text="Generations: ").grid(row=15)
+        Label(window, text="Population (even number, min = 10): ").grid(row=14)
+        Label(window, text="Generations (min = 10): ").grid(row=15)
         Label(window, text="Runs (n): ").grid(row=16)
         Label(window, text="Way of choosing parents:").grid(row=17)
 
@@ -402,18 +406,18 @@ class Plan():
         popupMenu = OptionMenu(mainframe_gen, t3, *choices_gen)
         popupMenu.grid(row = 2, column =1)
 
-        p3 = Entry(window)
         x3 = Entry(window)
+        p3 = Entry(window)
         n3 = Entry(window)
-        p3.grid(row=14, column=1)
-        x3.grid(row=15, column=1)
+        x3.grid(row=14, column=1)
+        p3.grid(row=15, column=1)
         n3.grid(row=16, column=1)
         p3.insert(10,"50")
         x3.insert(10,"10")
-        n3.insert(10,"3")
+        n3.insert(10,"1")
         t3.set('k-way')
-        p3.bind('<Return>', lambda _: printresults("genetic"))
         x3.bind('<Return>', lambda _: printresults("genetic"))
+        p3.bind('<Return>', lambda _: printresults("genetic"))
         n3.bind('<Return>', lambda _: printresults("genetic"))
 
 
@@ -555,26 +559,54 @@ if __name__ == "__main__":
     plan = Plan()
     plan.generate()
 
-    # 50 random roosters maken
+
+    # 100x rooster maken en algoritmen uitvoeren
     schedules = []
-    for i in range(50):
+    hillclimbers = []
+    hillclimber_extendeds = []
+    simulated_annealings = []
+    x = 30000
+    x_sim = 45000
+    n = 100
+    begin_temperature = 5
+    end_temperature = 0.9
+    type = 'exponential'
+
+    for i in range(n):
         schedule = schedulemaker.initialize_schedule(plan.courses)
-        schedules.append(schedule)
 
-    kway = []
-    for i in range(10):
-        kway.append(genetic.genetic_algorithm(schedules, plan.courses, 50, 50, "k-way"))
+        hillclimbers.append(hillclimber.climb(schedule, plan.courses, x)[1])
+        hillclimber_extendeds.append(hillclimberextended.climb(schedule, plan.courses, x)[1])
+        simulated_annealings.append(annealing.anneal(schedule, plan.courses, \
+            int(x_sim / 2), begin_temperature, end_temperature, type)[1])
 
-    print(kway)
 
-    rank = []
-    for i in range(10):
-        rank.append(genetic.genetic_algorithm(schedules, plan.courses, 50, 50, "rank"))
+        # print(hillclimbers, hillclimber_extendeds, simulated_annealings)
 
-    print(rank)
+    print(hillclimbers, hillclimber_extendeds, simulated_annealings)
 
-    random_genetic = []
-    for i in range(10):
-        random_genetic.append(genetic.genetic_algorithm(schedules, plan.courses, 50, 50, "random"))
 
-    print(random_genetic)
+
+    # # 50 random roosters maken
+    # schedules = []
+    # for i in range(50):
+    #     schedule = schedulemaker.initialize_schedule(plan.courses)
+    #     schedules.append(schedule)
+    #
+    # kway = []
+    # for i in range(10):
+    #     kway.append(genetic.genetic_algorithm(schedules, plan.courses, 50, 50, "k-way"))
+    #
+    # print(kway)
+    #
+    # rank = []
+    # for i in range(10):
+    #     rank.append(genetic.genetic_algorithm(schedules, plan.courses, 50, 50, "rank"))
+    #
+    # print(rank)
+    #
+    # random_genetic = []
+    # for i in range(10):
+    #     random_genetic.append(genetic.genetic_algorithm(schedules, plan.courses, 50, 50, "random"))
+    #
+    # print(random_genetic)
