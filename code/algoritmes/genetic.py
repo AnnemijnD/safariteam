@@ -85,8 +85,14 @@ def genetic_algorithm(schedules, courses, population_size, generations, choose):
         points = Constraint.get_points(population[i], courses)
         population_points.append((population[i], points))
 
+    best_schedule = sorted(population_points, key=itemgetter(1))[-1][0]
+
+    best_points = sorted(population_points, key=itemgetter(1))[-1][1]
+    best_schedule = np.array(best_schedule)
+    best_schedule = best_schedule.reshape(DAYS, TIME_SLOTS, ROOMS).tolist()
+
     # returns tuple of the best schedule in final population and it's points
-    return sorted(population_points, key=itemgetter(1))[-1]
+    return best_schedule, best_points
 
 
 def choose_parents_KWAY(population, courses, population_size):
