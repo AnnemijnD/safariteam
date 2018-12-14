@@ -530,3 +530,28 @@ class Plan():
 if __name__ == "__main__":
     plan = Plan()
     plan.generate()
+
+
+    # # 50 random roosters maken
+    # schedules = []
+    # for i in range(50):
+    #     schedule = schedulemaker.initialize_schedule(plan.courses)[0]
+    #     schedules.append(schedule)
+    #
+    # kway = []
+    # for i in range(10):
+    #     kway.append(genetic.genetic_algorithm(schedules, plan.courses, 50, 50, "k-way"))
+    #
+    # print(kway)
+    #
+    # rank = []
+    # for i in range(10):
+    #     rank.append(genetic.genetic_algorithm(schedules, plan.courses, 50, 50, "rank"))
+    #
+    # print(rank)
+    #
+    # random_genetic = []
+    # for i in range(10):
+    #     random_genetic.append(genetic.genetic_algorithm(schedules, plan.courses, 50, 50, "random"))
+    #
+    # print(random_genetic)

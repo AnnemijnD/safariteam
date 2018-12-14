@@ -35,7 +35,7 @@ class Constraint():
         the sessions of that course
 
         TODO: [day, slot, room] werkt niet???????????
-        TODO: moet input elke keer?????
+        TODO: ANNEMIJN: verwijder alles wat we niet meer gebruiken
         """
 
         courses_schedule = []
@@ -68,18 +68,15 @@ class Constraint():
 
     def session_spread_check(schedule, courses, courses_schedule):
         """
-        Calculates the amount of bonuspoints earned by correctly spreading the
-        courses over the week. Where a course with 2 sessions should be on
-        either monday and thursday or tuesday and friday. See the rest of the
-        constrains in the comments bellow.
-        A course can maximally get 20 points, this amount is spreaded over the
-        number of groups a course has.
-        Maximum amount of bonuspoints is 440
-        Maximum amount of maluspoints is 430
-        Dit is nu alleen zo voor onze functie!!
-        Doc string is schrijven wat de functie doet, welke arg die binnen
-        krijgt, en welke return waarden hij heeft.
-        Returns a list of malus and bonuspoints per course as well.
+        Calculates the amount of bonuspoints and maluspoints earned by
+        spreading the sessions of a course.
+
+        Input: schedule of which you want to check the constraints, list of all
+        courses, list of dictionaries with info of all the sessions of a course
+        Output: a list with the total amount of points, the amount of
+        bonuspoints, the amount of maluspoints.
+
+        TODO: ANNEMIJN verwijder alles wat we niet meer gebruiken
         """
         bonuspoints = 0
         maluspoints = 0
@@ -104,9 +101,11 @@ class Constraint():
             groups = max(courses_schedule[id]["group_id"])
             if groups > 0:
 
-                # saves indices of groups in courses_schedule together with lectures
+                # saves indices of groups together with lectures
                 for i in range(groups):
-                    same_group = [j for j, e in enumerate(courses_schedule[id]["group_id"]) if e == i + 1]
+                    same_group = [j for j,
+                                  e in enumerate(courses_schedule[id]["group_id"])
+                                  if e == i + 1]
                     sessions.append(lectures + same_group)
             else:
                 sessions = [lectures]
@@ -116,57 +115,31 @@ class Constraint():
 
             if course.sessions == 2:
 
-                #  loops over the amount of groups
-                for i in range(len(sessions)):
+                bonuspoints += Constraint.spread_detail(sessions, [0, 3],
+                                                        courses_schedule, id,
+                                                        spread_bonus)
 
-                    # checks if the courses are on monday and thursday
-                    if (courses_schedule[id]["day"][sessions[i][0]] == 0) and \
-                       (courses_schedule[id]["day"][sessions[i][1]] == 3):
-                        bonuspoints += spread_bonus
-                        course_bon_points += spread_bonus
-
-
-                    # checks if the courses are on tuesday an friday
-                    elif (courses_schedule[id]["day"][sessions[i][0]] == 1) and \
-                         (courses_schedule[id]["day"][sessions[i][1]] == 4):
-                        bonuspoints += spread_bonus
-                        course_bon_points += spread_bonus
+                bonuspoints += Constraint.spread_detail(sessions, [1, 4],
+                                                        courses_schedule, id,
+                                                        spread_bonus)
 
             elif course.sessions == 3:
 
-                for i in range(len(sessions)):
-
-                    # checks if the courses are on monday, wednesday and friday
-                    if (courses_schedule[id]["day"][sessions[i][0]] == 0) and \
-                       (courses_schedule[id]["day"][sessions[i][1]] == 2) and \
-                       (courses_schedule[id]["day"][sessions[i][2]] == 4):
-                        bonuspoints += spread_bonus
-                        course_bon_points += spread_bonus
+                bonuspoints += Constraint.spread_detail(sessions, [0, 2, 4],
+                                                        courses_schedule, id,
+                                                        spread_bonus)
 
             elif course.sessions == 4:
 
-                for i in range(len(sessions)):
-
-                    # checks if the courses are on monday, tuesday, thursday and friday
-                    if (courses_schedule[id]["day"][sessions[i][0]] == 0) and \
-                       (courses_schedule[id]["day"][sessions[i][1]] == 1) and \
-                       (courses_schedule[id]["day"][sessions[i][2]] == 3) and \
-                       (courses_schedule[id]["day"][sessions[i][3]] == 4):
-                        bonuspoints += spread_bonus
-                        course_bon_points += spread_bonus
+                bonuspoints += Constraint.spread_detail(sessions, [0, 1, 3, 4],
+                                                        courses_schedule, id,
+                                                        spread_bonus)
 
             elif course.sessions == 5:
 
-                for i in range(len(sessions)):
-
-                    # checks if the courses are spread out on the whole week (every day)
-                    if (courses_schedule[id]["day"][sessions[i][0]] == 0) and \
-                       (courses_schedule[id]["day"][sessions[i][1]] == 1) and \
-                       (courses_schedule[id]["day"][sessions[i][2]] == 2) and \
-                       (courses_schedule[id]["day"][sessions[i][3]] == 3) and \
-                       (courses_schedule[id]["day"][sessions[i][4]] == 4):
-                        bonuspoints += spread_bonus
-                        course_bon_points += spread_bonus
+                bonuspoints += Constraint.spread_detail(sessions, [0, 1, 2, 3, 4],
+                                                        courses_schedule, id,
+                                                        spread_bonus)
 
             #  check the overall spread per group
             for i in range(len(sessions)):
@@ -182,20 +155,16 @@ class Constraint():
                     maluspoints += (malusfactor * 10) / len(sessions)
                     course_mal_points += (malusfactor * 10) / len(sessions)
 
-
-            # course_bonus_malus.append([id, round(course_mal_points - course_bon_points)])
             course_dict.update({id: (round(course_mal_points - course_bon_points))})
 
         bonuspoints = round(bonuspoints)
         maluspoints = round(maluspoints)
-
         spread_points = maluspoints + bonuspoints
         Constraint.bonus_malus = course_bonus_malus
 
         return [spread_points, course_dict, bonuspoints, maluspoints]
 
-    def spread_detail(sessions, bonus_days, courses_schedule, id, bonuspoints,
-                      spread_bonus):
+    def spread_detail(sessions, bonus_days, courses_schedule, id, spread_bonus):
         """
         Increases bonuspoints when the sessions are spread over the days as
         desired
@@ -203,6 +172,8 @@ class Constraint():
         Input: TODO
         Output: increased amount of bonuspoints
         """
+        bonuspoints = 0
+
         for i in range(len(sessions)):
 
             # makes a list of the days of the sessions
@@ -213,7 +184,6 @@ class Constraint():
             # checks if the courses are on the correct days
             if (days == bonus_days):
                 bonuspoints += spread_bonus
-                print(" beter print dit")
 
         return bonuspoints
 
