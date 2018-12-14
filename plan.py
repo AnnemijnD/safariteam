@@ -157,6 +157,7 @@ class Plan():
             # Save max points to a list
             if algorithm == "Random" or algorithm == "genetic":
                 maxpoints.append(round(points))
+
             else:
                 maxpoints.append(round(max(points)))
 
@@ -280,7 +281,7 @@ class Plan():
                     and t2.get() and type.get() and x3.get() and n3.get() \
                     and p3.get() and t3.get() and n4.get():
                 plan.compare_algorithm(int(n4.get()), int(x.get()), int(n.get()),
-                                    int(hc2n.get()), int(hc2x.get()),
+                                    int(hc2x.get()), int(hc2n.get()),
                                     int(x2.get()), int(n2.get()), float(t1.get()),
                                     float(t2.get()), type.get(), var3.get(),
                                     var1.get(), var2.get(), var4.get())
