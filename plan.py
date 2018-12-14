@@ -138,11 +138,13 @@ class Plan():
                     max_schedule = schedule_temp
 
             elif algorithm == "genetic":
-                print("TODO")
+                # Make schedules
                 schedules = []
                 for i in range(pop):
                     schedules.append(schedulemaker.initialize_schedule(plan.courses))
-                schedule_temp, points = genetic.genetic_algorithm(schedules, plan.courses, pop, gen, gen_type)
+                    # Run the algorithm
+                    schedule_temp, points = genetic.genetic_algorithm(schedules, plan.courses, pop, gen, gen_type)
+                points = genetic.genetic_algorithm(schedules, plan.courses, pop, gen, gen_type)[1]
 
                 if max_schedule is None:
                     max_schedule = schedule_temp
@@ -153,7 +155,7 @@ class Plan():
                     max_schedule = schedule_temp
 
             # Save max points to a list
-            if algorithm == "Random":
+            if algorithm == "Random" or algorithm == "genetic":
                 maxpoints.append(round(points))
             else:
                 maxpoints.append(round(max(points)))
@@ -168,7 +170,7 @@ class Plan():
 
         return maxpoints, max_schedule, points
 
-    def compare_algorithm(self, random_n, hillclimber_n, hillclimber_x, hillclimber2_x,
+    def compare_algorithm(self, random_n, hillclimber_x, hillclimber_n, hillclimber2_x,
                         hillclimber2_n, sim_x, sim_n, begin_temp, end_temp,
                         type, check_rand, check_hill, check_hill2, check_sim):
         """
@@ -386,8 +388,8 @@ class Plan():
         # Add labels to genetic input
         Label(window, text="Genetic algorithm:", \
             font="Arial 15 bold").grid(column=1)
-        Label(window, text="Population (must be even number): ").grid(row=14)
-        Label(window, text="Generations: ").grid(row=15)
+        Label(window, text="Population (even number, min = 10): ").grid(row=14)
+        Label(window, text="Generations (min = 10): ").grid(row=15)
         Label(window, text="Runs (n): ").grid(row=16)
         Label(window, text="Way of choosing parents:").grid(row=17)
 
@@ -558,12 +560,12 @@ if __name__ == "__main__":
     plan = Plan()
     plan.generate()
 
-    # 50 random roosters maken
-    schedules = []
-    for i in range(50):
-        schedule = schedulemaker.initialize_schedule(plan.courses)
-        schedules.append(schedule)
-
+    # # 50 random roosters maken
+    # schedules = []
+    # for i in range(50):
+    #     schedule = schedulemaker.initialize_schedule(plan.courses)
+    #     schedules.append(schedule)
+    #
     # kway = []
     # for i in range(10):
     #     kway.append(genetic.genetic_algorithm(schedules, plan.courses, 50, 50, "k-way"))
