@@ -19,8 +19,6 @@ SWITCHES = 3
 
 
 def genetic_algorithm(schedules, courses, population_size, generations, choose):
-
-    print(generations)
     """
     Genetic algorithm
 
@@ -28,11 +26,13 @@ def genetic_algorithm(schedules, courses, population_size, generations, choose):
     Output: a list which contains the best schedule of the last generation and
     the amount of points of that schedule
     """
-    # TODO als we weer dingen voor improvement willen
-    # population_points = []
-    # for i in range(0, population_size):
-    #     points = Constraint.get_points(schedules[i], courses)
-    #     population_points.append(points)
+    # TODO: deze gaat weg als we geen improvement meer willen!!!
+    population_points = []
+    for i in range(0, population_size):
+        points = Constraint.get_points(schedules[i], courses)
+        population_points.append(points)
+
+    saved = max(population_points)
 
     population = schedules
 
@@ -83,10 +83,16 @@ def genetic_algorithm(schedules, courses, population_size, generations, choose):
     population_points = []
     for i in range(0, population_size):
         points = Constraint.get_points(population[i], courses)
-        population_points.append((population[i], points))
+        population_points.append(points)
 
+        # TODO: deze willen we straks!!!!!!!!
+        # population_points.append((population[i], points))
+
+    return max(population_points) - saved
+
+    # TODO DEZE WILLEN WE UITEINDELIJK!!!!!!!
     # returns tuple of the best schedule in final population and it's points
-    return sorted(population_points, key=itemgetter(1))[-1]
+    # return sorted(population_points, key=itemgetter(1))[-1]
 
 
 def choose_parents_KWAY(population, courses, population_size):
