@@ -559,6 +559,33 @@ if __name__ == "__main__":
     plan = Plan()
     plan.generate()
 
+
+    # 100x rooster maken en algoritmen uitvoeren
+    schedules = []
+    hillclimbers = []
+    hillclimber_extendeds = []
+    simulated_annealings = []
+    x = 3
+    x_sim = 4
+    n = 1
+    begin_temperature = 5
+    end_temperature = 0.9
+    type = 'exponential'
+
+    for i in range(n):
+        schedule = schedulemaker.initialize_schedule(plan.courses)
+
+        hillclimbers.append(hillclimber.climb(schedule, plan.courses, x)[1])
+        hillclimber_extendeds.append(hillclimberextended.climb(schedule, plan.courses, x)[1])
+        simulated_annealings.append(annealing.anneal(schedule, plan.courses, \
+            int(x_sim / 2), begin_temperature, end_temperature, type))
+
+        print(hillclimbers, hillclimber_extendeds, simulated_annealings)
+
+    print(hillclimbers, hillclimber_extendeds, simulated_annealings)
+
+
+
     # # 50 random roosters maken
     # schedules = []
     # for i in range(50):
