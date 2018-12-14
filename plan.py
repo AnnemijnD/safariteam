@@ -157,9 +157,10 @@ class Plan():
             # Save max points to a list
             if algorithm == "Random" or algorithm == "genetic":
                 maxpoints.append(round(points))
-
+                print(maxpoints)
             else:
                 maxpoints.append(round(max(points)))
+                print(maxpoints)
 
         # Save schedule with highest points
         courses_schedule, spread_points, capacity_points, lecture_points, \
@@ -276,15 +277,12 @@ class Plan():
             GUI FUNCTION.
             Returns a boxplot for a given algorithm of x iterations and n runs.
             """
-            # Check for input in all the fields
-            if x.get() and n.get() and x2.get() and n2.get() and t1.get() \
-                    and t2.get() and type.get() and x3.get() and n3.get() \
-                    and p3.get() and t3.get() and n4.get():
-                plan.compare_algorithm(int(n4.get()), int(x.get()), int(n.get()),
-                                    int(hc2x.get()), int(hc2n.get()),
-                                    int(x2.get()), int(n2.get()), float(t1.get()),
-                                    float(t2.get()), type.get(), var3.get(),
-                                    var1.get(), var2.get(), var4.get())
+
+            plan.compare_algorithm(int(n4.get()), int(x.get()), int(n.get()),
+                                int(hc2x.get()), int(hc2n.get()),
+                                int(x2.get()), int(n2.get()), float(t1.get()),
+                                float(t2.get()), type.get(), var3.get(),
+                                var1.get(), var2.get(), var4.get())
 
         def plot(algorithm):
             """
@@ -378,7 +376,7 @@ class Plan():
         x2.insert(10,"20000")
         n2.insert(10,"1")
         t1.insert(10,"5")
-        t2.insert(10,"0.05")
+        t2.insert(10,"0.1")
         # type.insert(10,"exponential")
         x2.bind('<Return>', lambda _: printresults("sa"))
         n2.bind('<Return>', lambda _: printresults("sa"))
@@ -414,9 +412,9 @@ class Plan():
         x3.grid(row=14, column=1)
         p3.grid(row=15, column=1)
         n3.grid(row=16, column=1)
-        x3.insert(10,"50")
-        p3.insert(10,"10")
-        n3.insert(10,"3")
+        p3.insert(10,"50")
+        x3.insert(10,"10")
+        n3.insert(10,"1")
         t3.set('k-way')
         x3.bind('<Return>', lambda _: printresults("genetic"))
         p3.bind('<Return>', lambda _: printresults("genetic"))
