@@ -12,10 +12,13 @@ TIME_SLOTS = 4
 DAYS = 5
 ROOMS = 7
 
+# TODO: Deze schedule.py commenten
+
 
 def initialize_schedule(courses):
     """
     Initialize schedule using Session().
+    TODO: Input en output definiëren
     """
 
     schedule = [[[[None] for i in range(ROOMS)] for i in range(TIME_SLOTS)] for i in range(DAYS)]
@@ -28,8 +31,6 @@ def initialize_schedule(courses):
     session_list_2d = []
 
     # random.shuffle(courses)
-
-    # ANNEMIJN KAN JE HIER NOG EEN COMMENT BIJ ZETTEN, SNap niet wat je hier hebt gedaan
 
     # Makes a list of all sessions
     for course in courses:
@@ -64,34 +65,18 @@ def initialize_schedule(courses):
             elif session_list_2d[i][j].type == "tutorial" or session_list_2d[i][j].type == "practical":
                 other_sessions.append(session_list_2d[i][j])
 
-
-    # shuffle de lectures zodat ze random zijn
-    # Make copy of sessions and shuffle
     lectures = lecture_sessions[:]
-    others = other_sessions[:]
-    # random.shuffle(lectures)
-    # random.shuffle(other_sessions)
-
-    # De lijst met totale sessies bestaat dus uit een lijst met eerst
-    # Hoorcolleges, daarna de andere sessies en is opgevuld tot 140 met lege sessies
-
     total = []
     total = lectures + other_sessions
     counter_sessions = 0
     new_sched = False
 
-
     # Ensures a valid schedule is created in fill schedule. If not, the process
     # is repeated.
     while not bool(new_sched):
-
-        # Shuffle the courses each time a new schedule is made
-        # print(session_list)
-        # random.shuffle(session_list)
-        # print("done")
         new_sched = fill_schedule(schedule, session_list_2d, lecture_sessions, empty_sessions, courses)
         counter_sessions += 1
-        if not new_sched == False:
+        if not new_sched is False:
             break
 
     return schedule, total, other_sessions, empty_sessions
@@ -100,14 +85,8 @@ def initialize_schedule(courses):
 def fill_schedule(schedule, sessions_2d, other_sessions, empty_sessions, courses):
     """
     Fill empty schedule with sessions.
+    TODO: Input en output definiëren
     """
-
-    # Gebruik nested for loop om elke cel een session te gegen.
-    # Je geeft hierbij een lijst met sessies mee aan de functie get_session
-    # De lijst met sessies is al gemaakt in initialize_schedule()
-
-    # Vul eerst met lege sessions
-    # counter = 0
 
     # shuffle the 2d list and flatten it back to linear list
     random.shuffle(sessions_2d)
@@ -258,52 +237,30 @@ def fill_schedule(schedule, sessions_2d, other_sessions, empty_sessions, courses
 
         return False
 
-# def random_schedule(schedule, sessions):
-#     """
-#     Generates a random schedule. Assigns every session to a random timeslot.
-#     """
-#
-#     # Maak een 1D lijst van schedule
-#     flatten = np.array(schedule, dtype=object).flatten()
-#
-#     random_numbers = []
-#
-#     for i in range(len(sessions)):
-#         rand = random.randint(0, SLOTS - 1)
-#         while rand in random_numbers:
-#             rand = random.randint(0, SLOTS - 1)
-#         random_numbers.append(rand)
-#         flatten[rand] = sessions[i]
-#
-#     # Convert back to 3D list
-#     schedule = flatten.reshape(DAYS, TIME_SLOTS, ROOMS).tolist()
-#
-#     return schedule
 
-def switch_session(schedule, number_of_switches, session_to_switch):
+def switch_session(schedule, number_of_switches):
     """
     Returns a schedule with two randomly switched sessions.
+    Input is a schedule, output is a schedule with randomly switched
+    sessions.
     number_of_switches determines how many switches have to be made.
     """
 
-    # Flatten schedule to get a 1D list to switch elements, otherwise a
-    # deepcopy is needed, which is slower than this step.
+    # Flatten schedule to get a 1D list to switch elements,
+    # This is faster than making a deepcopy...
     flatten = np.array(schedule).flatten()
 
-    # If there is no specific session to switch, make a random switch
-    if session_to_switch < 0:
+    for i in range(number_of_switches):
+        # Get two random numbers
+        random_number = randint(0, SLOTS - 1)
+        random_switch_number = randint(0, SLOTS - 1)
 
-        for i in range(number_of_switches):
-            # Get two random numbers
+        # If the numbers are equal to each other, make another number
+        while random_number is random_switch_number:
             random_number = randint(0, SLOTS - 1)
             random_switch_number = randint(0, SLOTS - 1)
-
-            # If the numbers are equal to each other, make another number
-            while random_number is random_switch_number:
-                random_number = randint(0, SLOTS - 1)
-                random_switch_number = randint(0, SLOTS - 1)
-            # Make the switch
-            flatten[random_number], flatten[random_switch_number] = flatten[random_switch_number], flatten[random_number]
+        # Make the switch
+        flatten[random_number], flatten[random_switch_number] = flatten[random_switch_number], flatten[random_number]
 
     # Convert back to 3D list
     schedule = flatten.reshape(DAYS, TIME_SLOTS, ROOMS).tolist()

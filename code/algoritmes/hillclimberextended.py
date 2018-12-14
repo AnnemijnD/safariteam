@@ -2,7 +2,8 @@
 """
 Hill climber algorithm: generates a schedule that fulfills certain constraints
 by accepting a schedule with higher points and some times accepting a schedule
-with lower points.
+with lower points. A schedule with lower points may be accepted if x number of
+schedules were rejected.
 """
 
 from constraint import Constraint
@@ -19,7 +20,7 @@ def climb(schedule, courses, schedule_counter, iterations):
     accept_counter = 0
     points = []
     counter = 0
-    OPTIMUM = 45
+    x = 45
 
     while counter < iterations:
         # Append points to show in a graph when the schedule is made
@@ -33,7 +34,7 @@ def climb(schedule, courses, schedule_counter, iterations):
         schedule1_points = Constraint.get_points(schedule1, courses)
         # Make a new schedule by switching random sessions. Amount of sessions
         # switched starts high and ends low.
-        schedule2 = schedulemaker.switch_session(schedule, 1, -1)
+        schedule2 = schedulemaker.switch_session(schedule, 1)
         # Get points of the new (not yet accepted) schedule
         schedule2_points = Constraint.get_points(schedule2, courses)
         # Accept new schedule if it has more points that the old schedule.
@@ -48,8 +49,8 @@ def climb(schedule, courses, schedule_counter, iterations):
             accept_counter += 1
         # Make a forced switch if an optimum is reached for the number of times
         # that a schedule was rejected.
-        if accept_counter > OPTIMUM:
-            schedule = schedulemaker.switch_session(schedule, 1, -1)
+        if accept_counter > x:
+            schedule = schedulemaker.switch_session(schedule, 1)
             accept_counter = 0
 
     # Append last points of the new schedule to make a full plot of the points

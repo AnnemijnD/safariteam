@@ -8,18 +8,19 @@ class Course(object):
     Representation of a course in Session.
     """
 
-    def __init__(self, name, course_id, lecture, tutorial, practical, max_students_lecture, max_students_tutorial, max_students_practical, expected_students):
+    def __init__(self, name, course_id, lecture, tutorial, practical, max_students_lecture, max_students_tutorial, max_students_practical, expected_students, df):
         self.name = name
         self.course_id = course_id
         self.lecture = lecture
         self.tutorial = tutorial
         self.practical = practical
+        self.df = df
         self.sessions = self.lecture + self.tutorial + self.practical
         self.session_lecture = self.load_sessions(self.lecture, 'lecture', max_students_lecture, expected_students)
         self.session_tutorial = self.load_sessions(self.tutorial, 'tutorial', max_students_tutorial, expected_students)
         self.session_practical = self.load_sessions(self.practical, 'practical', max_students_practical, expected_students)
         self.sessions_total = self.session_lecture + self.session_tutorial + self.session_practical
-        self.mutual_courses = self.load_mutual_courses(self.name)
+        self.mutual_courses = self.load_mutual_courses(self.name, self.df)
         self.max_students_lecture = max_students_lecture
         self.max_students_tutorial = max_students_tutorial
         self.max_students_practical = max_students_practical
@@ -66,14 +67,12 @@ class Course(object):
         return sessions_with_groups
 
 
-    def load_mutual_courses(self, coursename):
+    def load_mutual_courses(self, coursename, df):
         """
-        Loads all the mutual per course. Input is a course name,
+        Loads all the mutual per course. Input is a course name and
+        a pandas dataframe including all the mutual courses,
         output is a list of mutual courses for this course.
-
-        TODO
         """
-        df = pd.read_csv("data/tegelijkvolgbaar.csv", delimiter=";")
 
         mutual_courses = []
         row_counter = 0

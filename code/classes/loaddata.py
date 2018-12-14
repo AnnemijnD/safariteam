@@ -1,15 +1,20 @@
-# Loads original data from heuristieken.nl
-# November 5
+"""
+Loads all the original data from csv files from the
+data folder.
+"""
 
-import csv
 from course import Course
 from room import Room
+
+import csv
+import pandas as pd
 
 
 def load_courses():
     """
     Loads all the courses from a csv file.
     """
+
     course = 'data/vakken.csv'
 
     with open(course) as courses:
@@ -41,14 +46,19 @@ def load_courses():
                 max_students_practical = 'nvt'
             max_students_lecture = int(row[6])
 
+            df = pd.read_csv("data/tegelijkvolgbaar.csv", delimiter=";")
+
             # Use Course class to create objects for every course
-            course = Course(name, course_id, lecture, tutorial, practical, max_students_lecture, max_students_tutorial, max_students_practical, expected_students)
+            course = Course(name, course_id, lecture, tutorial, practical,
+                            max_students_lecture, max_students_tutorial,
+                            max_students_practical, expected_students, df)
             courses_list.append(course)
+
             # Count id_course
             id_counter += 1
 
         return courses_list
-
+        
 
 def load_rooms():
     """

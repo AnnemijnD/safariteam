@@ -17,7 +17,6 @@ import loaddata
 import schedulemaker
 import genetic
 import annealing
-import climbergreedy
 import hillclimberextended
 import hillclimber
 
@@ -73,7 +72,7 @@ class Plan():
 
 
     def runalgorithm(self, algorithm, x, n, begin_temperature,
-                    end_temperature, type, input_sched):
+                    end_temperature, type, pop, gen, gen_type, input_sched):
         """
         Run a certain algorithm for n number of times with x number of
         iterations. Algorithm input can be: "hill climber", "hill climber2",
@@ -142,6 +141,7 @@ class Plan():
 
             elif algorithm == "genetic":
                 print("TODO")
+                genetic.genetic_algortim(schedules, plan.courses, pop, gen)
 
             # Save max points to a list
             if algorithm == "Random":
@@ -163,6 +163,7 @@ class Plan():
                         hillclimber2_n, sim_x, sim_n, begin_temp, end_temp,
                         type, check_rand, check_hill, check_hill2, check_sim):
         """
+        GUI FUNCTION.
         Run certain algorithms with the intention to compare them in a boxplot.
         Takes all arguments necessary to make plot. The check-arguments show
         whether a box for that type of algorithm was checked.
@@ -178,28 +179,29 @@ class Plan():
 
         if check_rand == 1:
             max_points, max_schedule, points = plan.runalgorithm("Random",
-                                        0, random_n, 0, 0, None, False)
+                                        0, random_n, 0, 0, None, 0, 0, 0, False)
             boxplot_data.append(max_points)
             boxplot_xaxis.append(f"Random \n n = {random_n}")
 
         if check_hill == 1:
             max_points, max_schedule, points = plan.runalgorithm("hill climber",
-                            hillclimber_x, hillclimber_n, 0, 0, None, schedule)
+                            hillclimber_x, hillclimber_n, 0, 0, None, 0, 0, 0, schedule)
             boxplot_data.append(max_points)
             boxplot_xaxis.append(f"Hillclimber \n n = {hillclimber_n}")
 
         if check_hill2 == 1:
             max_points, max_schedule, points = plan.runalgorithm("hill climber2",
-                            hillclimber2_x, hillclimber2_n, 0, 0, None, schedule)
+                            hillclimber2_x, hillclimber2_n, 0, 0, None, 0, 0, 0, schedule)
             boxplot_data.append(max_points)
             boxplot_xaxis.append(f"Hillclimber2 \n n = {hillclimber2_n}")
 
         if check_sim == 1:
             max_points, max_schedule, points = plan.runalgorithm("Simulated annealing",
-                                sim_x, sim_n, begin_temp, end_temp, type, schedule)
+                                sim_x, sim_n, begin_temp, end_temp, type, 0, 0, 0, schedule)
             boxplot_data.append(max_points)
             boxplot_xaxis.append(f"Simulated Annealing \n n = {sim_n}")
 
+        # Make the plot of selected checkboxes
         ax = plt.subplot(111)
         plt.boxplot(boxplot_data)
         plt.xticks(fontsize=8)
@@ -215,45 +217,55 @@ class Plan():
         """
 
         window = tk.Tk()
-        window.geometry('930x800')
+        window.geometry('800x700')
         window.title("GUI Safariteam")
 
         def printresults(algorithm):
             """
+            GUI FUNCTION.
             Print results of an algorithm of x iterations and n runs to the GUI.
             """
             # Check for correct input:
             if n.get() and x.get() and n2.get() and x2.get() and t1.get() \
                     and t2.get() and type.get() and n3.get() and x3.get() \
                     and hc2n.get() and hc2x.get():
-                print("Loading....")
 
-                tk.Label(window, text="Resulted points (out of 440): ") \
+                # Print loading
+                print("Generating schedule(s)")
+                print("May take a minute or 2...")
+                print("Or 4...")
+                print("Exit at any moment using 'ctr + c'.")
+
+                # Run the selected algorithm
+                Label(window, text="Resulted points (out of 440): ") \
                     .place(x=600, y=20)
                 if algorithm == "hc":
-                    tk.Label(window, text=plan.runalgorithm("hill climber",
-                        int(n.get()), int(x.get()), 0, 0, 0, False)[0],
+                    Label(window, text=plan.runalgorithm("hill climber",
+                        int(x.get()), int(n.get()), 0, 0, 0, 0, 0, 0, False)[0],
                         wraplength=30, font="Arial 10").place(x=600, y =50)
                 elif algorithm == "hc2":
-                    tk.Label(window, text=plan.runalgorithm("hill climber2",
-                        int(hc2n.get()), int(hc2x.get()), 0, 0, 0, False)[0],
+                    Label(window, text=plan.runalgorithm("hill climber2",
+                        int(hc2x.get()), int(hc2n.get()), 0, 0, 0, 0, 0, 0, False)[0],
                         wraplength=30, font="Arial 10").place(x=600, y =50)
                 elif algorithm == "sa":
-                    tk.Label(window, text=plan.runalgorithm("Simulated annealing",
-                            int(n2.get()), int(x2.get()), float(t1.get()),
-                            float(t2.get()), type.get(), False)[0],wraplength=30,
+                    Label(window, text=plan.runalgorithm("Simulated annealing",
+                            int(x2.get()) / 2, int(n2.get()), float(t1.get()),
+                            float(t2.get()), type.get(), 0, 0, 0, False)[0],wraplength=30,
                             font="Arial 10").place(x=600, y =50)
                 elif algorithm == "Random":
-                    tk.Label(window, text=plan.runalgorithm("Random", 0, int(n4.get()),
-                            0, 0, 0, False)[0], wraplength=30,
+                    Label(window, text=plan.runalgorithm("Random", 0, int(n4.get()),
+                            0, 0, 0, 0, 0, 0, False)[0], wraplength=30,
                             font="Arial 10").place(x=600, y =50)
                 elif algorithm == "genetic":
-                    print("TODO")
+                    Label(window, text=plan.runalgorithm("genetic", 0, 0,
+                            0, 0, 0, 0, 0, 0, False)[0], wraplength=30,
+                            font="Arial 10").place(x=600, y =50)
             else:
                 print("Fill in all the fields.")
 
         def boxplot():
             """
+            GUI FUNCTION.
             Returns a boxplot for a given algorithm of x iterations and n runs.
             """
             # Check for input in all the fields
@@ -268,6 +280,7 @@ class Plan():
 
         def plot(algorithm):
             """
+            GUI FUNCTION.
             Returns a plot of 1 run (n = 1) of a given algorithm.
             """
 
@@ -280,10 +293,10 @@ class Plan():
             # Get the points
             if algorithm == "hill climber":
                 points = plan.runalgorithm(algorithm, int(x.get()), 1,
-                        float(t1.get()), float(t2.get()),type.get(), False)[2]
+                        float(t1.get()), float(t2.get()),type.get(), 0, 0, 0, False)[2]
             elif algorithm == "Simulated annealing":
                 points = plan.runalgorithm(algorithm, int(x2.get()), 1,
-                        float(t1.get()), float(t2.get()),type.get(), False)[2]
+                        float(t1.get()), float(t2.get()),type.get(), 0, 0, 0, False)[2]
 
             # Make a plot
             plt.plot(points, 'b')
@@ -291,36 +304,35 @@ class Plan():
             plt.ylabel("Points")
             plt.show()
 
-
         # Add labels to the hill climber input
-        tk.Label(window, text="Hill climber: ", font="Arial 15 bold").grid(column=1)
+        Label(window, text="Hill climber: ", font="Arial 15 bold").grid(column=1)
         Label(window, text="Iterations: ").grid(row=1)
         Label(window, text="Runs (n): ").grid(row=2)
-        n = Entry(window)
         x = Entry(window)
-        n.grid(row=1, column=1)
-        x.grid(row=2, column=1)
-        n.insert(10,"10")
-        x.insert(10,"1")
-        n.bind('<Return>', lambda _: printresults("hc"))
+        n = Entry(window)
+        x.grid(row=1, column=1)
+        n.grid(row=2, column=1)
+        x.insert(10,"20000")
+        n.insert(10,"1")
         x.bind('<Return>', lambda _: printresults("hc"))
+        n.bind('<Return>', lambda _: printresults("hc"))
 
         # Add labels to the hill climber extended input
-        tk.Label(window, text="Hill climber extended: ",
+        Label(window, text="Hill climber extended: ",
                 font="Arial 15 bold").grid(column=1)
         Label(window, text="Iterations: ").grid(row=4)
         Label(window, text="Runs (n): ").grid(row=5)
-        hc2n = Entry(window)
         hc2x = Entry(window)
-        hc2n.grid(row=4, column=1)
-        hc2x.grid(row=5, column=1)
-        hc2n.insert(10,"100")
-        hc2x.insert(10,"1")
-        hc2n.bind('<Return>', lambda _: printresults("hc2"))
+        hc2n = Entry(window)
+        hc2x.grid(row=4, column=1)
+        hc2n.grid(row=5, column=1)
+        hc2x.insert(10,"20000")
+        hc2n.insert(10,"1")
         hc2x.bind('<Return>', lambda _: printresults("hc2"))
+        hc2n.bind('<Return>', lambda _: printresults("hc2"))
 
         # Add labels to simmulated annealing input
-        tk.Label(window, text="Simulated annealing: ",
+        Label(window, text="Simulated annealing: ",
                 font="Arial 15 bold").grid(column=1)
         Label(window, text="Iterations: ").grid(row=8)
         Label(window, text="Runs (n): ").grid(row=9)
@@ -339,9 +351,9 @@ class Plan():
         type.grid(row=12, column=1)
         x2.insert(10,"20000")
         n2.insert(10,"1")
-        t1.insert(10,"4")
-        t2.insert(10,"0.01")
-        type.insert(10,"exponential")
+        t1.insert(10,"3")
+        t2.insert(10,"0.1")
+        type.insert(10,"logaritmic")
         x2.bind('<Return>', lambda _: printresults("sa"))
         n2.bind('<Return>', lambda _: printresults("sa"))
         t1.bind('<Return>', lambda _: printresults("sa"))
@@ -349,7 +361,7 @@ class Plan():
         type.bind('<Return>', lambda _: printresults("sa"))
 
         # Add labels to genetic input
-        tk.Label(window, text="Genetic algorithm:", \
+        Label(window, text="Genetic algorithm:", \
             font="Arial 15 bold").grid(column=1)
         Label(window, text="Population: ").grid(row=14)
         Label(window, text="Gnerations: ").grid(row=15)
@@ -373,7 +385,7 @@ class Plan():
         t3.bind('<Return>', lambda _: printresults("genetic"))
 
         # Add labels to random algorithm
-        tk.Label(window, text="Random schedule:",
+        Label(window, text="Random schedule:",
             font="Arial 15 bold").grid(column=1)
         Label(window, text="Runs(n): ").grid(row=19)
         n4 = Entry(window)
@@ -400,13 +412,14 @@ class Plan():
         Button(window, text='Quit',
                 command=window.quit).grid(row=25, column=7, sticky=W, pady=4)
 
+        # Add buttons to plot a line chart
         ttk.Button(window, text="Plot one hill climber run",
             command=lambda:plot("hill climber"), padding=5).place(x=40, y=540)
         ttk.Button(window, text="Plot one simmulated annealing run",
             command=lambda:plot("Simulated annealing"), padding=5).place(x=40, y=580)
 
-        tk.Label(window, text="Press enter to run. ").place(x=40, y =620)
-        tk.Label(window, text="View the schedule at 'results/schedule.html' by heading to the results folder.",\
+        Label(window, text="Select an algorithm and press enter to run. ").place(x=40, y =620)
+        Label(window, text="View the schedule at 'results/schedule.html'.",\
             font="Arial 15 bold").place(x = 40, y = 660)
 
         window.mainloop()
@@ -489,17 +502,6 @@ class Plan():
             f.write(html_string.format(table=thursday.to_html(classes='style')))
             f.write("Friday")
             f.write(html_string.format(table=friday.to_html(classes='style')))
-
-    # def makeplot(self, points, points2):
-    #     """
-    #     Plots a graph of all the points on the y-axis and number of schedules
-    #     on the x-axis.
-    #     """
-    #     plt.plot(points, 'b') # annealing
-    #     plt.plot(points2, 'r') # hillclimber
-    #     plt.xlabel("Iterations")
-    #     plt.ylabel("Points")
-    #     plt.show()
 
     def end(self, schedule, courses_schedule):
         """
