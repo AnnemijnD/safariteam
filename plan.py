@@ -82,7 +82,6 @@ class Plan():
         max_schedule = None
 
         for i in range(n):
-
             if not bool(input_sched):
                 first_schedule = schedulemaker.initialize_schedule(plan.courses)
             else:
@@ -140,8 +139,8 @@ class Plan():
                 print("TODO")
                 schedules = []
                 for i in range(pop):
-                    schedules.append(schedulemaker.initialize_schedule(plan.courses)[0])
-                schedule_temp, points = genetic.genetic_algortim(schedules, plan.courses, pop, gen)
+                    schedules.append(schedulemaker.initialize_schedule(plan.courses))
+                schedule_temp, points = genetic.genetic_algorithm(schedules, plan.courses, pop, gen, gen_type)
 
                 if max_schedule is None:
                     max_schedule = schedule_temp
@@ -183,7 +182,7 @@ class Plan():
         boxplot_xaxis = []
         points = 0
 
-        schedule = schedulemaker.initialize_schedule(plan.courses)[0]
+        schedule = schedulemaker.initialize_schedule(plan.courses)
 
         if check_rand == 1:
             max_points, max_schedule, points = plan.runalgorithm("Random",
@@ -354,10 +353,10 @@ class Plan():
         type = StringVar(window)
 
         # Dictionary with options
-        choices = {'logaritmic','exponential'}
+        choices = {'logarihtmic','exponential'}
 
         # defautl function
-        type.set('logaritmic')
+        type.set('exponential')
         popupMenu = OptionMenu(mainframe_sim, type, *choices)
         popupMenu.grid(row = 2, column =1)
 
@@ -456,9 +455,6 @@ class Plan():
         Label(window, text="Select an algorithm and press enter to run. ").place(x=40, y =620)
         Label(window, text="View the schedule at 'results/schedule.html'.",\
             font="Arial 15 bold").place(x=40, y=660)
-
-
-
 
 
         window.mainloop()
