@@ -31,7 +31,6 @@ def anneal(schedule, courses, total_iterations, begin_temperature, end_temperatu
 
     for i in range(0, total_iterations):
 
-        print(type)
         # Get cooling scheme
         if type == "exponential":
             temp = begin_temperature * math.pow((end_temperature / begin_temperature),  (i / total_iterations))

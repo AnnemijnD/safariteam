@@ -62,7 +62,7 @@ class Plan():
         plan.own_session_points = 0
 
         # # Make random valid schedule
-        schedule = schedulemaker.initialize_schedule(plan.courses)[0]
+        schedule = schedulemaker.initialize_schedule(plan.courses)
 
         print("Opening GUI...")
         plan.gui(schedule, plan.courses, True)
@@ -78,14 +78,13 @@ class Plan():
         the schedule that reached max points.
         """
 
-        print(type)
         maxpoints = []
         max_schedule = None
 
         for i in range(n):
 
             if not bool(input_sched):
-                first_schedule = schedulemaker.initialize_schedule(plan.courses)[0]
+                first_schedule = schedulemaker.initialize_schedule(plan.courses)
             else:
                 first_schedule = input_sched
             # Call algorithm
@@ -343,51 +342,82 @@ class Plan():
         Label(window, text="Runs (n): ").grid(row=9)
         Label(window, text="Begin temperature: ").grid(row=10)
         Label(window, text="End temperature: ").grid(row=11)
-        Label(window, text="exponential | logarithmic").grid(row=12)
+        Label(window, text="Cooling scheme:").grid(row=12)
+
+        # dropdown menu for cooling scheme
+        mainframe_sim = Frame(window)
+        mainframe_sim.grid(column=1,row=12)
+        mainframe_sim.columnconfigure(0, weight = 1)
+        mainframe_sim.rowconfigure(0, weight = 1)
+
+        # Create a Tkinter variable
+        type = StringVar(window)
+
+        # Dictionary with options
+        choices = {'logaritmic','exponential'}
+
+        # defautl function
+        type.set('logaritmic')
+        popupMenu = OptionMenu(mainframe_sim, type, *choices)
+        popupMenu.grid(row = 2, column =1)
+
         x2 = Entry(window)
         n2 = Entry(window)
         t1 = Entry(window)
         t2 = Entry(window)
-        type = Entry(window)
+
         x2.grid(row=8, column=1)
         n2.grid(row=9, column=1)
         t1.grid(row=10, column=1)
         t2.grid(row=11, column=1)
-        type.grid(row=12, column=1)
+
         x2.insert(10,"20000")
         n2.insert(10,"1")
         t1.insert(10,"5")
         t2.insert(10,"0.05")
-        type.insert(10,"exponential")
+        # type.insert(10,"exponential")
         x2.bind('<Return>', lambda _: printresults("sa"))
         n2.bind('<Return>', lambda _: printresults("sa"))
         t1.bind('<Return>', lambda _: printresults("sa"))
         t2.bind('<Return>', lambda _: printresults("sa"))
-        type.bind('<Return>', lambda _: printresults("sa"))
+
 
         # Add labels to genetic input
         Label(window, text="Genetic algorithm:", \
             font="Arial 15 bold").grid(column=1)
         Label(window, text="Population: ").grid(row=14)
-        Label(window, text="Gnerations: ").grid(row=15)
+        Label(window, text="Generations: ").grid(row=15)
         Label(window, text="Runs (n): ").grid(row=16)
-        Label(window, text="k-way | rank | random").grid(row=17)
+        Label(window, text="Way of choosing parents:").grid(row=17)
+
+        # dropdown menu for way of choosing parents
+        mainframe_gen = Frame(window)
+        mainframe_gen.grid(column=1,row=17)
+        mainframe_gen.columnconfigure(0, weight = 1)
+        mainframe_gen.rowconfigure(0, weight = 1)
+
+        # Create a Tkinter variable
+        t3 = StringVar(window)
+
+        # Dictionary with options
+        choices_gen = {'k-way','rank', 'random'}
+        popupMenu = OptionMenu(mainframe_gen, t3, *choices_gen)
+        popupMenu.grid(row = 2, column =1)
+
         x3 = Entry(window)
         p3 = Entry(window)
         n3 = Entry(window)
-        t3 = Entry(window)
         x3.grid(row=14, column=1)
         p3.grid(row=15, column=1)
         n3.grid(row=16, column=1)
-        t3.grid(row=17, column=1)
         x3.insert(10,"50")
         p3.insert(10,"10")
         n3.insert(10,"3")
-        t3.insert(10,"k-way")
+        t3.set('k-way')
         x3.bind('<Return>', lambda _: printresults("genetic"))
         p3.bind('<Return>', lambda _: printresults("genetic"))
         n3.bind('<Return>', lambda _: printresults("genetic"))
-        t3.bind('<Return>', lambda _: printresults("genetic"))
+
 
         # Add labels to random algorithm
         Label(window, text="Random schedule:",
@@ -426,6 +456,10 @@ class Plan():
         Label(window, text="Select an algorithm and press enter to run. ").place(x=40, y =620)
         Label(window, text="View the schedule at 'results/schedule.html'.",\
             font="Arial 15 bold").place(x=40, y=660)
+
+
+
+
 
         window.mainloop()
 
@@ -526,13 +560,12 @@ if __name__ == "__main__":
     plan = Plan()
     plan.generate()
 
+    # 50 random roosters maken
+    schedules = []
+    for i in range(50):
+        schedule = schedulemaker.initialize_schedule(plan.courses)
+        schedules.append(schedule)
 
-    # # 50 random roosters maken
-    # schedules = []
-    # for i in range(50):
-    #     schedule = schedulemaker.initialize_schedule(plan.courses)[0]
-    #     schedules.append(schedule)
-    #
     # kway = []
     # for i in range(10):
     #     kway.append(genetic.genetic_algorithm(schedules, plan.courses, 50, 50, "k-way"))
