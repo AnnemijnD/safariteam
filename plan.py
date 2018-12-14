@@ -275,7 +275,7 @@ class Plan():
             """
             # Check for input in all the fields
             if x.get() and n.get() and x2.get() and n2.get() and t1.get() \
-                    and t2.get() and type.get() and n3.get() and x3.get() \
+                    and t2.get() and type.get() and x3.get() and n3.get() \
                     and p3.get() and t3.get() and n4.get():
                 plan.compare_algorithm(int(n4.get()), int(x.get()), int(n.get()),
                                     int(hc2n.get()), int(hc2x.get()),
