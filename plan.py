@@ -136,11 +136,13 @@ class Plan():
                     max_schedule = schedule_temp
 
             elif algorithm == "genetic":
-                print("TODO")
+                # Make schedules
                 schedules = []
                 for i in range(pop):
                     schedules.append(schedulemaker.initialize_schedule(plan.courses))
-                schedule_temp, points = genetic.genetic_algorithm(schedules, plan.courses, pop, gen, gen_type)
+                # Run the algorithm
+                # schedule_temp, points = genetic.genetic_algorithm(schedules, plan.courses, pop, gen, gen_type)
+                points = genetic.genetic_algorithm(schedules, plan.courses, pop, gen, gen_type)
 
                 if max_schedule is None:
                     max_schedule = schedule_temp
@@ -166,7 +168,7 @@ class Plan():
 
         return maxpoints, max_schedule, points
 
-    def compare_algorithm(self, random_n, hillclimber_n, hillclimber_x, hillclimber2_x,
+    def compare_algorithm(self, random_n, hillclimber_x, hillclimber_n, hillclimber2_x,
                         hillclimber2_n, sim_x, sim_n, begin_temp, end_temp,
                         type, check_rand, check_hill, check_hill2, check_sim):
         """
@@ -271,15 +273,12 @@ class Plan():
             GUI FUNCTION.
             Returns a boxplot for a given algorithm of x iterations and n runs.
             """
-            # Check for input in all the fields
-            if n.get() and x.get() and n2.get() and x2.get() and t1.get() \
-                    and t2.get() and type.get() and n3.get() and x3.get() \
-                    and p3.get() and t3.get() and n4.get():
-                plan.compare_algorithm(int(n4.get()), int(x.get()), int(n.get()),
-                                    int(hc2n.get()), int(hc2x.get()),
-                                    int(x2.get()), int(n2.get()), float(t1.get()),
-                                    float(t2.get()), type.get(), var3.get(),
-                                    var1.get(), var2.get(), var4.get())
+
+            plan.compare_algorithm(int(n4.get()), int(x.get()), int(n.get()),
+                                int(hc2n.get()), int(hc2x.get()),
+                                int(x2.get()), int(n2.get()), float(t1.get()),
+                                float(t2.get()), type.get(), var3.get(),
+                                var1.get(), var2.get(), var4.get())
 
         def plot(algorithm):
             """
@@ -353,7 +352,7 @@ class Plan():
         type = StringVar(window)
 
         # Dictionary with options
-        choices = {'logarihtmic','exponential'}
+        choices = {'logarithmic','exponential'}
 
         # defautl function
         type.set('exponential')
@@ -403,18 +402,18 @@ class Plan():
         popupMenu = OptionMenu(mainframe_gen, t3, *choices_gen)
         popupMenu.grid(row = 2, column =1)
 
-        x3 = Entry(window)
         p3 = Entry(window)
+        x3 = Entry(window)
         n3 = Entry(window)
-        x3.grid(row=14, column=1)
-        p3.grid(row=15, column=1)
+        p3.grid(row=14, column=1)
+        x3.grid(row=15, column=1)
         n3.grid(row=16, column=1)
-        x3.insert(10,"50")
-        p3.insert(10,"10")
+        p3.insert(10,"50")
+        x3.insert(10,"10")
         n3.insert(10,"3")
         t3.set('k-way')
-        x3.bind('<Return>', lambda _: printresults("genetic"))
         p3.bind('<Return>', lambda _: printresults("genetic"))
+        x3.bind('<Return>', lambda _: printresults("genetic"))
         n3.bind('<Return>', lambda _: printresults("genetic"))
 
 
@@ -452,7 +451,7 @@ class Plan():
         ttk.Button(window, text="Plot one simulated annealing run",
             command=lambda:plot("Simulated annealing"), padding=5).place(x=40, y=580)
 
-        Label(window, text="Select an algorithm and press enter to run. ").place(x=40, y =620)
+        Label(window, text="Select an algorithm and press enter to run. ").place(x=40, y=620)
         Label(window, text="View the schedule at 'results/schedule.html'.",\
             font="Arial 15 bold").place(x=40, y=660)
 

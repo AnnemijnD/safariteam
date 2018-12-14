@@ -19,6 +19,8 @@ SWITCHES = 3
 
 
 def genetic_algorithm(schedules, courses, population_size, generations, choose):
+
+    print(generations)
     """
     Genetic algorithm
 
