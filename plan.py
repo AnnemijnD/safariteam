@@ -65,7 +65,7 @@ class Plan():
         plan.own_session_points = 0
 
         # # Make random valid schedule
-        schedule = schedulemaker.initialize_schedule(plan.courses)[0]
+        schedule = schedulemaker.initialize_schedule(plan.courses)
 
         print("Opening GUI...")
         plan.gui(schedule, plan.courses, plan.schedule_counter, True)
@@ -87,7 +87,7 @@ class Plan():
         for i in range(n):
 
             if not bool(input_sched):
-                first_schedule = schedulemaker.initialize_schedule(plan.courses)[0]
+                first_schedule = schedulemaker.initialize_schedule(plan.courses)
             else:
                 first_schedule = input_sched
             # Call algorithm
@@ -531,13 +531,12 @@ if __name__ == "__main__":
     plan = Plan()
     plan.generate()
 
+    # 50 random roosters maken
+    schedules = []
+    for i in range(50):
+        schedule = schedulemaker.initialize_schedule(plan.courses)
+        schedules.append(schedule)
 
-    # # 50 random roosters maken
-    # schedules = []
-    # for i in range(50):
-    #     schedule = schedulemaker.initialize_schedule(plan.courses)[0]
-    #     schedules.append(schedule)
-    #
     # kway = []
     # for i in range(10):
     #     kway.append(genetic.genetic_algorithm(schedules, plan.courses, 50, 50, "k-way"))
