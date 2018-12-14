@@ -30,7 +30,7 @@ def initialize_schedule(courses):
     empty_sessions = []
     session_list_2d = []
 
-    # random.shuffle(courses)
+
 
     # Makes a list of all sessions
     for course in courses:

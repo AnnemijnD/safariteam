@@ -331,58 +331,89 @@ class Plan():
         hc2x.bind('<Return>', lambda _: printresults("hc2"))
         hc2n.bind('<Return>', lambda _: printresults("hc2"))
 
-        # Add labels to simmulated annealing input
+        # Add labels to simulated annealing input
         Label(window, text="Simulated annealing: ",
                 font="Arial 15 bold").grid(column=1)
         Label(window, text="Iterations: ").grid(row=8)
         Label(window, text="Runs (n): ").grid(row=9)
         Label(window, text="Begin temperature: ").grid(row=10)
         Label(window, text="End temperature: ").grid(row=11)
-        Label(window, text="exponential | logaritmic").grid(row=12)
+        Label(window, text="Cooling scheme:").grid(row=12)
+
+        # dropdown menu for cooling scheme
+        mainframe_sim = Frame(window)
+        mainframe_sim.grid(column=1,row=12)
+        mainframe_sim.columnconfigure(0, weight = 1)
+        mainframe_sim.rowconfigure(0, weight = 1)
+
+        # Create a Tkinter variable
+        type = StringVar(window)
+
+        # Dictionary with options
+        choices = {'logaritmic','exponential'}
+
+        # defautl function
+        type.set('logaritmic')
+        popupMenu = OptionMenu(mainframe_sim, type, *choices)
+        popupMenu.grid(row = 2, column =1)
+
         x2 = Entry(window)
         n2 = Entry(window)
         t1 = Entry(window)
         t2 = Entry(window)
-        type = Entry(window)
+
         x2.grid(row=8, column=1)
         n2.grid(row=9, column=1)
         t1.grid(row=10, column=1)
         t2.grid(row=11, column=1)
-        type.grid(row=12, column=1)
+
         x2.insert(10,"20000")
         n2.insert(10,"1")
         t1.insert(10,"3")
         t2.insert(10,"0.1")
-        type.insert(10,"logaritmic")
+
         x2.bind('<Return>', lambda _: printresults("sa"))
         n2.bind('<Return>', lambda _: printresults("sa"))
         t1.bind('<Return>', lambda _: printresults("sa"))
         t2.bind('<Return>', lambda _: printresults("sa"))
-        type.bind('<Return>', lambda _: printresults("sa"))
+
 
         # Add labels to genetic input
         Label(window, text="Genetic algorithm:", \
             font="Arial 15 bold").grid(column=1)
         Label(window, text="Population: ").grid(row=14)
-        Label(window, text="Gnerations: ").grid(row=15)
+        Label(window, text="Generations: ").grid(row=15)
         Label(window, text="Runs (n): ").grid(row=16)
-        Label(window, text="k-way | rank | random").grid(row=17)
+        Label(window, text="Way of choosing parents:").grid(row=17)
+
+        # dropdown menu for way of choosing parents
+        mainframe_gen = Frame(window)
+        mainframe_gen.grid(column=1,row=17)
+        mainframe_gen.columnconfigure(0, weight = 1)
+        mainframe_gen.rowconfigure(0, weight = 1)
+
+        # Create a Tkinter variable
+        t3 = StringVar(window)
+
+        # Dictionary with options
+        choices_gen = {'k-way','rank', 'random'}
+        popupMenu = OptionMenu(mainframe_gen, t3, *choices_gen)
+        popupMenu.grid(row = 2, column =1)
+
         x3 = Entry(window)
         p3 = Entry(window)
         n3 = Entry(window)
-        t3 = Entry(window)
         x3.grid(row=14, column=1)
         p3.grid(row=15, column=1)
         n3.grid(row=16, column=1)
-        t3.grid(row=17, column=1)
         x3.insert(10,"50")
         p3.insert(10,"10")
         n3.insert(10,"3")
-        t3.insert(10,"k-way")
+        t3.set('k-way')
         x3.bind('<Return>', lambda _: printresults("genetic"))
         p3.bind('<Return>', lambda _: printresults("genetic"))
         n3.bind('<Return>', lambda _: printresults("genetic"))
-        t3.bind('<Return>', lambda _: printresults("genetic"))
+
 
         # Add labels to random algorithm
         Label(window, text="Random schedule:",
@@ -421,6 +452,10 @@ class Plan():
         Label(window, text="Select an algorithm and press enter to run. ").place(x=40, y =620)
         Label(window, text="View the schedule at 'results/schedule.html'.",\
             font="Arial 15 bold").place(x = 40, y = 660)
+
+
+
+
 
         window.mainloop()
 

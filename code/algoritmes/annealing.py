@@ -37,6 +37,7 @@ def anneal(schedule, courses, schedule_counter, total_iterations, begin_temperat
         elif type == "logaritmic":
             temp = begin_temperature / math.log(i + 2)
 
+        print(type)
         points.append(Constraint.get_points(schedule, courses))
         # Append points to show in a graph when the schedule is made
         points.append(Constraint.get_points(schedule, courses))
