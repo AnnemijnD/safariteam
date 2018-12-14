@@ -92,7 +92,6 @@ def fill_schedule(schedule, sessions_2d, other_sessions, empty_sessions, courses
     random.shuffle(sessions_2d)
     sessions = list(itertools.chain(*sessions_2d))
 
-
     session_counter = 0
     for b in range(DAYS):
         for c in range(TIME_SLOTS):
