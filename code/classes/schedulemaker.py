@@ -61,8 +61,7 @@ def initialize_schedule(courses):
             # put all lectures in list and put all other sessions in other list
             if session_list_2d[i][j].type == "lecture":
                 lecture_sessions.append(session_list_2d[i][j])
-            elif session_list_2d[i][j].type == "tutorial" or \
-                    session_list_2d[i][j].type == "practical":
+            elif session_list_2d[i][j].type == "tutorial" or session_list_2d[i][j].type == "practicum":
                 other_sessions.append(session_list_2d[i][j])
 
     counter_sessions = 0
@@ -182,7 +181,7 @@ def fill_schedule(schedule, sessions_2d, other_sessions, empty_sessions,
 
                 amount_sessions = sessions[session].course_object.lecture + \
                     sessions[session].course_object.tutorial + \
-                    sessions[session].course_object.practical
+                    sessions[session].course_object.practicum
                 prohibited_timeslots = amount_sessions - 1 - passed_lectures
 
                 passed_lectures += 1

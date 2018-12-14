@@ -32,7 +32,7 @@ def load_courses():
             name = row[0]
             lecture = int(row[1])
             tutorial = int(row[2])
-            practical = int(row[4])
+            practicum = int(row[4])
             course_id = id_counter
             expected_students = int(row[6])
 
@@ -41,24 +41,24 @@ def load_courses():
             else:
                 max_students_tutorial = 'nvt'
             if row[5].isdigit():
-                max_students_practical = int(row[5])
+                max_students_practicum = int(row[5])
             else:
-                max_students_practical = 'nvt'
+                max_students_practicum = 'nvt'
             max_students_lecture = int(row[6])
 
             df = pd.read_csv("data/tegelijkvolgbaar.csv", delimiter=";")
 
             # Use Course class to create objects for every course
-            course = Course(name, course_id, lecture, tutorial, practical,
+            course = Course(name, course_id, lecture, tutorial, practicum,
                             max_students_lecture, max_students_tutorial,
-                            max_students_practical, expected_students, df)
+                            max_students_practicum, expected_students, df)
             courses_list.append(course)
 
             # Count id_course
             id_counter += 1
 
         return courses_list
-        
+
 
 def load_rooms():
     """

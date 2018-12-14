@@ -8,7 +8,7 @@ Output is a schedule (with more points than the input schedule).
 from constraint import Constraint
 import schedulemaker
 import math
-from random import randint
+import random
 
 CYCLES = 5
 OPTIMUM = 200
@@ -16,7 +16,7 @@ LIMIT = 500
 MAXPOINTS = 440
 
 
-def anneal(schedule, courses, schedule_counter, total_iterations, begin_temperature, end_temperature, type):
+def anneal(schedule, courses, total_iterations, begin_temperature, end_temperature, type):
     """
     Generates a schedule using a hill climber algorithm.
     Input is a random schedule, output is a schedule that fulfills all hard-
@@ -24,24 +24,22 @@ def anneal(schedule, courses, schedule_counter, total_iterations, begin_temperat
     """
 
     accept_counter = 0
-    accept_max = 15
     points = []
 
     # Sigmodial:
     # temp = end_temperature + (begin_temperature - end_temperature) / (1 + math.exp(0.3 * (i - total_iterations/2)))
 
     for i in range(0, total_iterations):
+
         # Get cooling scheme
         if type == "exponential":
             temp = begin_temperature * math.pow((end_temperature / begin_temperature),  (i / total_iterations))
-        elif type == "logaritmic":
+        elif type == "logarithmic":
             temp = begin_temperature / math.log(i + 2)
 
         points.append(Constraint.get_points(schedule, courses))
         # Append points to show in a graph when the schedule is made
         points.append(Constraint.get_points(schedule, courses))
-        # Count the number of schedules made
-        schedule_counter += 1
         # Save the first schedule
         schedule1 = schedule
         # Get points of the first schedule
@@ -61,15 +59,14 @@ def anneal(schedule, courses, schedule_counter, total_iterations, begin_temperat
             schedule = schedule1
             accept_counter += 1
         # Apply simmulated annealing
-        if accept_counter > accept_max:
-            diff = schedule2_points - schedule1_points
-            # If the acceptance chance is higher than a random integer
-            # between 0 and 100, force to accept a schedule
-            if randint(0, 100) < (math.exp(diff / temp) * 100):
-                schedule = schedule2
+        diff = schedule2_points - schedule1_points
+        # If the acceptance chance is higher than a random number
+        # between 0 and 1, force to accept a schedule
+        if random.random() < math.exp(diff / temp):
+            schedule = schedule2
 
     # Append last points of the new schedule to make a full plot of the points
     points.append(Constraint.get_points(schedule, courses))
 
     # Return the generated schedule and its points :-)
-    return schedule, points, schedule_counter
+    return schedule, points
