@@ -65,7 +65,7 @@ class Plan():
         plan.own_session_points = 0
 
         # # Make random valid schedule
-        schedule = schedulemaker.initialize_schedule(plan.courses)[0]
+        schedule = schedulemaker.initialize_schedule(plan.courses)
 
         print("Opening GUI...")
         plan.gui(schedule, plan.courses, plan.schedule_counter, True)
@@ -75,7 +75,7 @@ class Plan():
                     end_temperature, type, pop, gen, gen_type, input_sched):
         """
         Run a certain algorithm for n number of times with x number of
-        iterations. Algorithm input can be: "hill climber", "hill climber2",
+        iterations. Algorithm input can be: "hill climber", "hill climber ext",
         "genetic", "simulated annealing", or "Random".
         Output is a list of maximum points that the algorithm reached or
         the schedule that reached max points.
@@ -87,7 +87,7 @@ class Plan():
         for i in range(n):
 
             if not bool(input_sched):
-                first_schedule = schedulemaker.initialize_schedule(plan.courses)[0]
+                first_schedule = schedulemaker.initialize_schedule(plan.courses)
             else:
                 first_schedule = input_sched
             # Call algorithm
@@ -103,7 +103,7 @@ class Plan():
                     Constraint.get_points(max_schedule, plan.courses):
                     max_schedule = schedule_temp
 
-            if algorithm == "hill climber2":
+            if algorithm == "hill climber ext":
                 schedule_temp, points, schedule_counter = \
                 hillclimberextended.climb(first_schedule, plan.courses, plan.schedule_counter, x)
 
@@ -190,10 +190,10 @@ class Plan():
             boxplot_xaxis.append(f"Hillclimber \n n = {hillclimber_n}")
 
         if check_hill2 == 1:
-            max_points, max_schedule, points = plan.runalgorithm("hill climber2",
+            max_points, max_schedule, points = plan.runalgorithm("hill climber ext",
                             hillclimber2_x, hillclimber2_n, 0, 0, None, 0, 0, 0, schedule)
             boxplot_data.append(max_points)
-            boxplot_xaxis.append(f"Hillclimber2 \n n = {hillclimber2_n}")
+            boxplot_xaxis.append(f"Hillclimber extended \n n = {hillclimber2_n}")
 
         if check_sim == 1:
             max_points, max_schedule, points = plan.runalgorithm("Simulated annealing",
@@ -244,7 +244,7 @@ class Plan():
                         int(x.get()), int(n.get()), 0, 0, 0, 0, 0, 0, False)[0],
                         wraplength=30, font="Arial 10").place(x=600, y =50)
                 elif algorithm == "hc2":
-                    Label(window, text=plan.runalgorithm("hill climber2",
+                    Label(window, text=plan.runalgorithm("hill climber ext",
                         int(hc2x.get()), int(hc2n.get()), 0, 0, 0, 0, 0, 0, False)[0],
                         wraplength=30, font="Arial 10").place(x=600, y =50)
                 elif algorithm == "sa":
@@ -446,7 +446,7 @@ class Plan():
         # Add buttons to plot a line chart
         ttk.Button(window, text="Plot one hill climber run",
             command=lambda:plot("hill climber"), padding=5).place(x=40, y=540)
-        ttk.Button(window, text="Plot one simmulated annealing run",
+        ttk.Button(window, text="Plot one simulated annealing run",
             command=lambda:plot("Simulated annealing"), padding=5).place(x=40, y=580)
 
         Label(window, text="Select an algorithm and press enter to run. ").place(x=40, y =620)
@@ -566,13 +566,12 @@ if __name__ == "__main__":
     plan = Plan()
     plan.generate()
 
+    # 50 random roosters maken
+    schedules = []
+    for i in range(50):
+        schedule = schedulemaker.initialize_schedule(plan.courses)
+        schedules.append(schedule)
 
-    # # 50 random roosters maken
-    # schedules = []
-    # for i in range(50):
-    #     schedule = schedulemaker.initialize_schedule(plan.courses)[0]
-    #     schedules.append(schedule)
-    #
     # kway = []
     # for i in range(10):
     #     kway.append(genetic.genetic_algorithm(schedules, plan.courses, 50, 50, "k-way"))
