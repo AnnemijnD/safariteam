@@ -567,7 +567,7 @@ if __name__ == "__main__":
     simulated_annealings = []
     x = 30000
     x_sim = 45000
-    n = 100
+    n = 50
     begin_temperature = 5
     end_temperature = 0.9
     type = 'exponential'
