@@ -1,6 +1,7 @@
 
 import random
 import numpy as np
+import itertools
 
 from session import Session
 from random import randint
@@ -24,18 +25,25 @@ def initialize_schedule(courses):
     lecture_sessions = []
     other_sessions = []
     empty_sessions = []
+    session_list_2d = []
 
     # random.shuffle(courses)
 
     # ANNEMIJN KAN JE HIER NOG EEN COMMENT BIJ ZETTEN, SNap niet wat je hier hebt gedaan
 
+    # Makes a list of all sessions
     for course in courses:
         session_list = session_list + course.sessions_total
 
+        # Make a list of lists for each course
+        session_list_2d.append(course.sessions_total)
+
+    # adds overall id's to the sessions
     session_counter = 0
-    for i in range(len(session_list)):
-        session_list[i].overall_id = session_counter
-        session_counter += 1
+    for i in range(len(session_list_2d)):
+        for j in range(len(session_list_2d[i])):
+            session_list_2d[i][j].overall_id = session_counter
+            session_counter += 1
 
     # make #SLOTS empty sessions
     for i in range(SLOTS):
@@ -48,12 +56,14 @@ def initialize_schedule(courses):
         empty_session.overall_id = SLOTS
         empty_sessions.append(empty_session)
 
-    for i in range(len(session_list)):
+    for i in range(len(session_list_2d)):
+        for j in range(len(session_list_2d[i])):
         # Get all the lectures
-        if session_list[i].type == "lecture":
-            lecture_sessions.append(session_list[i])
-        elif session_list[i].type == "tutorial" or session_list[i].type == "practical":
-            other_sessions.append(session_list[i])
+            if session_list_2d[i][j].type == "lecture":
+                lecture_sessions.append(session_list_2d[i][j])
+            elif session_list_2d[i][j].type == "tutorial" or session_list_2d[i][j].type == "practical":
+                other_sessions.append(session_list_2d[i][j])
+
 
     # shuffle de lectures zodat ze random zijn
     # Make copy of sessions and shuffle
@@ -64,17 +74,22 @@ def initialize_schedule(courses):
 
     # De lijst met totale sessies bestaat dus uit een lijst met eerst
     # Hoorcolleges, daarna de andere sessies en is opgevuld tot 140 met lege sessies
+
     total = []
     total = lectures + other_sessions
-
-    # plan.fill_schedule(schedule, total, other_sessions, empty_sessions, courses)
-    # print(session_list)
-    # print(len(session_list))
     counter_sessions = 0
     new_sched = False
 
+
+    # Ensures a valid schedule is created in fill schedule. If not, the process
+    # is repeated.
     while not bool(new_sched):
-        new_sched = fill_schedule(schedule, session_list, lecture_sessions, empty_sessions, courses)
+
+        # Shuffle the courses each time a new schedule is made
+        # print(session_list)
+        # random.shuffle(session_list)
+        # print("done")
+        new_sched = fill_schedule(schedule, session_list_2d, lecture_sessions, empty_sessions, courses)
         counter_sessions += 1
         if not new_sched == False:
             break
@@ -82,7 +97,7 @@ def initialize_schedule(courses):
     return schedule, total, other_sessions, empty_sessions
 
 
-def fill_schedule(schedule, lectures, other_sessions, empty_sessions, courses):
+def fill_schedule(schedule, sessions_2d, other_sessions, empty_sessions, courses):
     """
     Fill empty schedule with sessions.
     """
@@ -93,6 +108,12 @@ def fill_schedule(schedule, lectures, other_sessions, empty_sessions, courses):
 
     # Vul eerst met lege sessions
     # counter = 0
+
+    # shuffle the 2d list and flatten it back to linear list
+    random.shuffle(sessions_2d)
+    sessions = list(itertools.chain(*sessions_2d))
+
+
     session_counter = 0
     for b in range(DAYS):
         for c in range(TIME_SLOTS):
@@ -104,10 +125,8 @@ def fill_schedule(schedule, lectures, other_sessions, empty_sessions, courses):
     # vertelt hoeveelste lecture van dit vak dit is
     passed_lectures = 0
 
-
     # found = False
-    for e in range(len(lectures)):
-        # print(lectures[e].name)
+    for e in range(len(sessions)):
 
         lectures_first = False
         tut_or_prac = False
@@ -116,12 +135,12 @@ def fill_schedule(schedule, lectures, other_sessions, empty_sessions, courses):
 
 
         for course in courses:
-            if lectures[e].name == course.name:
-               lectures[e].course_object = course
-               mutual_courses_session = lectures[e].course_object.mutual_courses
+            if sessions[e].name == course.name:
+               sessions[e].course_object = course
+               mutual_courses_session = sessions[e].course_object.mutual_courses
 
         # is dit een hoorcollege?
-        if lectures[e].type == "lecture":
+        if sessions[e].type == "lecture":
             lectures_first = True
         else:
             tut_or_prac = True
@@ -138,15 +157,15 @@ def fill_schedule(schedule, lectures, other_sessions, empty_sessions, courses):
                     if not lectures_first:
 
 
-                        if lectures[e].name == schedule[b][c][d].name:
+                        if sessions[e].name == schedule[b][c][d].name:
                             if schedule[b][c][d].type == "lecture":
 
                                 # alle eerdere locaties mogen weg want er mag niets voor een lecture
                                 location.clear()
                                 # print(location)
                                 break
-                            elif not lectures[e].session_id == schedule[b][c][d].session_id:
-                                if lectures[e].group_id == schedule[b][c][d].group_id:
+                            elif not sessions[e].session_id == schedule[b][c][d].session_id:
+                                if sessions[e].group_id == schedule[b][c][d].group_id:
                                     for k in range(len(location) - 1, -1, -1):
                                         if location[k][1] == c and location[k][0] == b:
                                             del location[k]
@@ -164,7 +183,7 @@ def fill_schedule(schedule, lectures, other_sessions, empty_sessions, courses):
 
 
                     # als het een lecture is
-                    elif lectures[e].name == schedule[b][c][d].name or schedule[b][c][d].name in mutual_courses_session:
+                    elif sessions[e].name == schedule[b][c][d].name or schedule[b][c][d].name in mutual_courses_session:
 
                         # achteruit itereren anders gaat het verwijderen niet goed
                         for k in range(len(location) - 1, -1, -1):
@@ -186,7 +205,7 @@ def fill_schedule(schedule, lectures, other_sessions, empty_sessions, courses):
             # aan de hoeveelheid vakken die er nog moeten worden ingedeeld
             if lectures_first:
 
-                amount_sessions = lectures[e].course_object.lecture + lectures[e].course_object.tutorial + lectures[e].course_object.practical
+                amount_sessions = sessions[e].course_object.lecture + sessions[e].course_object.tutorial + sessions[e].course_object.practical
                 prohibited_timeslots = amount_sessions - 1 - passed_lectures
 
                 # probleem: er moeten nu teveel plekken open worden gehouden
@@ -205,10 +224,10 @@ def fill_schedule(schedule, lectures, other_sessions, empty_sessions, courses):
 
             random_location = random.choice(location)
             # print(random_location)
-            schedule[random_location[0]][random_location[1]][random_location[2]] = lectures[e]
+            schedule[random_location[0]][random_location[1]][random_location[2]] = sessions[e]
             found = True
             # als dit het laatste lecture van het vak was of als er geen andere sessies meer zijn van dit vak:
-            if not e == len(lectures) - 1 and (not lectures[e + 1].type == "lecture" or not lectures[e].course_object == lectures[e + 1].course_object):
+            if not e == len(sessions) - 1 and (not sessions[e + 1].type == "lecture" or not sessions[e].course_object == sessions[e + 1].course_object):
                 passed_lectures = 0
 
 

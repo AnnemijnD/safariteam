@@ -178,7 +178,7 @@ class Plan():
 
         if check_rand == 1:
             max_points, max_schedule, points = plan.runalgorithm("Random",
-                                        0, random_n, 0, 0, None, schedule)
+                                        0, random_n, 0, 0, None, False)
             boxplot_data.append(max_points)
             boxplot_xaxis.append(f"Random \n n = {random_n}")
 
