@@ -262,7 +262,7 @@ def mutate_children(children):
         switches = randint(1, SWITCHES)
         child = random.choice(children)
         children.remove(child)
-        child = schedulemaker.switch_session(child, switches, -1)
+        child = schedulemaker.switch_session(child, switches)
         children.append(child)
 
     return children

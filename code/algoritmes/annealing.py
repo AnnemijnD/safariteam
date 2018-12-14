@@ -1,15 +1,14 @@
 
 """
-SIMULATED ANNEALING TEST
+Simulated annealing algorithm.
+Input is a (valid) schedule, number of iterations, begin- and end temperature.
+Output is a schedule (with more points than the input schedule).
 """
 
 from constraint import Constraint
 import schedulemaker
-import matplotlib
 import math
 from random import randint
-matplotlib.use('TkAgg')
-import matplotlib.pyplot as plt
 
 CYCLES = 5
 OPTIMUM = 200
@@ -25,23 +24,17 @@ def anneal(schedule, courses, schedule_counter, total_iterations, begin_temperat
     """
 
     accept_counter = 0
-    accept_max = 25
+    accept_max = 15
     points = []
-    # begin_temperature = 4
-    # end_temperature = 0.01
 
     # Sigmodial:
     # temp = end_temperature + (begin_temperature - end_temperature) / (1 + math.exp(0.3 * (i - total_iterations/2)))
 
-
-
     for i in range(0, total_iterations):
-
         # Get cooling scheme
         if type == "exponential":
             temp = begin_temperature * math.pow((end_temperature / begin_temperature),  (i / total_iterations))
-        else:
-            # Geman cooling scheme
+        elif type == "logaritmic":
             temp = begin_temperature / math.log(i + 2)
 
         points.append(Constraint.get_points(schedule, courses))
@@ -55,28 +48,28 @@ def anneal(schedule, courses, schedule_counter, total_iterations, begin_temperat
         schedule1_points = Constraint.get_points(schedule1, courses)
         # Make a new schedule by switching random sessions. Amount of sessions
         # switched starts high and ends low.
-        schedule2 = schedulemaker.switch_session(schedule, 1, -1)
+        schedule2 = schedulemaker.switch_session(schedule, 1)
         # Get points of the new (not yet accepted) schedule
         schedule2_points = Constraint.get_points(schedule2, courses)
         # Accept new schedule if it has more points that the old schedule.
         # Also accept schedules with equal number of points for a higher chance
         # of finding a solution.
-        if schedule2_points >= schedule1_points: # or schedule2_points - schedule1_points < verschil:
+        if schedule2_points >= schedule1_points:
             schedule = schedule2
             accept_counter = 0
-        else: # deze else moet even anders
+        else:
             schedule = schedule1
             accept_counter += 1
-        # Bij vastlopen
+        # Apply simmulated annealing
         if accept_counter > accept_max:
             diff = schedule2_points - schedule1_points
-            # Pas simulated annealing toe
+            # If the acceptance chance is higher than a random integer
+            # between 0 and 100, force to accept a schedule
             if randint(0, 100) < (math.exp(diff / temp) * 100):
                 schedule = schedule2
 
     # Append last points of the new schedule to make a full plot of the points
     points.append(Constraint.get_points(schedule, courses))
-    print("Max points:", max(points))
 
     # Return the generated schedule and its points :-)
     return schedule, points, schedule_counter

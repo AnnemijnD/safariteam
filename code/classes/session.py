@@ -1,5 +1,3 @@
-
-SLOTS = 140
 A = 65
 
 
@@ -18,7 +16,6 @@ class Session(object):
         self.course_object = None
 
 
-
     def __iter__(self):
         """
         Enables a list of objects to be iterated one element at a time.
@@ -30,10 +27,6 @@ class Session(object):
         Represents an object when it is printed.
         """
         return self.name
-
-    # Dit gebruiken we volgens mij niet meer?
-    # def __getitem__(self, day):
-    #     return self.day
 
     def __str__(self):
         if self.max_students == " ":
