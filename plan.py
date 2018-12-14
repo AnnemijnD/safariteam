@@ -214,8 +214,10 @@ class Plan():
         Starts a GUI when plan.py is runned.
         """
 
+        # TODO: overal tk. voor weghalen
+
         window = tk.Tk()
-        window.geometry('930x800')
+        window.geometry('800x700')
         window.title("GUI Safariteam")
 
         def printresults(algorithm):
@@ -300,7 +302,7 @@ class Plan():
         x = Entry(window)
         n.grid(row=1, column=1)
         x.grid(row=2, column=1)
-        n.insert(10,"10")
+        n.insert(10,"20000")
         x.insert(10,"1")
         n.bind('<Return>', lambda _: printresults("hc"))
         x.bind('<Return>', lambda _: printresults("hc"))
@@ -314,7 +316,7 @@ class Plan():
         hc2x = Entry(window)
         hc2n.grid(row=4, column=1)
         hc2x.grid(row=5, column=1)
-        hc2n.insert(10,"100")
+        hc2n.insert(10,"20000")
         hc2x.insert(10,"1")
         hc2n.bind('<Return>', lambda _: printresults("hc2"))
         hc2x.bind('<Return>', lambda _: printresults("hc2"))
@@ -400,14 +402,17 @@ class Plan():
         Button(window, text='Quit',
                 command=window.quit).grid(row=25, column=7, sticky=W, pady=4)
 
+        # Add buttons to plot a line chart
         ttk.Button(window, text="Plot one hill climber run",
             command=lambda:plot("hill climber"), padding=5).place(x=40, y=540)
         ttk.Button(window, text="Plot one simmulated annealing run",
             command=lambda:plot("Simulated annealing"), padding=5).place(x=40, y=580)
 
-        tk.Label(window, text="Press enter to run. ").place(x=40, y =620)
-        tk.Label(window, text="View the schedule at 'results/schedule.html' by heading to the results folder.",\
+        tk.Label(window, text="Select an algorithm and press enter to run. ").place(x=40, y =620)
+        tk.Label(window, text="View the schedule at 'results/schedule.html'.",\
             font="Arial 15 bold").place(x = 40, y = 660)
+
+        # Label(window, text="Will take about {} seconds".format(int(n.get()) * int(x.get())/100), font="Arial 10").grid(row=1, column=2)
 
         window.mainloop()
 
