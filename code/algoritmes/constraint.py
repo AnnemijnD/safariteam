@@ -116,33 +116,31 @@ class Constraint():
 
             if course.sessions == 2:
 
-                # increases bonuspoints if sessions are on monday and thursday
-                Constraint.spread_detail(sessions, [0, 3], courses_schedule,
-                                         id, bonuspoints, spread_bonus)
+                bonuspoints += Constraint.spread_detail(sessions, [0, 3],
+                                                        courses_schedule, id,
+                                                        spread_bonus)
 
-                # increases bonuspoints if sessions are on tuesday and friday
-                Constraint.spread_detail(sessions, [1, 4], courses_schedule,
-                                         id, bonuspoints, spread_bonus)
+                bonuspoints += Constraint.spread_detail(sessions, [1, 4],
+                                                        courses_schedule, id,
+                                                        spread_bonus)
 
             elif course.sessions == 3:
 
-                # increases bonuspoints if sessions are on mon, wed, fri
-                Constraint.spread_detail(sessions, [0, 2, 4], courses_schedule,
-                                         id, bonuspoints, spread_bonus)
+                bonuspoints += Constraint.spread_detail(sessions, [0, 2, 4],
+                                                        courses_schedule, id,
+                                                        spread_bonus)
 
             elif course.sessions == 4:
 
-                # increases bonuspoints if sessions are on mon, tues, thurs, fri
-                Constraint.spread_detail(sessions, [0, 1, 3, 4],
-                                         courses_schedule, id, bonuspoints,
-                                         spread_bonus)
+                bonuspoints += Constraint.spread_detail(sessions, [0, 1, 3, 4],
+                                                        courses_schedule, id,
+                                                        spread_bonus)
 
             elif course.sessions == 5:
 
-                # increases bonuspoints if there's a session every day of the week
-                Constraint.spread_detail(sessions, [0, 1, 2, 3, 4],
-                                         courses_schedule, id, bonuspoints,
-                                         spread_bonus)
+                bonuspoints += Constraint.spread_detail(sessions, [0, 1, 2, 3, 4],
+                                                        courses_schedule, id,
+                                                        spread_bonus)
 
             # check the overall spread per group
             for i in range(len(sessions)):
@@ -172,8 +170,7 @@ class Constraint():
 
         return [spread_points, course_dict, bonuspoints, maluspoints]
 
-    def spread_detail(sessions, bonus_days, courses_schedule, id, bonuspoints,
-                      spread_bonus):
+    def spread_detail(sessions, bonus_days, courses_schedule, id, spread_bonus):
         """
         Increases bonuspoints when the sessions are spread over the days as
         desired
@@ -181,6 +178,8 @@ class Constraint():
         Input: TODO
         Output: increased amount of bonuspoints
         """
+        bonuspoints = 0
+
         for i in range(len(sessions)):
 
             # makes a list of the days of the sessions
