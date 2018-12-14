@@ -56,9 +56,6 @@ class Plan():
         Generates a schedule by calling several helper functions and algorithms.
         """
 
-        plan.then = time.time()
-        plan.schedule_counter = 0
-
         # Load all the courses, rooms and sessions
         plan.courses = loaddata.load_courses()
         plan.rooms = loaddata.load_rooms()
@@ -68,7 +65,7 @@ class Plan():
         schedule = schedulemaker.initialize_schedule(plan.courses)[0]
 
         print("Opening GUI...")
-        plan.gui(schedule, plan.courses, plan.schedule_counter, True)
+        plan.gui(schedule, plan.courses, True)
 
 
     def runalgorithm(self, algorithm, x, n, begin_temperature,
@@ -81,6 +78,7 @@ class Plan():
         the schedule that reached max points.
         """
 
+        print(type)
         maxpoints = []
         max_schedule = None
 
@@ -92,10 +90,10 @@ class Plan():
                 first_schedule = input_sched
             # Call algorithm
             if algorithm == "hill climber":
-                schedule_temp, points, schedule_counter =  \
-                hillclimber.climb(first_schedule, plan.courses, plan.schedule_counter, x)
+                schedule_temp, points =  \
+                hillclimber.climb(first_schedule, plan.courses, x)
 
-                if max_schedule == None:
+                if max_schedule is None:
                     max_schedule = schedule_temp
 
                 # Save schedule with most points
@@ -104,10 +102,10 @@ class Plan():
                     max_schedule = schedule_temp
 
             if algorithm == "hill climber ext":
-                schedule_temp, points, schedule_counter = \
-                hillclimberextended.climb(first_schedule, plan.courses, plan.schedule_counter, x)
+                schedule_temp, points = \
+                hillclimberextended.climb(first_schedule, plan.courses, x)
 
-                if max_schedule == None:
+                if max_schedule is None:
                     max_schedule = schedule_temp
 
                 # Save schedule with most points
@@ -118,7 +116,7 @@ class Plan():
             elif algorithm == "Random":
                 points = Constraint.get_points(first_schedule, plan.courses)
 
-                if max_schedule == None:
+                if max_schedule is None:
                     max_schedule = first_schedule
 
                 # Save schedule with most points
@@ -127,11 +125,11 @@ class Plan():
                     max_schedule = first_schedule
 
             elif algorithm == "Simulated annealing":
-                schedule_temp, points, schedule_counter = \
+                schedule_temp, points = \
                 annealing.anneal(first_schedule, plan.courses, \
-                    plan.schedule_counter, x, begin_temperature, end_temperature, type)
+                    int(x / 2), begin_temperature, end_temperature, type)
 
-                if max_schedule == None:
+                if max_schedule is None:
                     max_schedule = schedule_temp
 
                 # Save schedule with most points
@@ -141,7 +139,18 @@ class Plan():
 
             elif algorithm == "genetic":
                 print("TODO")
-                genetic.genetic_algortim(schedules, plan.courses, pop, gen)
+                schedules = []
+                for i in range(pop):
+                    schedules.append(schedulemaker.initialize_schedule(plan.courses)[0])
+                schedule_temp, points = genetic.genetic_algortim(schedules, plan.courses, pop, gen)
+
+                if max_schedule is None:
+                    max_schedule = schedule_temp
+
+                # Save schedule with most points
+                elif Constraint.get_points(schedule_temp, plan.courses) > \
+                Constraint.get_points(max_schedule, plan.courses):
+                    max_schedule = schedule_temp
 
             # Save max points to a list
             if algorithm == "Random":
@@ -211,7 +220,7 @@ class Plan():
         plt.xlabel("Algorithms \n (n = runs)")
         plt.show()
 
-    def gui(self, schedule, courses, schedule_counter, bool):
+    def gui(self, schedule, courses, bool):
         """
         Starts a GUI when plan.py is runned.
         """
@@ -225,43 +234,39 @@ class Plan():
             GUI FUNCTION.
             Print results of an algorithm of x iterations and n runs to the GUI.
             """
-            # Check for correct input:
-            if n.get() and x.get() and n2.get() and x2.get() and t1.get() \
-                    and t2.get() and type.get() and n3.get() and x3.get() \
-                    and hc2n.get() and hc2x.get():
 
-                # Print loading
-                print("Generating schedule(s)")
-                print("May take a minute or 2...")
-                print("Or 4...")
-                print("Exit at any moment using 'ctr + c'.")
+            # Print loading
+            print("Generating schedule(s)")
+            print("May take a minute or 2...")
+            print("Or 4...")
+            print("Exit at any moment using 'ctr + c'.")
 
-                # Run the selected algorithm
-                Label(window, text="Resulted points (out of 440): ") \
-                    .place(x=600, y=20)
-                if algorithm == "hc":
-                    Label(window, text=plan.runalgorithm("hill climber",
-                        int(x.get()), int(n.get()), 0, 0, 0, 0, 0, 0, False)[0],
+            # Run the selected algorithm
+            Label(window, text="Resulted points (out of 440): ") \
+                .place(x=600, y=20)
+            if algorithm == "hc":
+                Label(window, text=plan.runalgorithm("hill climber",
+                    int(x.get()), int(n.get()), 0, 0, 0, 0, 0, 0, False)[0],
+                    wraplength=30, font="Arial 10").place(x=600, y =50)
+            elif algorithm == "hc2":
+                Label(window, text=plan.runalgorithm("hill climber ext",
+                    int(hc2x.get()), int(hc2n.get()), 0, 0, 0, 0, 0, 0, False)[0],
+                    wraplength=30, font="Arial 10").place(x=600, y =50)
+            elif algorithm == "sa":
+                Label(window, text=plan.runalgorithm("Simulated annealing",
+                        int(x2.get()), int(n2.get()), float(t1.get()),
+                        float(t2.get()), type.get(), 0, 0, 0, False)[0],
                         wraplength=30, font="Arial 10").place(x=600, y =50)
-                elif algorithm == "hc2":
-                    Label(window, text=plan.runalgorithm("hill climber ext",
-                        int(hc2x.get()), int(hc2n.get()), 0, 0, 0, 0, 0, 0, False)[0],
-                        wraplength=30, font="Arial 10").place(x=600, y =50)
-                elif algorithm == "sa":
-                    Label(window, text=plan.runalgorithm("Simulated annealing",
-                            int(x2.get()) / 2, int(n2.get()), float(t1.get()),
-                            float(t2.get()), type.get(), 0, 0, 0, False)[0],wraplength=30,
-                            font="Arial 10").place(x=600, y =50)
-                elif algorithm == "Random":
-                    Label(window, text=plan.runalgorithm("Random", 0, int(n4.get()),
-                            0, 0, 0, 0, 0, 0, False)[0], wraplength=30,
-                            font="Arial 10").place(x=600, y =50)
-                elif algorithm == "genetic":
-                    Label(window, text=plan.runalgorithm("genetic", 0, 0,
-                            0, 0, 0, 0, 0, 0, False)[0], wraplength=30,
-                            font="Arial 10").place(x=600, y =50)
-            else:
-                print("Fill in all the fields.")
+            elif algorithm == "Random":
+                Label(window, text=plan.runalgorithm("Random", 0, int(n4.get()),
+                        0, 0, 0, 0, 0, 0, False)[0], wraplength=30,
+                        font="Arial 10").place(x=600, y =50)
+            elif algorithm == "genetic":
+                # TODO
+                Label(window, text=plan.runalgorithm("genetic", 0,
+                        int(n3.get()), 0, 0, 0, int(p3.get()), int(x3.get()),
+                        (t3.get()), False)[0], wraplength=30,
+                        font="Arial 10").place(x=600, y=50)
 
         def boxplot():
             """
@@ -293,10 +298,10 @@ class Plan():
             # Get the points
             if algorithm == "hill climber":
                 points = plan.runalgorithm(algorithm, int(x.get()), 1,
-                        float(t1.get()), float(t2.get()),type.get(), 0, 0, 0, False)[2]
+                        float(t1.get()), float(t2.get()), type.get(), 0, 0, 0, False)[2]
             elif algorithm == "Simulated annealing":
                 points = plan.runalgorithm(algorithm, int(x2.get()), 1,
-                        float(t1.get()), float(t2.get()),type.get(), 0, 0, 0, False)[2]
+                        float(t1.get()), float(t2.get()), type.get(), 0, 0, 0, False)[2]
 
             # Make a plot
             plt.plot(points, 'b')
@@ -338,7 +343,7 @@ class Plan():
         Label(window, text="Runs (n): ").grid(row=9)
         Label(window, text="Begin temperature: ").grid(row=10)
         Label(window, text="End temperature: ").grid(row=11)
-        Label(window, text="exponential | logaritmic").grid(row=12)
+        Label(window, text="exponential | logarithmic").grid(row=12)
         x2 = Entry(window)
         n2 = Entry(window)
         t1 = Entry(window)
@@ -351,9 +356,9 @@ class Plan():
         type.grid(row=12, column=1)
         x2.insert(10,"20000")
         n2.insert(10,"1")
-        t1.insert(10,"3")
-        t2.insert(10,"0.1")
-        type.insert(10,"logaritmic")
+        t1.insert(10,"5")
+        t2.insert(10,"0.05")
+        type.insert(10,"exponential")
         x2.bind('<Return>', lambda _: printresults("sa"))
         n2.bind('<Return>', lambda _: printresults("sa"))
         t1.bind('<Return>', lambda _: printresults("sa"))
@@ -420,7 +425,7 @@ class Plan():
 
         Label(window, text="Select an algorithm and press enter to run. ").place(x=40, y =620)
         Label(window, text="View the schedule at 'results/schedule.html'.",\
-            font="Arial 15 bold").place(x = 40, y = 660)
+            font="Arial 15 bold").place(x=40, y=660)
 
         window.mainloop()
 
@@ -502,16 +507,6 @@ class Plan():
             f.write(html_string.format(table=thursday.to_html(classes='style')))
             f.write("Friday")
             f.write(html_string.format(table=friday.to_html(classes='style')))
-
-    def end(self, schedule, courses_schedule):
-        """
-        Prints text to tell user how many schedules were made and how long it took to make.
-        """
-        print("Succes! :-)")
-        print("It took:", round(time.time() - plan.then, 3), "seconds, = ", round((time.time() - plan.then) / 60, 3), "minutes.")
-        print("Made", plan.schedule_counter, "schedule(s).")
-        print("Points:", Constraint.session_spread_check(schedule, plan.courses, courses_schedule)[0]
-              - Constraint.students_fit(schedule, plan.courses, courses_schedule), "out of 440.")
 
     def points_to_print(self, schedule):
         """

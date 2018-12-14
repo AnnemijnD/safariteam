@@ -8,13 +8,12 @@ from constraint import Constraint
 import schedulemaker
 
 
-def climb(schedule, courses, schedule_counter, iterations):
+def climb(schedule, courses, iterations):
     """
     Generates a schedule using a hill climber algorithm.
     Input is a random schedule, output is a schedule that fulfills all hard-
     constraints and most soft constraints.
     """
-    # print(iterations)
     counter = 0
     points = []
 
@@ -22,8 +21,6 @@ def climb(schedule, courses, schedule_counter, iterations):
         # Append points to show in a graph when the schedule is made
         points.append(Constraint.get_points(schedule, courses))
         counter += 1
-        # Count the number of schedules made
-        schedule_counter += 1
         # Save the first schedule
         schedule1 = schedule
         # Get points of the first schedule
@@ -43,4 +40,4 @@ def climb(schedule, courses, schedule_counter, iterations):
     points.append(Constraint.get_points(schedule, courses))
 
     # Return the generated schedule and its points :-)
-    return schedule, points, schedule_counter
+    return schedule, points

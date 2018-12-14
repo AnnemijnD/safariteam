@@ -62,7 +62,7 @@ def initialize_schedule(courses):
         # Get all the lectures
             if session_list_2d[i][j].type == "lecture":
                 lecture_sessions.append(session_list_2d[i][j])
-            elif session_list_2d[i][j].type == "tutorial" or session_list_2d[i][j].type == "practical":
+            elif session_list_2d[i][j].type == "tutorial" or session_list_2d[i][j].type == "practicum":
                 other_sessions.append(session_list_2d[i][j])
 
     lectures = lecture_sessions[:]
@@ -183,7 +183,7 @@ def fill_schedule(schedule, sessions_2d, other_sessions, empty_sessions, courses
             # aan de hoeveelheid vakken die er nog moeten worden ingedeeld
             if lectures_first:
 
-                amount_sessions = sessions[e].course_object.lecture + sessions[e].course_object.tutorial + sessions[e].course_object.practical
+                amount_sessions = sessions[e].course_object.lecture + sessions[e].course_object.tutorial + sessions[e].course_object.practicum
                 prohibited_timeslots = amount_sessions - 1 - passed_lectures
 
                 # probleem: er moeten nu teveel plekken open worden gehouden

@@ -23,7 +23,7 @@ De code kan gerund worden met de onderstaande code.
 ```
 python plan.py
 ```
-Vervolgens wordt verschijnt er een pop-up met mogelijke input. Alle velden moeten ingevuld worden. Als er wordt gevraagd om aantal iteraties of runs, moet de input altijd een positief getal zijn. In de terminal wordt aangegeven wanneer er een functie geladen wordt.
+Vervolgens wordt verschijnt er een pop-up met mogelijke input. Alle velden moeten ingevuld worden. Als er wordt gevraagd om aantal iteraties of runs, moet de input altijd een positief getal zijn. In de terminal wordt aangegeven wanneer er een functie geladen wordt. ALLE velden moeten ingevuld zijn. 
 
 ### Resultaat
 Het uiteindelijke resultaat staat in de folder 'results' onder de naam 'schedule.html'.

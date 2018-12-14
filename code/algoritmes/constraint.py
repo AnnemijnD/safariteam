@@ -296,7 +296,7 @@ class Constraint():
                 elif types[i] is "tutorial":
                     students = course.max_students_tutorial
                 else:
-                    students = course.max_students_practical
+                    students = course.max_students_practicum
 
                 # calculates how many empty seats there are
                 empty_seats = rooms[room_ids[i]].capacity - students
