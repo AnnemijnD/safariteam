@@ -78,6 +78,8 @@ class Plan():
         the schedule that reached max points.
         """
 
+        print("x = ", x, "n = ", n)
+
         maxpoints = []
         max_schedule = None
 
@@ -272,7 +274,7 @@ class Plan():
             Returns a boxplot for a given algorithm of x iterations and n runs.
             """
             # Check for input in all the fields
-            if n.get() and x.get() and n2.get() and x2.get() and t1.get() \
+            if x.get() and n.get() and x2.get() and n2.get() and t1.get() \
                     and t2.get() and type.get() and n3.get() and x3.get() \
                     and p3.get() and t3.get() and n4.get():
                 plan.compare_algorithm(int(n4.get()), int(x.get()), int(n.get()),
@@ -384,7 +386,7 @@ class Plan():
         # Add labels to genetic input
         Label(window, text="Genetic algorithm:", \
             font="Arial 15 bold").grid(column=1)
-        Label(window, text="Population: ").grid(row=14)
+        Label(window, text="Population (must be even number): ").grid(row=14)
         Label(window, text="Generations: ").grid(row=15)
         Label(window, text="Runs (n): ").grid(row=16)
         Label(window, text="Way of choosing parents:").grid(row=17)
