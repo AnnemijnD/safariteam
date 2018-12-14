@@ -18,17 +18,20 @@ PERCENTAGE = 52
 SWITCHES = 3
 
 
-def genetic_algortim(schedules, courses, population_size, generations):
+def genetic_algorithm(schedules, courses, population_size, generations, choose):
     """
-    Genetic algorithm in which the two bes, the two second best, ...,
-    the two worst schedules in the population generate children. After
-    generating children the best half of the population survives.
+    Genetic algorithm
+
+    Input: TODO, sowieso choose uitleggen
+    Output: a list which contains the best schedule of the last generation and
+    the amount of points of that schedule
     """
     population_points = []
     for i in range(0, population_size):
         points = Constraint.get_points(schedules[i], courses)
         population_points.append(points)
 
+    # TODO: dit weghalen
     # print(population_points)
     # print(max(population_points), min(population_points), sum(population_points) / len(population_points))
     saved = max(population_points)
@@ -37,13 +40,13 @@ def genetic_algortim(schedules, courses, population_size, generations):
 
     for generation in range(generations):
 
-        # choose the parents
-        # if generation > 10:
-        #     parents = choose_parents_KWAY(population, courses)
-        # else:
-        #     parents = choose_parents_rank(population, courses)
-        # parents = choose_parents_KWAY(population, courses)
-        parents = choose_parents_rank(population, courses)
+        # chooses the parents in the desired way
+        if choose is "k-way":
+            parents = choose_parents_KWAY(population, courses, population_size)
+        elif choose is "rank":
+            parents = choose_parents_rank(population, courses, population_size)
+        else:
+            parents = choose_parents_random(population, population_size)
 
         children = []
         for i in range(0, population_size, 2):
@@ -76,7 +79,7 @@ def genetic_algortim(schedules, courses, population_size, generations):
         # add children to population
         population += children
 
-        # choose survivors
+        # choose new population out of the parents and children
         population = choose_parents_KWAY(population, courses, population_size)
 
     population_points = []
@@ -84,19 +87,22 @@ def genetic_algortim(schedules, courses, population_size, generations):
         points = Constraint.get_points(population[i], courses)
         population_points.append(points)
 
-    # print(population_points)
-    # print(max(population_points), min(population_points), sum(population_points) / len(population_points))
-    # print(f"improvement {max(population_points) - saved}")
+        # TODO: deze willen we straks!!!!!!!!
+        # population_points.append((population[i], points))
 
-    # TODO: BESTE ROOSTER RETURNEN
-    return max(population_points)
+    return max(population_points) - saved
+
+    # TODO DEZE WILLEN WE UITEINDELIJK!!!!!!!
+    # returns tuple of the best schedule in final population and it's points
+    # return sorted(population_points, key=itemgetter(1))[-1]
 
 
 def choose_parents_KWAY(population, courses, population_size):
     """
-    Choose parents with a K-way tournamentself.
+    Choose parents with a K-way tournament
 
-    PRESTEERT WEL AL EEN BEETJE MAAR ERG WEINIG DIVERSITEIT TUSSEN DE OUDERS
+    Input: TODO
+    Output: list of parents
     """
     parents = []
     for i in range(population_size):
@@ -119,6 +125,7 @@ def choose_parents_KWAY(population, courses, population_size):
         for j in range(K):
             population.append(battlefield[j][0])
 
+    # TODO dit verwijderen maar pas als we hebben gekeken welke ouders kiezen beter is
     # print_list = []
     # for i in range(len(parents)):
     #     print_list.append(Constraint.get_points(parents[i], courses))
@@ -131,17 +138,23 @@ def choose_parents_KWAY(population, courses, population_size):
 def choose_parents_random(population, population_size):
     """
     Choose the parents randomly
+
+    Input: TODO
+    Output: list of parents
     """
     parents = []
     for i in range(population_size):
         parents.append(random.choice(population))
+
     return parents
 
 
 def choose_parents_rank(population, courses, population_size):
     """
-    When the population isn't very diverse rank the schedules. The best
-    schedules have a bigger chance to be a parent.
+    Choose the parents with a ranking system
+
+    Input: TODO
+    Output: list of parents
     """
     parents = []
 
@@ -151,7 +164,7 @@ def choose_parents_rank(population, courses, population_size):
         points = Constraint.get_points(population[i], courses)
         population_points.append([population[i], points])
 
-    # create a list with high ranked schedules in there more than low ranked ones
+    # creates a list with more high ranked schedules low ranked ones
     ranking = sorted(population_points, key=itemgetter(1))
     chances = []
     for i in range(population_size):
@@ -162,20 +175,15 @@ def choose_parents_rank(population, courses, population_size):
     for i in range(population_size):
         parents.append(random.choice(chances))
 
-    # print(parents)
-
-    # print_list = []
-    # for i in range(len(parents)):
-    #     print_list.append(Constraint.get_points(parents[i], courses))
-
-    # print(max(print_list), min(print_list), sum(print_list) / len(print_list))
-
     return parents
 
 
 def create_cycles(parent1_id, parent2_id):
     """
-    Create cycles between the two parent schedules.
+    Find existing cycles between the two parent schedules
+
+    Input: two schedules
+    Output: a list of cycles
     """
     cycles = []
     cycles_len = []
