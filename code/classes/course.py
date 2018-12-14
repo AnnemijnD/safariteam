@@ -1,5 +1,4 @@
 from session import Session
-import pandas as pd
 import math
 
 
@@ -8,7 +7,9 @@ class Course(object):
     Representation of a course in Session.
     """
 
-    def __init__(self, name, course_id, lecture, tutorial, practical, max_students_lecture, max_students_tutorial, max_students_practical, expected_students, df):
+    def __init__(self, name, course_id, lecture, tutorial, practical,
+                 max_students_lecture, max_students_tutorial,
+                 max_students_practical, expected_students, df):
         self.name = name
         self.course_id = course_id
         self.lecture = lecture
@@ -16,10 +17,17 @@ class Course(object):
         self.practical = practical
         self.df = df
         self.sessions = self.lecture + self.tutorial + self.practical
-        self.session_lecture = self.load_sessions(self.lecture, 'lecture', max_students_lecture, expected_students)
-        self.session_tutorial = self.load_sessions(self.tutorial, 'tutorial', max_students_tutorial, expected_students)
-        self.session_practical = self.load_sessions(self.practical, 'practical', max_students_practical, expected_students)
-        self.sessions_total = self.session_lecture + self.session_tutorial + self.session_practical
+        self.session_lecture = self.load_sessions(self.lecture, 'lecture',
+                                                  max_students_lecture,
+                                                  expected_students)
+        self.session_tutorial = self.load_sessions(self.tutorial, 'tutorial',
+                                                   max_students_tutorial,
+                                                   expected_students)
+        self.session_practical = self.load_sessions(self.practical, 'practical',
+                                                    max_students_practical,
+                                                    expected_students)
+        self.sessions_total = self.session_lecture + self.session_tutorial + \
+            self.session_practical
         self.mutual_courses = self.load_mutual_courses(self.name, self.df)
         self.max_students_lecture = max_students_lecture
         self.max_students_tutorial = max_students_tutorial
@@ -29,6 +37,8 @@ class Course(object):
     def load_sessions(self, int_session, type, max_students, expected_students):
         """
         Loads all the session types for every course.
+        TODO
+
         """
 
         mutual_courses = []
