@@ -355,7 +355,7 @@ class Plan():
         type = StringVar(window)
 
         # Dictionary with options
-        choices = {'logarihtmic','exponential'}
+        choices = {'logarithmic','exponential'}
 
         # defautl function
         type.set('exponential')
@@ -454,7 +454,7 @@ class Plan():
         ttk.Button(window, text="Plot one simulated annealing run",
             command=lambda:plot("Simulated annealing"), padding=5).place(x=40, y=580)
 
-        Label(window, text="Select an algorithm and press enter to run. ").place(x=40, y =620)
+        Label(window, text="Select an algorithm and press enter to run. ").place(x=40, y=620)
         Label(window, text="View the schedule at 'results/schedule.html'.",\
             font="Arial 15 bold").place(x=40, y=660)
 
