@@ -136,12 +136,13 @@ class Plan():
                     max_schedule = schedule_temp
 
             elif algorithm == "genetic":
-                print("TODO")
+                # Make schedules
                 schedules = []
-                print("population:", pop, "generations", gen)
                 for i in range(pop):
                     schedules.append(schedulemaker.initialize_schedule(plan.courses))
-                schedule_temp, points = genetic.genetic_algorithm(schedules, plan.courses, pop, gen, gen_type)
+                # Run the algorithm
+                # schedule_temp, points = genetic.genetic_algorithm(schedules, plan.courses, pop, gen, gen_type)
+                points = genetic.genetic_algorithm(schedules, plan.courses, pop, gen, gen_type)
 
                 if max_schedule is None:
                     max_schedule = schedule_temp
@@ -167,7 +168,7 @@ class Plan():
 
         return maxpoints, max_schedule, points
 
-    def compare_algorithm(self, random_n, hillclimber_n, hillclimber_x, hillclimber2_x,
+    def compare_algorithm(self, random_n, hillclimber_x, hillclimber_n, hillclimber2_x,
                         hillclimber2_n, sim_x, sim_n, begin_temp, end_temp,
                         type, check_rand, check_hill, check_hill2, check_sim):
         """
@@ -193,13 +194,13 @@ class Plan():
 
         if check_hill == 1:
             max_points, max_schedule, points = plan.runalgorithm("hill climber",
-                            hillclimber_n, hillclimber_x, 0, 0, None, 0, 0, 0, schedule)
+                            hillclimber_x, hillclimber_n, 0, 0, None, 0, 0, 0, schedule)
             boxplot_data.append(max_points)
             boxplot_xaxis.append(f"Hillclimber \n n = {hillclimber_n}")
 
         if check_hill2 == 1:
             max_points, max_schedule, points = plan.runalgorithm("hill climber ext",
-                            hillclimber2_n, hillclimber2_x, 0, 0, None, 0, 0, 0, schedule)
+                            hillclimber2_x, hillclimber2_n, 0, 0, None, 0, 0, 0, schedule)
             boxplot_data.append(max_points)
             boxplot_xaxis.append(f"Hillclimber extended \n n = {hillclimber2_n}")
 
