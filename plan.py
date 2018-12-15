@@ -8,6 +8,7 @@ import os, sys
 
 directory = os.path.dirname(os.path.realpath(__file__))
 sys.path.append(os.path.join(directory, "code"))
+sys.path.append(os.path.join(directory, "results"))
 sys.path.append(os.path.join(directory, "code", "classes"))
 sys.path.append(os.path.join(directory, "code", "algoritmes"))
 
@@ -19,6 +20,7 @@ import genetic
 import annealing
 import hillclimberextended
 import hillclimber
+import schedule_to_html
 
 import random
 import copy
@@ -65,7 +67,7 @@ class Plan():
         schedule = schedulemaker.initialize_schedule(plan.courses)
 
         print("Opening GUI...")
-        # plan.gui(schedule, plan.courses, True)
+        plan.gui(schedule, plan.courses, True)
 
 
     def runalgorithm(self, algorithm, x, n, begin_temperature,
@@ -77,8 +79,6 @@ class Plan():
         Output is a list of maximum points that the algorithm reached or
         the schedule that reached max points.
         """
-
-        print("x = ", x, "n = ", n)
 
         maxpoints = []
         max_schedule = None
@@ -143,9 +143,10 @@ class Plan():
                 for i in range(pop):
                     schedules.append(schedulemaker.initialize_schedule(plan.courses))
                     # Run the algorithm
-                    schedule_temp, points = genetic.genetic_algorithm(schedules, plan.courses, pop, gen, gen_type)
-                points = genetic.genetic_algorithm(schedules, plan.courses, pop, gen, gen_type)[1]
-
+                    schedule_temp, points = genetic.genetic_algorithm(schedules, \
+                                            plan.courses, pop, gen, gen_type)
+                points = genetic.genetic_algorithm(schedules, plan.courses, \
+                                                   pop, gen, gen_type)[1]
                 if max_schedule is None:
                     max_schedule = schedule_temp
 
@@ -165,7 +166,7 @@ class Plan():
         # Save schedule with highest points
         courses_schedule, spread_points, capacity_points, lecture_points, \
             mutual_course_malus = plan.points_to_print(max_schedule)
-        plan.save_html(max_schedule, plan.rooms, spread_points,
+        schedule_to_html.save_html(max_schedule, plan.rooms, spread_points,
                        capacity_points, lecture_points, mutual_course_malus)
 
         print(algorithm, "reached max points of: ", maxpoints)
@@ -183,7 +184,7 @@ class Plan():
         Returns a boxplot.
         """
 
-        # dict met alle data voor boxplot
+        # dict with all data for the boxplot
         boxplot_data = []
         boxplot_xaxis = []
         points = 0
@@ -277,7 +278,6 @@ class Plan():
             GUI FUNCTION.
             Returns a boxplot for a given algorithm of x iterations and n runs.
             """
-
             plan.compare_algorithm(int(n4.get()), int(x.get()), int(n.get()),
                                 int(hc2x.get()), int(hc2n.get()),
                                 int(x2.get()), int(n2.get()), float(t1.get()),
@@ -356,7 +356,7 @@ class Plan():
         type = StringVar(window)
 
         # Dictionary with options
-        choices = {'logarithmic','exponential'}
+        choices = {'logarithmic', 'exponential'}
 
         # defautl function
         type.set('exponential')
@@ -376,8 +376,7 @@ class Plan():
         x2.insert(10,"20000")
         n2.insert(10,"1")
         t1.insert(10,"5")
-        t2.insert(10,"0.1")
-        # type.insert(10,"exponential")
+        t2.insert(10,"0.9")
         x2.bind('<Return>', lambda _: printresults("sa"))
         n2.bind('<Return>', lambda _: printresults("sa"))
         t1.bind('<Return>', lambda _: printresults("sa"))
@@ -459,87 +458,7 @@ class Plan():
         Label(window, text="View the schedule at 'results/schedule.html'.",\
             font="Arial 15 bold").place(x=40, y=660)
 
-
         window.mainloop()
-
-
-    def save_html(self, schedule, rooms, spread_points, capacity_points, lecture_points, mutual_course_malus):
-        """
-        Save the schedule and its points to a html to visualize schedule.
-        """
-        # Save schedule for a different schedule visualisation
-        schedule1 = copy.copy(schedule)
-
-        # Make a table for all the schedule points
-        d = pd.Series([lecture_points, -mutual_course_malus, "", spread_points, capacity_points, spread_points - capacity_points])
-        d = pd.DataFrame(d)
-        d.columns = ["Points"]
-        d.index = ["Incorrectly placed lectures", "Incorrectly placed courses with 'mutual' courses", "", "Spread bonus points (out of 440)", "Capacity malus points (out of 1332)", "Total points"]
-
-        # Add rooms to every timeslot
-        flatten = np.array(schedule).flatten()
-        counter = 0
-        for i in range(len(flatten)):
-            if flatten[i].name is not ' ':
-                flatten[i] = str(flatten[i]) + " : " + str(rooms[counter])
-            counter += 1
-            counter = counter % 7
-        # Convert back to 1D list
-        schedule = flatten.reshape(DAYS, TIME_SLOTS, ROOMS).tolist()
-
-        # Make a big schedule for the whole week
-        df = pd.DataFrame(schedule1)
-        pd.set_option('display.max_colwidth', 600)
-        df.columns = ['9:00 - 11:00', '11:00 - 13:00', '13:00 - 15:00', '15:00 - 17:00']
-        df.index = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"]
-        # Transpose rows and columns
-        df = df.T
-
-        # Make seperate schedules for every day in the week
-        test = pd.DataFrame(schedule)
-        pd.set_option('display.max_colwidth', 600)
-        test.columns = ['9:00 - 11:00', '11:00 - 13:00', '13:00 - 15:00', '15:00 - 17:00']
-        test.index = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"]
-        # Transpose rows and columns
-        test = test.T
-
-        # Determine column names
-        tags = df['Monday'].apply(pd.Series)
-        tags.columns = [rooms[0], rooms[1], rooms[2], rooms[3], rooms[4], rooms[5], rooms[6]]
-        tuesday = df['Tuesday'].apply(pd.Series)
-        tuesday.columns = [rooms[0], rooms[1], rooms[2], rooms[3], rooms[4], rooms[5], rooms[6]]
-        wednesday = df['Wednesday'].apply(pd.Series)
-        wednesday.columns = [rooms[0], rooms[1], rooms[2], rooms[3], rooms[4], rooms[5], rooms[6]]
-        thursday = df['Thursday'].apply(pd.Series)
-        thursday.columns = [rooms[0], rooms[1], rooms[2], rooms[3], rooms[4], rooms[5], rooms[6]]
-        friday = df['Friday'].apply(pd.Series)
-        friday.columns = [rooms[0], rooms[1], rooms[2], rooms[3], rooms[4], rooms[5], rooms[6]]
-
-        # dataframes will be added to the html_string
-        html_string = '''
-        <html>
-          <head><title>Schedule</title></head>
-          <link rel="stylesheet" type="text/css" href="style.css" href="https://www.w3schools.com/w3css/4/w3.css"/>
-          <body class="body bgcolor="#660000">
-            <h1 class="h1" align="center"></h>
-            {table}
-          </body>
-        </html>.
-        '''
-
-        with open('results/schedule.html', 'w') as f:
-            f.write(html_string.format(table=d.to_html(classes='points')))
-            f.write(html_string.format(table=test.to_html(classes='style')))
-            f.write("Monday")
-            f.write(html_string.format(table=tags.to_html(classes='style')))
-            f.write("Tuesday")
-            f.write(html_string.format(table=tuesday.to_html(classes='style')))
-            f.write("Wednesday")
-            f.write(html_string.format(table=wednesday.to_html(classes='style')))
-            f.write("Thursday")
-            f.write(html_string.format(table=thursday.to_html(classes='style')))
-            f.write("Friday")
-            f.write(html_string.format(table=friday.to_html(classes='style')))
 
     def points_to_print(self, schedule):
         """

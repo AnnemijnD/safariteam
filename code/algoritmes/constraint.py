@@ -320,7 +320,7 @@ class Constraint():
                                                  course_schedule)[0] - \
             (Constraint.lecture_first(schedule, courses, course_schedule) * 100) - \
             (Constraint.mutual_courses_check(schedule, courses) * 100) - \
-            (Constraint.students_fit(schedule, courses, course_schedule) / WEIGHT)
+            (Constraint.students_fit(schedule, courses, course_schedule) / 4)
 
         return points
 
