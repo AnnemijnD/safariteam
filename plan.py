@@ -65,7 +65,7 @@ class Plan():
         schedule = schedulemaker.initialize_schedule(plan.courses)
 
         print("Opening GUI...")
-        plan.gui(schedule, plan.courses, True)
+        # plan.gui(schedule, plan.courses, True)
 
 
     def runalgorithm(self, algorithm, x, n, begin_temperature,
@@ -77,6 +77,8 @@ class Plan():
         Output is a list of maximum points that the algorithm reached or
         the schedule that reached max points.
         """
+
+        print("x = ", x, "n = ", n)
 
         maxpoints = []
         max_schedule = None
@@ -404,18 +406,18 @@ class Plan():
         popupMenu = OptionMenu(mainframe_gen, t3, *choices_gen)
         popupMenu.grid(row = 2, column =1)
 
-        p3 = Entry(window)
         x3 = Entry(window)
+        p3 = Entry(window)
         n3 = Entry(window)
-        p3.grid(row=14, column=1)
-        x3.grid(row=15, column=1)
+        x3.grid(row=14, column=1)
+        p3.grid(row=15, column=1)
         n3.grid(row=16, column=1)
         p3.insert(10,"50")
         x3.insert(10,"10")
         n3.insert(10,"1")
         t3.set('k-way')
-        p3.bind('<Return>', lambda _: printresults("genetic"))
         x3.bind('<Return>', lambda _: printresults("genetic"))
+        p3.bind('<Return>', lambda _: printresults("genetic"))
         n3.bind('<Return>', lambda _: printresults("genetic"))
 
 
@@ -556,6 +558,34 @@ class Plan():
 if __name__ == "__main__":
     plan = Plan()
     plan.generate()
+
+
+    # 100x rooster maken en algoritmen uitvoeren
+    schedules = []
+    hillclimbers = []
+    hillclimber_extendeds = []
+    simulated_annealings = []
+    x = 30000
+    x_sim = 45000
+    n = 40
+    begin_temperature = 5
+    end_temperature = 0.9
+    type = 'exponential'
+
+    for i in range(n):
+        schedule = schedulemaker.initialize_schedule(plan.courses)
+
+        hillclimbers.append(hillclimber.climb(schedule, plan.courses, x)[1])
+        hillclimber_extendeds.append(hillclimberextended.climb(schedule, plan.courses, x)[1])
+        simulated_annealings.append(annealing.anneal(schedule, plan.courses, \
+            int(x_sim / 2), begin_temperature, end_temperature, type)[1])
+
+
+        print(hillclimbers, hillclimber_extendeds, simulated_annealings)
+
+    print(hillclimbers, hillclimber_extendeds, simulated_annealings)
+
+
 
     # # 50 random roosters maken
     # schedules = []
