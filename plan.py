@@ -572,18 +572,18 @@ if __name__ == "__main__":
     end_temperature = 0.9
     type = 'exponential'
 
-    for i in range(n):
-        schedule = schedulemaker.initialize_schedule(plan.courses)
-
-        hillclimbers.append(hillclimber.climb(schedule, plan.courses, x)[1])
-        hillclimber_extendeds.append(hillclimberextended.climb(schedule, plan.courses, x)[1])
-        simulated_annealings.append(annealing.anneal(schedule, plan.courses, \
-            int(x_sim / 2), begin_temperature, end_temperature, type)[1])
-
-
-        print(hillclimbers, hillclimber_extendeds, simulated_annealings)
-
-    print(hillclimbers, hillclimber_extendeds, simulated_annealings)
+    # for i in range(n):
+    #     schedule = schedulemaker.initialize_schedule(plan.courses)
+    #
+    #     hillclimbers.append(hillclimber.climb(schedule, plan.courses, x)[1])
+    #     hillclimber_extendeds.append(hillclimberextended.climb(schedule, plan.courses, x)[1])
+    #     simulated_annealings.append(annealing.anneal(schedule, plan.courses, \
+    #         int(x_sim / 2), begin_temperature, end_temperature, type)[1])
+    #
+    #
+    #     print(hillclimbers, hillclimber_extendeds, simulated_annealings)
+    #
+    # print(hillclimbers, hillclimber_extendeds, simulated_annealings)
 
 
 
