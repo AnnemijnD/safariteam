@@ -15,7 +15,6 @@ class Session(object):
         self.group_id = group_id
         self.course_object = None
 
-
     def __iter__(self):
         """
         Enables a list of objects to be iterated one element at a time.
@@ -32,4 +31,6 @@ class Session(object):
         if self.max_students == " ":
             return f'{self.name} {self.type}'
         else:
-            return f'{self.name} {self.type}, group: {(chr(self.group_id + A))}, ({self.max_students} students)'
+            return f'{self.name} {self.type}, \
+                    group: {(chr(self.group_id + A))}, \
+                    ({self.max_students} students)'
