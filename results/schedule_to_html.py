@@ -81,7 +81,6 @@ def save_html(schedule, loc, spread_points, capacity_points,
 
     # Write to the html file
     with open('results/schedule.html', 'w') as f:
-        print("Ik kom hier")
         f.write(html_string.format(table=d.to_html(classes='points')))
         f.write(html_string.format(table=test.to_html(classes='style')))
         f.write("Monday")
@@ -94,3 +93,5 @@ def save_html(schedule, loc, spread_points, capacity_points,
         f.write(html_string.format(table=thursday.to_html(classes='style')))
         f.write("Friday")
         f.write(html_string.format(table=friday.to_html(classes='style')))
+
+    print("Saved schedule to 'results/schedule.html'")
