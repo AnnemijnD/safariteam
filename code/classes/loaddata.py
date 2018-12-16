@@ -19,15 +19,15 @@ def load_courses():
 
     with open(course) as courses:
         courses = csv.reader(courses, delimiter=';')
-        # Skip file header
+        # skip file header
         next(courses)
 
-        # Keep track of course_id with a counter
+        # keep track of course_id with a counter
         id_counter = 0
-        # Make a list of all the course objects
+        # make a list of all the course objects
         courses_list = []
 
-        # Define every item of the course; each row is a different course
+        # define every item of the course; each row is a different course
         for row in courses:
             name = row[0]
             lecture = int(row[1])
@@ -48,13 +48,13 @@ def load_courses():
 
             df = pd.read_csv("data/tegelijkvolgbaar.csv", delimiter=";")
 
-            # Use Course class to create objects for every course
+            # use Course class to create objects for every course
             course = Course(name, course_id, lecture, tutorial, practicum,
                             max_students_lecture, max_students_tutorial,
                             max_students_practicum, expected_students, df)
             courses_list.append(course)
 
-            # Count id_course
+            # count id_course
             id_counter += 1
 
         return courses_list
@@ -83,10 +83,6 @@ def load_individual():
     """
     Loads individual student courses.
     """
-    # Use encoding='iso-8859-1' to ensure that content is accessible as bytes
+    # use encoding='iso-8859-1' to ensure that content is accessible as bytes
     with open('data/studentenenvakken.csv', encoding='iso-8859-1') as wishes:
         wishes = csv.reader(wishes, delimiter=';')
-
-        # Optional code to visualize data
-        for row in wishes:
-            print(row)

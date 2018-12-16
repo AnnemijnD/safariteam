@@ -16,7 +16,7 @@ LIMIT = 500
 MAXPOINTS = 440
 
 
-def anneal(schedule, courses, total_iterations, begin_temperature, end_temperature, type):
+def anneal(schedule, courses, total_iterations, t1, t2, type):
     """
     Generates a schedule using a hill climber algorithm.
     Input is a random schedule, output is a schedule that fulfills all hard-
@@ -26,31 +26,32 @@ def anneal(schedule, courses, total_iterations, begin_temperature, end_temperatu
     accept_counter = 0
     points = []
 
-    # Sigmodial:
-    # temp = end_temperature + (begin_temperature - end_temperature) / (1 + math.exp(0.3 * (i - total_iterations/2)))
+    # sigmodial:
+    # temp = t2 + (t1 - t2) / (1 + math.exp(0.3 * (i - total_iterations/2)))
 
     for i in range(0, total_iterations):
 
-        # Get cooling scheme
+        # get cooling scheme
         if type == "exponential":
-            temp = begin_temperature * math.pow((end_temperature / begin_temperature),  (i / total_iterations))
+            temp = t1 * math.pow((t2 / t1),
+                        (i / total_iterations))
         elif type == "logarithmic":
-            temp = begin_temperature / math.log(i + 2)
+            temp = t1 / math.log(i + 2)
 
         points.append(Constraint.get_points(schedule, courses))
-        # Append points to show in a graph when the schedule is made
+        # append points to show in a graph when the schedule is made
         points.append(Constraint.get_points(schedule, courses))
-        # Save the first schedule
+        # save the first schedule
         schedule1 = schedule
-        # Get points of the first schedule
+        # get points of the first schedule
         schedule1_points = Constraint.get_points(schedule1, courses)
-        # Make a new schedule by switching random sessions. Amount of sessions
+        # make a new schedule by switching random sessions. Amount of sessions
         # switched starts high and ends low.
         schedule2 = schedulemaker.switch_session(schedule, 1)
-        # Get points of the new (not yet accepted) schedule
+        # get points of the new (not yet accepted) schedule
         schedule2_points = Constraint.get_points(schedule2, courses)
-        # Accept new schedule if it has more points that the old schedule.
-        # Also accept schedules with equal number of points for a higher chance
+        # accept new schedule if it has more points that the old schedule.
+        # also accept schedules with equal number of points for a higher chance
         # of finding a solution.
         if schedule2_points >= schedule1_points:
             schedule = schedule2
@@ -58,18 +59,18 @@ def anneal(schedule, courses, total_iterations, begin_temperature, end_temperatu
         else:
             schedule = schedule1
             accept_counter += 1
-        # Apply simmulated annealing
+        # apply simmulated annealing
         diff = schedule2_points - schedule1_points
-        # If the acceptance chance is higher than a random number
+        # ff the acceptance chance is higher than a random number
         # between 0 and 1, force to accept a schedule
         if random.random() < math.exp(diff / temp):
             schedule = schedule2
 
-    # Append last points of the new schedule to make a full plot of the points
+    # append last points of the new schedule to make a full plot of the points
     points.append(Constraint.get_points(schedule, courses))
 
     # TODO: DIT MOET WEG ALS WE GAAN INLEVEREN EN WEER GEWOON POINTS RETURNEN
     point = max(points)
 
-    # Return the generated schedule and its points :-)
+    # return the generated schedule and its points :-)
     return schedule, point
