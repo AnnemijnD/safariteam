@@ -491,18 +491,23 @@ if __name__ == "__main__":
     end_temperature = 0.9
     type = 'exponential'
 
-    # for i in range(n):
-    #     schedule = schedulemaker.initialize_schedule(plan.courses)
-    #
-    #     hillclimbers.append(hillclimber.climb(schedule, plan.courses, x)[1])
-    #     hillclimber_extendeds.append(hillclimberextended.climb(schedule, plan.courses, x)[1])
-    #     simulated_annealings.append(annealing.anneal(schedule, plan.courses, \
-    #         int(x_sim / 2), begin_temperature, end_temperature, type)[1])
-    #
-    #
-    #     print(hillclimbers, hillclimber_extendeds, simulated_annealings)
-    #
-    # print(hillclimbers, hillclimber_extendeds, simulated_annealings)
+    for i in range(50):
+        schedule = schedulemaker.initialize_schedule(plan.courses)
+
+        # hillclimbers.append(hillclimber.climb(schedule, plan.courses, x)[1])
+        # hillclimber_extendeds.append(hillclimberextended.climb(schedule, plan.courses, x)[1])
+        simulated_annealings.append(annealing.anneal(schedule, plan.courses, \
+            int(x_sim / 2), begin_temperature, end_temperature, type)[0])
+        # simulated_annealings.append(schedule)
+
+    genetic_points = []
+    for i in range(50):
+        genetic_points.append(genetic.genetic_algorithm(simulated_annealings,
+                              plan.courses, 50, 50, "rank")[1])
+        print(genetic_points)
+
+    print(genetic_points)
+
 
 
 
@@ -533,19 +538,19 @@ if __name__ == "__main__":
 
 
 
-    # 50 random roosters maken
-    schedules = []
-    for i in range(50):
-        schedule = schedulemaker.initialize_schedule(plan.courses)
-        schedules.append(schedule)
-
-    kway = []
-    rank = []
-    random_genetic = []
-    for i in range(50):
-        kway.append(genetic.genetic_algorithm(schedules, plan.courses, 50, 50, "k-way"))
-        rank.append(genetic.genetic_algorithm(schedules, plan.courses, 50, 50, "rank"))
-        random_genetic.append(genetic.genetic_algorithm(schedules, plan.courses, 50, 50, "random"))
-        print(kway, rank, random_genetic)
-
-    print(kway, rank, random_genetic)
+    # # 50 random roosters maken
+    # schedules = []
+    # for i in range(50):
+    #     schedule = schedulemaker.initialize_schedule(plan.courses)
+    #     schedules.append(schedule)
+    #
+    # kway = []
+    # rank = []
+    # random_genetic = []
+    # for i in range(50):
+    #     kway.append(genetic.genetic_algorithm(schedules, plan.courses, 50, 50, "k-way"))
+    #     rank.append(genetic.genetic_algorithm(schedules, plan.courses, 50, 50, "rank"))
+    #     random_genetic.append(genetic.genetic_algorithm(schedules, plan.courses, 50, 50, "random"))
+    #     print(kway, rank, random_genetic)
+    #
+    # print(kway, rank, random_genetic)
