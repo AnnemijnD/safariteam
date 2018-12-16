@@ -24,34 +24,34 @@ def climb(schedule, courses, iterations):
 
     while counter < iterations:
         counter += 1
-        # Append points to show in a graph when the schedule is made
+        # append points to show in a graph when the schedule is made
         points.append(Constraint.get_points(schedule, courses))
-        # Save the first schedule
+        # save the first schedule
         schedule1 = schedule
-        # Get points of the first schedule
+        # get points of the first schedule
         schedule1_points = Constraint.get_points(schedule1, courses)
-        # Make a new schedule by switching random sessions. Amount of sessions
+        # make a new schedule by switching random sessions. Amount of sessions
         # switched starts high and ends low.
         schedule2 = schedulemaker.switch_session(schedule, 1)
-        # Get points of the new (not yet accepted) schedule
+        # get points of the new (not yet accepted) schedule
         schedule2_points = Constraint.get_points(schedule2, courses)
-        # Accept new schedule if it has more points that the old schedule.
-        # Also accept schedules with equal number of points for a higher chance
+        # accept new schedule if it has more points that the old schedule.
+        # also accept schedules with equal number of points for a higher chance
         # of finding a solution.
         if schedule2_points >= schedule1_points:
             schedule = schedule2
             accept_counter = 0
-        # If the second schedule has less points, go back to the old schedule.
+        # if the second schedule has less points, go back to the old schedule.
         else:
             schedule = schedule1
             accept_counter += 1
-        # Make a forced switch if an optimum is reached for the number of times
-        # that a schedule was rejected.
+        # make a forced switch if an optimum is reached for the number of times
+        # hat a schedule was rejected.
         if accept_counter > x:
             schedule = schedulemaker.switch_session(schedule, 1)
             accept_counter = 0
 
-    # Append last points of the new schedule to make a full plot of the points
+    # append last points of the new schedule to make a full plot of the points
     points.append(Constraint.get_points(schedule, courses))
 
     # TODO: DIT MOET WEG ALS WE GAAN INLEVEREN EN WEER GEWOON POINTS RETURNEN
