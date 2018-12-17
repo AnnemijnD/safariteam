@@ -34,7 +34,7 @@ def anneal(schedule, courses, total_iterations, t1, t2, type):
         # get cooling scheme
         if type == "exponential":
             temp = t1 * math.pow((t2 / t1),
-                        (i / total_iterations))
+                                 (i / total_iterations))
         elif type == "logarithmic":
             temp = t1 / math.log(i + 2)
 
@@ -69,8 +69,5 @@ def anneal(schedule, courses, total_iterations, t1, t2, type):
     # append last points of the new schedule to make a full plot of the points
     points.append(Constraint.get_points(schedule, courses))
 
-    # TODO: DIT MOET WEG ALS WE GAAN INLEVEREN EN WEER GEWOON POINTS RETURNEN
-    point = max(points)
-
     # return the generated schedule and its points :-)
-    return schedule, point
+    return schedule, points

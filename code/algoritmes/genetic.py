@@ -27,12 +27,12 @@ def genetic_algorithm(schedules, courses, population_size, generations, choose):
     the amount of points of that schedule
     """
     # TODO: deze gaat weg als we geen improvement meer willen!!!
-    population_points = []
-    for i in range(0, population_size):
-        points = Constraint.get_points(schedules[i], courses)
-        population_points.append(points)
-
-    saved = max(population_points)
+    # population_points = []
+    # for i in range(0, population_size):
+    #     points = Constraint.get_points(schedules[i], courses)
+    #     population_points.append(points)
+    #
+    # saved = max(population_points)
 
     population = schedules
 
@@ -65,7 +65,8 @@ def genetic_algorithm(schedules, courses, population_size, generations, choose):
             cycles = create_cycles(parent1_id, parent2_id)
 
             # make children out of parent1 and parent2
-            child1, child2 = make_children(cycles, parent1, parent1_id, parent2, parent2_id)
+            child1, child2 = make_children(cycles, parent1, parent1_id,
+                                           parent2, parent2_id)
 
             # add children to children
             children.append(child1)
@@ -83,21 +84,18 @@ def genetic_algorithm(schedules, courses, population_size, generations, choose):
     population_points = []
     for i in range(0, population_size):
         points = Constraint.get_points(population[i], courses)
-        population_points.append(points)
+        population_points.append((population[i], points))
 
-        # TODO: deze willen we straks!!!!!!!!
-        # population_points.append((population[i], points))
+    # TODO deze weghalen als we geen improvement meer willen!
+    # return max(population_points) - saved
 
-    return max(population_points) - saved
+    best_schedule = sorted(population_points, key=itemgetter(1))[-1][0]
+    best_schedule = np.array(best_schedule)
+    best_schedule = best_schedule.reshape(DAYS, TIME_SLOTS, ROOMS).tolist()
+    best_points = sorted(population_points, key=itemgetter(1))[-1][1]
 
-    # best_schedule = sorted(population_points, key=itemgetter(1))[-1][0]
-    #
-    # best_points = sorted(population_points, key=itemgetter(1))[-1][1]
-    # best_schedule = np.array(best_schedule)
-    # best_schedule = best_schedule.reshape(DAYS, TIME_SLOTS, ROOMS).tolist()
-    #
-    # # returns tuple of the best schedule in final population and it's points
-    # return best_schedule, best_points
+    # returns the best schedule in final population and it's points
+    return best_schedule, best_points
 
 
 def choose_parents_KWAY(population, courses, population_size):
