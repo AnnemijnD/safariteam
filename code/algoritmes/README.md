@@ -46,6 +46,6 @@ Als laatste methode is er nog de random methode. Hierbij wordt er telkens willek
 
 De kinderen worden gemaakt m.b.v cyclische crossovers, hierbij krijgen beide kinderen 30% van de ene ouder en 70% van de andere ouder. Deze percentages zijn ook gekozen op basis van testen. Om diversiteit in de populatie te brengen wordt bij maximaal 20% van de kinderen een mutatie aangebracht. Deze mutatie bestaat uit het doen van minimaal 1 en maximaal 3 switches van sessies.
 
-Als laatste wordt deze nieuwe populatie gehalveerd zodat de populatiegrootte gelijk blijft. Dit halveren wordt altijd gedaan op basis van K-way tournament
+Als laatste wordt deze nieuwe populatie gehalveerd zodat de populatiegrootte gelijk blijft. Dit halveren wordt altijd gedaan op basis van K-way tournament.
 
 Dit proces wordt een x aantal generaties uitgevoerd.
