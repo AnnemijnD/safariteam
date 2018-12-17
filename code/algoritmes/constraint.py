@@ -5,7 +5,9 @@ DAYS = 5
 ROOMS = 7
 SLOTS = DAYS * TIME_SLOTS * ROOMS
 SLOTS_PER_DAY = ROOMS * TIME_SLOTS
-MPF = 10  # TODO willen we hier uitleg bij???????
+
+# Malus point factor
+MPF = 10
 
 # case specific
 EMPTY_SESSIONS = 11  # kan weg als SESSION_NUM weg is
@@ -14,10 +16,6 @@ MAX_FIT = 1332
 MAX_SPREAD = 440
 WEIGHT = MAX_FIT / MAX_SPREAD
 SESSION_NUM = SLOTS - EMPTY_SESSIONS  # kan weg als alle ongebruikte functies weg zijn
-
-
-
-# TODO: class die courses in zich heeft en hier iets over zegt
 
 
 class Constraint():
@@ -225,33 +223,18 @@ class Constraint():
                         # if session in this slot is a lecture
                         if schedule[day][slot][room].type == "lecture":
 
-                            # Each slot has a course name and the courses'
-                            # mutual courses. Mutual courses is a list of
-                            # courses that can't be in the same timeslot
-
                             # get list of mutual courses
                             mutual_courses = \
                                 schedule[day][slot][room].course_object.mutual_courses
-
-                            # For every mutual course in the mutual_courses list,
-                            # check if it is placed in the same timeslot.
 
                             # check if session is in same slot as mutual course session
                             for mutual_course in range(len(mutual_courses)):
                                 for i in range(len(schedule[day][slot])):
 
-                                    # If this mutual course is placed in the
-                                    # same timeslot (for example Bioinformatica
-                                    # and Compilerbouw), count one minus point.
-
                                     # if session is in same slot, count 1 minus point
                                     if mutual_courses[mutual_course] in \
                                             schedule[day][slot][i].name:
                                         minus_points += 1
-
-                            # Also, if this course has a session of its own in
-                            # this timeslot (for example: Bioinformatica and
-                            # Bioinformatica) count one minus point.
 
                             # count minus points for session of own course in same slot
                             own_session_counter = 0
@@ -262,9 +245,6 @@ class Constraint():
                                     # count number of sessions in this timeslot
                                     own_session_counter += 1
 
-                                # If own_session_counter is greater than 1, there's
-                                # a conflicting session placed in this timeslot.
-
                                 # if sessions in same slot add minus_point
                                 if own_session_counter > 1:
                                     minus_points += 1
@@ -272,26 +252,16 @@ class Constraint():
                         # if session is practical or tutorial
                         else:
 
-                            # If session is a pratical or tutorial, check if
-                            # groups aren't planned in at the same timeslot
-                            # Check in every timeslot
-
                             # check for every slot if there aren't multiple groups
                             own_session_counter = 0
                             for i in range(len(schedule[day][slot])):
                                 if schedule[day][slot][i].name ==  \
                                         schedule[day][slot][room].name:
 
-                                    # Count one minuspoint if the same group_id
-                                    # is found for this course in this timeslot.
-
                                     # count minuspoint if same group is found
                                     if schedule[day][slot][i].group_id is \
                                             schedule[day][slot][room].group_id:
                                         own_session_counter += 1
-
-                            # own_session_counter will always be 1, so check if
-                            # the counter is higher than 1.
 
                             # if groups in same slot add minus_point
                             if own_session_counter > 1:

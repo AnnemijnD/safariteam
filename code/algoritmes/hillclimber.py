@@ -1,9 +1,3 @@
-
-"""
-Hill climber algorithm: generates a schedule that fulfills certain constraints
-by accepting a schedule with higher points.
-"""
-
 from constraint import Constraint
 import schedulemaker
 
@@ -11,8 +5,9 @@ import schedulemaker
 def climb(schedule, courses, iterations):
     """
     Generates a schedule using a hill climber algorithm.
-    Input is a random schedule, output is a schedule that fulfills all hard-
-    constraints and most soft constraints.
+    Input: random schedule and number of iterations;
+    Output: a schedule that fulfills all hard constraints
+    and most soft constraints.
     """
     counter = 0
     points = []
@@ -34,7 +29,7 @@ def climb(schedule, courses, iterations):
 
         # get points of the new (not yet accepted) schedule
         schedule2_points = Constraint.get_points(schedule2, courses)
-        
+
         # accept new schedule if it has more points that the old schedule.
         # also accept schedules with equal number of points for a higher chance
         # of finding a solution.
