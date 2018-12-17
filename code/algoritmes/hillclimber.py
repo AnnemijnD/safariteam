@@ -21,15 +21,20 @@ def climb(schedule, courses, iterations):
         # append points to show in a graph when the schedule is made
         points.append(Constraint.get_points(schedule, courses))
         counter += 1
+
         # save the first schedule
         schedule1 = schedule
+
         # get points of the first schedule
         schedule1_points = Constraint.get_points(schedule1, courses)
+
         # make a new schedule by switching random sessions. Amount of sessions
         # switched starts high and ends low.
         schedule2 = schedulemaker.switch_session(schedule, 1)
+
         # get points of the new (not yet accepted) schedule
         schedule2_points = Constraint.get_points(schedule2, courses)
+        
         # accept new schedule if it has more points that the old schedule.
         # also accept schedules with equal number of points for a higher chance
         # of finding a solution.

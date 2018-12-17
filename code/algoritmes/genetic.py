@@ -11,7 +11,6 @@ ROOMS = 7
 TIME_SLOTS = 4
 SLOTS = DAYS * ROOMS * TIME_SLOTS
 
-CHILDREN = 2
 K = 5
 MUTATIONS = 10
 PERCENTAGE = 52
@@ -244,7 +243,6 @@ def make_children(cycles, parent1, parent1_id, parent2, parent2_id):
                 child2[parent2_id.index(overall_id)] = parent1[parent1_id.index(overall_id)]
         # else:
         #     print(f"cycle length after {len(cycle_len)}")
-
 
 
     # convert the children to 3D lists
