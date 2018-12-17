@@ -4,7 +4,7 @@ Probleem: hoe kan een lesrooster zo efficiënt mogelijk ingedeeld worden?
 
 ### Link naar het rooster
 
-https://annemijnd.github.io/safariteam/results/index.html
+https://annemijnd.github.io/safariteam/results/schedule.html
 
 ### Vereisten
 
