@@ -19,10 +19,8 @@ def initialize_schedule(courses):
     """
     Initialize schedule using Session()
 
-    Input: TODO
+    Input: list of courses
     Output: a valid schedule
-
-    TODO: (eventueel) andere namen aan lijsten geven want nu erg lang
     """
 
     schedule = [[[[None] for i in range(ROOMS)] for i in range(TIME_SLOTS)]
@@ -65,7 +63,8 @@ def initialize_schedule(courses):
             # put all lectures in list and put all other sessions in other list
             if session_list_2d[i][j].type == "lecture":
                 lecture_sessions.append(session_list_2d[i][j])
-            elif session_list_2d[i][j].type == "tutorial" or session_list_2d[i][j].type == "practicum":
+            elif session_list_2d[i][j].type == "tutorial" or \
+                    session_list_2d[i][j].type == "practicum":
                 other_sessions.append(session_list_2d[i][j])
 
     counter_sessions = 0
@@ -87,9 +86,9 @@ def fill_schedule(schedule, sessions_2d, other_sessions, empty_sessions,
     """
     Fills schedule with sessions
 
-    Input: An empty schedule, a 2D-list of all sessions sorted by course, a list
-    of all session objects that are not lectures, a list of empty session objects,
-    a list of course objects
+    Input: An empty schedule, a 2D-list of all sessions sorted by course, a
+    list of all session objects that are not lectures, a list of empty session
+    objects, a list of course objects
     Output: If all sessions were placed in the schedule: a filled schedule.
             Else: a boolean (False).
     """
@@ -106,7 +105,6 @@ def fill_schedule(schedule, sessions_2d, other_sessions, empty_sessions,
             for room in range(ROOMS):
                 schedule[day][slot][room] = empty_sessions[session_counter]
                 session_counter += 1
-
 
     passed_lectures = 0
 
@@ -144,7 +142,7 @@ def fill_schedule(schedule, sessions_2d, other_sessions, empty_sessions,
                         # from the same course as the current session
                         if sessions[session].name == schedule[day][slot][room].name:
 
-                            # check wether this session is a lecture
+                            # check if this session is a lecture
                             if schedule[day][slot][room].type == "lecture":
 
                                 # delete all previous locations
@@ -156,7 +154,7 @@ def fill_schedule(schedule, sessions_2d, other_sessions, empty_sessions,
                             elif not sessions[session].session_id == \
                                     schedule[day][slot][room].session_id:
 
-                                # check whether the group of students of these sessions
+                                # check whether the groups of this session
                                 # overlap
                                 if sessions[session].group_id == \
                                         schedule[day][slot][room].group_id:
@@ -173,8 +171,6 @@ def fill_schedule(schedule, sessions_2d, other_sessions, empty_sessions,
                             # delete all locations of this day
                             locations = delete_location(locations, slot, day)
                             break
-
-
 
                     # check if the current session(lecture) overlaps with
                     # a mutual course or its own course
@@ -194,7 +190,6 @@ def fill_schedule(schedule, sessions_2d, other_sessions, empty_sessions,
         # check if any location was found for the current session
         if bool(locations):
             counter = 0
-
 
             # check if the current session is a lecture
             if lectures_first:
@@ -263,12 +258,12 @@ def fill_schedule(schedule, sessions_2d, other_sessions, empty_sessions,
 
 def delete_location(locations, slot, day):
     """
-    Deletes all locations from locations list that are on the slot and day given
-    Input: list of locations, timeslot and day
-    A location in this list is a coordinate consisting of three integer elements:
-    a day, a slot and a time.
-    Output: list with locations
+    Deletes all locations from locations list that are on the slot and day
+    given. A location in this list is a coordinate consisting of three integer
+    elements: a day, a slot and a room.
 
+    Input: list of locations, timeslot,day
+    Output: list with locations
     """
     for location in range(len(locations) - 1, -1, -1):
         if locations[location][1] == slot and locations[location][0] == day:

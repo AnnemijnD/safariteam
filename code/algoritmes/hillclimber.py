@@ -13,6 +13,7 @@ def climb(schedule, courses, iterations):
     points = []
 
     while counter < iterations:
+
         # append points to show in a graph when the schedule is made
         points.append(Constraint.get_points(schedule, courses))
         counter += 1

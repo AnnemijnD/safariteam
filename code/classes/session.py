@@ -3,7 +3,7 @@ A = 65
 
 class Session(object):
     """
-    Representation of a schedule.
+    Representation of a session
     """
 
     def __init__(self, name, type, max_students, session_id, group_id):

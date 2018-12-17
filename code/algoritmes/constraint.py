@@ -10,12 +10,10 @@ SLOTS_PER_DAY = ROOMS * TIME_SLOTS
 MPF = 10
 
 # case specific
-EMPTY_SESSIONS = 11  # kan weg als SESSION_NUM weg is
 SPREAD_BONUS = 20
 MAX_FIT = 1332
 MAX_SPREAD = 440
 WEIGHT = MAX_FIT / MAX_SPREAD
-SESSION_NUM = SLOTS - EMPTY_SESSIONS  # kan weg als alle ongebruikte functies weg zijn
 
 
 class Constraint():
@@ -31,8 +29,6 @@ class Constraint():
         all courses
         Output: list with for every course a dictionary that contains info of
         the sessions of that course
-
-        TODO: [day, slot, room] werkt niet???????????
         """
 
         courses_schedule = []
@@ -80,7 +76,6 @@ class Constraint():
         for course in courses:
             id = course.course_id
             course_mal_points = 0
-            course_bon_points = 0
             lectures = []
             sessions = []
 
@@ -129,7 +124,8 @@ class Constraint():
 
             elif course.sessions == 5:
 
-                bonuspoints += Constraint.spread_detail(sessions, [0, 1, 2, 3, 4],
+                bonuspoints += Constraint.spread_detail(sessions,
+                                                        [0, 1, 2, 3, 4],
                                                         courses_schedule, id,
                                                         spread_bonus)
 
@@ -146,7 +142,6 @@ class Constraint():
                     malusfactor = (course.sessions - len(days) - len(set(days)))
                     maluspoints += (malusfactor * 10) / len(sessions)
                     course_mal_points += (malusfactor * 10) / len(sessions)
-
 
         bonuspoints = round(bonuspoints)
         maluspoints = round(maluspoints)
