@@ -33,7 +33,6 @@ class Constraint():
         the sessions of that course
 
         TODO: [day, slot, room] werkt niet???????????
-        TODO: ANNEMIJN: verwijder alles wat we niet meer gebruiken
         """
 
         courses_schedule = []
@@ -63,6 +62,97 @@ class Constraint():
             courses_schedule.append(course_schedule)
 
         return courses_schedule
+
+    def session_spread_check(schedule, courses, courses_schedule):
+        """
+        Calculates the amount of bonuspoints and maluspoints earned by
+        spreading the sessions of a course.
+
+        Input: schedule of which you want to check the constraints, list of all
+        courses, list of dictionaries with info of all the sessions of a course
+        Output: a list with the total amount of points, the amount of
+        bonuspoints, the amount of maluspoints.
+        """
+
+        bonuspoints = 0
+        maluspoints = 0
+
+        for course in courses:
+            id = course.course_id
+            course_mal_points = 0
+            course_bon_points = 0
+            lectures = []
+            sessions = []
+
+            # gets indices of lectures in courses_schedule
+            for i in range(len(courses_schedule[id]["type"])):
+                if courses_schedule[id]["type"][i] == "lecture":
+                    lectures.append(i)
+
+            # checks if a course has groups
+            groups = max(courses_schedule[id]["group_id"])
+            if groups > 0:
+
+                # saves indices of groups together with lectures
+                for i in range(groups):
+                    same_group = [j for j,
+                                  e in enumerate(courses_schedule[id]["group_id"])
+                                  if e == i + 1]
+                    sessions.append(lectures + same_group)
+            else:
+                sessions = [lectures]
+
+            # calculates the spread_bonus per group
+            spread_bonus = SPREAD_BONUS / len(sessions)
+
+            if course.sessions == 2:
+
+                bonuspoints += Constraint.spread_detail(sessions, [0, 3],
+                                                        courses_schedule, id,
+                                                        spread_bonus)
+
+                bonuspoints += Constraint.spread_detail(sessions, [1, 4],
+                                                        courses_schedule, id,
+                                                        spread_bonus)
+
+            elif course.sessions == 3:
+
+                bonuspoints += Constraint.spread_detail(sessions, [0, 2, 4],
+                                                        courses_schedule, id,
+                                                        spread_bonus)
+
+            elif course.sessions == 4:
+
+                bonuspoints += Constraint.spread_detail(sessions, [0, 1, 3, 4],
+                                                        courses_schedule, id,
+                                                        spread_bonus)
+
+            elif course.sessions == 5:
+
+                bonuspoints += Constraint.spread_detail(sessions, [0, 1, 2, 3, 4],
+                                                        courses_schedule, id,
+                                                        spread_bonus)
+
+            #  check the overall spread per group
+            for i in range(len(sessions)):
+                days = []
+
+                # adds the days sessions are given to list days
+                for j in range(len(sessions[i])):
+                    days.append(courses_schedule[id]["day"][sessions[i][j]])
+
+                # if the sessions aren't spread enough increase maluspoints
+                if len(days) - len(set(days)) > 0:
+                    malusfactor = (course.sessions - len(days) - len(set(days)))
+                    maluspoints += (malusfactor * 10) / len(sessions)
+                    course_mal_points += (malusfactor * 10) / len(sessions)
+
+
+        bonuspoints = round(bonuspoints)
+        maluspoints = round(maluspoints)
+        spread_points = maluspoints + bonuspoints
+
+        return spread_points
 
     def spread_detail(sessions, bonus_days, courses_schedule, id,
                       spread_bonus):
@@ -227,7 +317,7 @@ class Constraint():
         course_schedule = Constraint.all_constraints(schedule, courses)
 
         points = Constraint.session_spread_check(schedule, courses,
-                                                 course_schedule)[0] - \
+                                                 course_schedule) - \
             (Constraint.lecture_first(schedule, courses, course_schedule) * 100) - \
             (Constraint.mutual_courses_check(schedule, courses) * 100) - \
             (Constraint.students_fit(schedule, courses, course_schedule) / WEIGHT)
@@ -245,7 +335,7 @@ class Constraint():
         course_schedule = Constraint.all_constraints(schedule, courses)
 
         points = Constraint.session_spread_check(schedule, courses,
-                                                 course_schedule)[0] - \
+                                                 course_schedule) - \
             Constraint.students_fit(schedule, courses, course_schedule)
 
         return points

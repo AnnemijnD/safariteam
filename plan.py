@@ -20,7 +20,6 @@ import annealing
 import hillclimberextended
 import hillclimber
 import schedule_to_html
-
 import pandas as pd
 import tkinter as tk
 from tkinter import *
@@ -29,6 +28,9 @@ import matplotlib
 matplotlib.use('TkAgg')
 import matplotlib.pyplot as plt
 from matplotlib.pyplot import figure
+
+
+
 
 
 TIME_SLOTS = 4
@@ -488,7 +490,7 @@ class Plan():
 
         courses_schedule = Constraint.all_constraints(schedule, plan.courses)
         spread_points = Constraint.session_spread_check(schedule, plan.courses,
-                                                        courses_schedule)[0]
+                                                        courses_schedule)
         capacity_points = (Constraint.students_fit(schedule, plan.courses,
                                                    courses_schedule))
         lecture_points = Constraint.lecture_first(schedule, plan.courses,

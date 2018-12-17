@@ -87,138 +87,157 @@ def fill_schedule(schedule, sessions_2d, other_sessions, empty_sessions,
     """
     Fills schedule with sessions
 
-    Input: TODO
-    Output:
+    Input: An empty schedule, a 2D-list of all sessions sorted by course, a list
+    of all session objects that are not lectures, a list of empty session objects,
+    a list of course objects
+    Output: If all sessions were placed in the schedule: a filled schedule.
+            Else: a boolean (False).
     """
 
     # shuffle the 2d list and flatten it back to linear list
+    # to get random list of sessions
     random.shuffle(sessions_2d)
     sessions = list(itertools.chain(*sessions_2d))
 
-    # fills schedule with different empty sessions
+    # fills schedule with empty sessions to be able to loop through the schedule
     session_counter = 0
     for day in range(DAYS):
         for slot in range(TIME_SLOTS):
             for room in range(ROOMS):
-
                 schedule[day][slot][room] = empty_sessions[session_counter]
                 session_counter += 1
 
-    # TODO dit naar iets veranderen
-    # vertelt hoeveelste lecture van dit vak dit is
+
     passed_lectures = 0
 
-    # TODO: comment
-    # found = False
+    # loop through all sessions that are sorted in a list per course
+    # to place them in the schedule
     for session in range(len(sessions)):
 
         lectures_first = False
         locations = []
+
+        # a boolean that states whether the current session was placed in the schedule
         found = False
 
-        # TODO comment
+        # TODO comment DIT MOET WEG
         for course in courses:
             if sessions[session].name == course.name:
                 sessions[session].course_object = course
                 mutual_courses_session = \
                     sessions[session].course_object.mutual_courses
 
-        # checks if the session is a lecture
+        # check wether the current session is a lecture
         if sessions[session].type == "lecture":
             lectures_first = True
 
-        #  TODO comment
+        # loop through all locations in the schedule to determine whether this
+        # location is available for the current session
         for day in range(DAYS):
             for slot in range(TIME_SLOTS):
                 for room in range(ROOMS):
 
-                    # if session is a tutorial or practicum
+                    # check wether the current session is a tutorial or practicum
                     if not lectures_first:
 
-                        # TODO comment
+                        # check wether the current location holds a session originating
+                        # from the same course as the current session
                         if sessions[session].name == schedule[day][slot][room].name:
 
-                            # TODO comment
+                            # check wether this session is a lecture
                             if schedule[day][slot][room].type == "lecture":
 
                                 # delete all previous locations
                                 locations.clear()
                                 break
 
-                            # TODO comment
+                            # check whether the session_id of the current session
+                            # is the same as the session on this location in the schedule
                             elif not sessions[session].session_id == \
                                     schedule[day][slot][room].session_id:
 
-                                # TODO comment
+                                # check whether the group of students of these sessions
+                                # overlap
                                 if sessions[session].group_id == \
                                         schedule[day][slot][room].group_id:
+
+                                    # delete all locations of this day
                                     locations = delete_location(locations, slot, day)
                                     break
 
-                        # TODO comment
+                        # check if the session in the current location
+                        # is not part of a mutual course of the current session
                         elif schedule[day][slot][room].name in \
                                 mutual_courses_session:
+
+                            # delete all locations of this day
                             locations = delete_location(locations, slot, day)
                             break
 
-                    #  TODO comment
-                    # als het een lecture is
+
+
+                    # check if the current session(lecture) overlaps with
+                    # a mutual course or its own course
                     elif sessions[session].name == schedule[day][slot][room].name \
                             or schedule[day][slot][room].name \
                             in mutual_courses_session:
 
+                        # delete alle locations of this day
                         locations = delete_location(locations, slot, day)
                         break
 
-                    # if the slot in the schedule is empty
+                    # if all constraints are met, append current location to
+                    # list of locations
                     if schedule[day][slot][room].name == ' ':
                         locations.append((day, slot, room))
 
-        # TODO comment
+        # check if any location was found for the current session
         if bool(locations):
             counter = 0
 
-            # TODO comment
-            # als het een lecture was, verwijder het aantal potentiele locaties aan het einde van het rooster gelijk
-            # aan de hoeveelheid vakken die er nog moeten worden ingedeeld
+
+            # check if the current session is a lecture
             if lectures_first:
 
+                # calculate the amount of remaining sessions of this course
                 amount_sessions = sessions[session].course_object.lecture + \
                     sessions[session].course_object.tutorial + \
                     sessions[session].course_object.practicum
                 prohibited_timeslots = amount_sessions - 1 - passed_lectures
 
+                # keep track of the amount of lectures of this course scheduled
                 passed_lectures += 1
 
-                # TODO comment
+                # delete the minimal amount of locations needed for the remaining
+                # sessions of this course, starting at the end of the list
                 while not counter == prohibited_timeslots:
 
-                    # TODO comment
+                    # if no locations are left after applying the constraints
                     if not bool(locations) or \
                             prohibited_timeslots >= len(locations):
                         return False
 
-                    # TODO comment
+                    # checks if the current location is not the same timeslot as
+                    # the next location
                     elif not locations[-1][1] == locations[-2][1]:
                         counter += 1
 
                     locations.remove(locations[-1])
 
-            # TODO comment
+            # choose a random location of the location list
             rndm_location = random.choice(locations)
             schedule[rndm_location[0]][rndm_location[1]][rndm_location[2]] \
                 = sessions[session]
             found = True
 
-            # TODO comment
-            # als dit het laatste lecture van het vak was of als er geen andere sessies meer zijn van dit vak:
+            # check if this was the last lecture of the course
             if not session == len(sessions) - 1 and \
                     (not sessions[session + 1].type == "lecture" or not
                      sessions[session].course_object ==
                      sessions[session + 1].course_object):
                 passed_lectures = 0
 
-        # TODO comment
+        # if no locations were found for the current session
         else:
             return False
 
@@ -244,12 +263,12 @@ def fill_schedule(schedule, sessions_2d, other_sessions, empty_sessions,
 
 def delete_location(locations, slot, day):
     """
-    Deletes location from locations list
-
-    Input: TODO
+    Deletes all locations from locations list that are on the slot and day given
+    Input: list of locations, timeslot and day
+    A location in this list is a coordinate consisting of three integer elements:
+    a day, a slot and a time.
     Output: list with locations
 
-    TODO ANNEMIJN: klopt deze uitleg???
     """
     for location in range(len(locations) - 1, -1, -1):
         if locations[location][1] == slot and locations[location][0] == day:

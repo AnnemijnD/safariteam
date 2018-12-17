@@ -11,6 +11,7 @@ def plot():
 
     boxplot_xaxis = ["Random", "Simulated annealing"]
 
+
     # Make the plot of selected checkboxes
     ax = plt.subplot(111)
     plt.boxplot(boxplot_data)
