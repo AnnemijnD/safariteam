@@ -156,9 +156,11 @@ class Plan():
 
         return maxpoints, max_schedule, points
 
-    def compare_algorithm(self, random_n, hillclimber_x, hillclimber_n, hillclimber2_x,
-                          hillclimber2_n, sim_x, sim_n, begin_temp, end_temp,
-                          type, check_rand, check_hill, check_hill2, check_sim):
+    def compare_algorithm(self, random_n, hillclimber_x, hillclimber_n,
+                          hillclimber2_x, hillclimber2_n, sim_x, sim_n,
+                          begin_temp, end_temp, type, check_rand, check_hill,
+                          check_hill2, check_sim, check_gen, gen_x, gen_n,
+                          pop):
         """
         GUI FUNCTION.
         Run certain algorithms with the intention to compare them in a boxplot.
@@ -195,10 +197,16 @@ class Plan():
 
         if check_sim == 1:
             max_points, max_schedule, points = plan.runalgorithm("Simulated annealing",
-                                sim_x, sim_n, begin_temp, end_temp, type,
-                                0, 0, 0, schedule)
+                                sim_x, sim_n, 0, 0, None, 0, 0, 0, schedule)
             boxplot_data.append(max_points)
             boxplot_xaxis.append(f"Simulated Annealing \n n = {sim_n}")
+
+        if check_gen == 1:
+            max_points, max_schedule, points = plan.runalgorithm("genetic",
+                                0, gen_n, 0, 0, None,
+                                pop, gen_x, 0, schedule)
+            boxplot_data.append(max_points)
+            boxplot_xaxis.append(f"Genetic \n n = {pop}")
 
         # make the plot of selected checkboxes
         ax = plt.subplot(111)
@@ -267,7 +275,8 @@ class Plan():
                                    int(hc2x.get()), int(hc2n.get()),
                                    int(x2.get()), int(n2.get()), float(t1.get()),
                                    float(t2.get()), type.get(), var3.get(),
-                                   var1.get(), var2.get(), var4.get())
+                                   var1.get(), var2.get(), var4.get(), var5.get(),
+                                   int(x3.get()), int(n3.get()), int(p3.get()))
 
         def plot(algorithm):
             """
@@ -312,7 +321,6 @@ class Plan():
                                             type.get(), 0, 0, 0, schedule)[2]
 
             if algorithm == "all":
-                # make a plot
                 plt.plot(points1, "b")
                 plt.plot(points2, "r")
                 plt.plot(points3, "yellow")
@@ -454,6 +462,9 @@ class Plan():
         var4 = IntVar()
         Checkbutton(window, text="Simulated Annealing",
                     variable=var4).grid(row=24, column=2, sticky=W)
+        var5 = IntVar()
+        Checkbutton(window, text="Genetic",
+                    variable=var5).grid(row=25, column=2, sticky=W)
         Button(window, text="Make a boxplot!",
                command=lambda: boxplot()).place(x=450, y=640)
         Button(window, text='Quit',
