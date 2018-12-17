@@ -11,6 +11,7 @@ def plot():
     print(sum(boxplot_data) / len(boxplot_data))
     boxplot_xaxis = [" "]
 
+
     # Make the plot of selected checkboxes
     ax = plt.subplot(111)
     plt.boxplot(boxplot_data)

@@ -14,10 +14,9 @@ sys.path.append(os.path.join(directory, "code", "algoritmes"))
 from constraint import Constraint
 import loaddata
 from session import Session
-import switch
+import itertools
 import genetic
 import annealing
-import climbergreedy
 import hillclimber
 import csv
 import random
@@ -30,6 +29,7 @@ import matplotlib
 matplotlib.use('TkAgg')
 import matplotlib.pyplot as plt
 from matplotlib.pyplot import figure
+
 
 
 SLOTS = 140
@@ -52,28 +52,39 @@ class Plan():
         Initialize schedule using Session().
         """
 
-        schedule = [[[[None] for i in range(ROOMS)] for i in range(TIME_SLOTS)] for i in range(DAYS)]
-        session_analysis = [0 for i in range(SESSION_NUM)]
+        schedule = [[[[None] for i in range(ROOMS)] for i in range(TIME_SLOTS)]
+                    for i in range(DAYS)]
 
-        sessions = []
         session_list = []
         lecture_sessions = []
         other_sessions = []
         empty_sessions = []
+        session_list_2d = []
 
-        # random.shuffle(courses)
-
-        # ANNEMIJN KAN JE HIER NOG EEN COMMENT BIJ ZETTEN, SNap niet wat je hier hebt gedaan
-
+        # makes a list of all sessions
         for course in courses:
             session_list = session_list + course.sessions_total
 
-        session_counter = 0
-        for i in range(len(session_list)):
-            session_list[i].overall_id = session_counter
-            session_counter += 1
+            # make a list of lists for each course
+            session_list_2d.append(course.sessions_total)
 
-        # make #SLOTS empty sessions
+        # adds overall id's to the sessions
+        session_counter = 0
+
+        for i in range(len(session_list_2d)):
+            for j in range(len(session_list_2d[i])):
+                session_list_2d[i][j].overall_id = session_counter
+                session_counter += 1
+
+
+        for course in courses:
+            for i in range(len(session_list_2d)):
+                for j in range(len(session_list_2d[i])):
+                    if session_list_2d[i][j].name == course.name:
+
+                        session_list_2d[i][j].course_object = course
+
+        # make SLOTS empty sessions
         for i in range(SLOTS):
             name = ' '
             type = ' '
@@ -84,24 +95,17 @@ class Plan():
             empty_session.overall_id = SLOTS
             empty_sessions.append(empty_session)
 
-        for i in range(len(session_list)):
-            # Get all the lectures
-            if session_list[i].type == "lecture":
-                lecture_sessions.append(session_list[i])
-            elif session_list[i].type == "tutorial" or session_list[i].type == "practical":
-                other_sessions.append(session_list[i])
+        for i in range(len(session_list_2d)):
+            for j in range(len(session_list_2d[i])):
 
-        # shuffle de lectures zodat ze random zijn
-        # Make copy of sessions and shuffle
-        lectures = lecture_sessions[:]
-        others = other_sessions[:]
-        # random.shuffle(lectures)
-        # random.shuffle(other_sessions)
+                # put all lectures in list and put all other sessions in other list
+                if session_list_2d[i][j].type == "lecture":
+                    lecture_sessions.append(session_list_2d[i][j])
+                elif session_list_2d[i][j].type == "tutorial" or session_list_2d[i][j].type == "practicum":
+                    other_sessions.append(session_list_2d[i][j])
 
-        # De lijst met totale sessies bestaat dus uit een lijst met eerst
-        # Hoorcolleges, daarna de andere sessies en is opgevuld tot 140 met lege sessies
-        total = []
-        total = lectures + other_sessions
+        counter_sessions = 0
+        new_sched = False
 
         # plan.fill_schedule(schedule, total, other_sessions, empty_sessions, courses)
         # print(session_list)
@@ -109,7 +113,7 @@ class Plan():
 
 
         # zorgt dat er een plot wordt gemaakt van alle vakken waar het fout gaat
-
+        session_analysis = [0 for i in range(SESSION_NUM)]
         row1 = [0 for i in range(SESSION_NUM)]
         row2 = [0 for i in range(SESSION_NUM)]
         row3 = [0 for i in range(SESSION_NUM)]
@@ -117,38 +121,58 @@ class Plan():
         counter_lala = 0
         counter_2 = 0
         lalalijst = []
+        dataaxis2 = []
+        dataaxis22 = [0 for i in range(SESSION_NUM)]
+        for i in range(len(session_list_2d)):
+            for j in range(len(session_list_2d[i])):
+                dataaxis2.append(session_list_2d[i][j].course_object.expected_students)
+
+
+
         if not bool(new_sched):
 
-            while not bool(new_sched) or not counter_2 >= 1:
+            while not bool(new_sched) or not counter_2 >= 1000:
 
-                new_sched, course_stop, session_problems = plan.fill_schedule(schedule, session_list, lecture_sessions, empty_sessions, courses)
+                new_sched, course_stop1, session_problems= plan.fill_schedule(schedule, session_list_2d, lecture_sessions,
+                                          empty_sessions, courses)
+
                 plan.schedule_counter += 1
 
                 if bool(new_sched):
-                    if counter_2 < 1:
+                    if counter_2 < 1000:
                         continue
 
                     else:
                         break
 
+                print(f"coursestpo: {course_stop1}")
+                print(f"1: {course_stop1.name}")
+                course_stop = course_stop1.overall_id
+                print(f"2: {course_stop}")
+                dataaxis22[course_stop] = course_stop1.course_object.expected_students
                 row1[course_stop] += session_problems[0]
-                row2[course_stop] += session_problems[1ff]
+                row2[course_stop] += session_problems[1]
                 row3[course_stop] += session_problems[2]
-
                 session_analysis[course_stop] += 1
                 counter_2 += 1
 
+
         xAxis = []
-        yAxis = []
+        yAxis = session_analysis
+        #
+        # for k in range(len(session_analysis)):
+        #  if session_analysis[k] > 0:
+        #      for j in range(len(session_list_2d)):
+        #          for g in range(len(session_list_2d[j])):
+        #              if session_list_2d[j][g].overall_id == k:
+        #                  xAxis.append(f"{session_list_2d[j][g].name} {session_list_2d[j][g].type} {session_list_2d[j][g].overall_id}")
+        #                  yAxis.append(session_analysis[k])
+        #                  lalalijst.append([session_list_2d[j][g], session_analysis[k]])
+
+        for i in range(len(session_analysis)):
+            xAxis.append(f'{i}')
 
 
-        for k in range(len(session_analysis)):
-         if session_analysis[k] > 0:
-             for j in range(len(session_list)):
-                 if session_list[j].overall_id == k:
-                     xAxis.append(f"{session_list[j].name} {session_list[j].type} {session_list[j].overall_id}")
-                     yAxis.append(session_analysis[k])
-                     lalalijst.append([session_list[j], session_analysis[k]])
 
         # print(row3)
         # for l in range(len(row3)):
@@ -166,21 +190,28 @@ class Plan():
                 del row2[l]
                 del row3[l]
 
-        ax = plt.subplot(111)
-        pos1 = ax.get_position() # get the original position
-        pos2 = [pos1.x0, pos1.y0 + 0.2,  pos1.width , pos1.height - 0.2]
-        ax.set_position(pos2)
+        # ax = plt.subplot(111)
+        # pos1 = ax.get_position() # get the original position
+        # pos2 = [pos1.x0, pos1.y0 + 0.2,  pos1.width , pos1.height - 0.2]
+        # ax.set_position(pos2)
         plt.bar(xAxis, yAxis)
         plt.xticks(fontsize=6, rotation=89)
         plt.title("Analysis of invalid schedules")
         plt.ylabel("Sessions causing invalid schedule")
+
+        x = np.linspace(0, 5)
+        y = np.sin(x)
+        print(x)
+        print(y)
+        axes2 = plt.twinx()
+        axes2.plot(xAxis, dataaxis2, color='k', label='Sine')
+        axes2.set_ylabel('Line plot')
+        plt.show()
+
         plt.show()
 
 
-        ax = plt.subplot(111)
-        pos1 = ax.get_position() # get the original position
-        pos2 = [pos1.x0, pos1.y0 + 0.2,  pos1.width , pos1.height - 0.2]
-        ax.set_position(pos2)
+
         N = len(row1)
         ind = np.arange(N)    # the x locations for the groups
         width = 0.35       # the width of the bars: can also be len(x) sequence
@@ -194,14 +225,13 @@ class Plan():
         # plt.yticks(np.arange(0, 81, 10))
         plt.legend((p1[0], p2[0], p3[0]), ('Lectures first', 'Overlap own course', 'Overlap mutual courses'))
 
-        plt.show()
 
 
 
         return new_sched, total, other_sessions, empty_sessions
 
 
-    def fill_schedule(self, schedule, lectures, other_sessions, empty_sessions, courses):
+    def fill_schedule(self, schedule, sessions_2d, other_sessions, empty_sessions, courses):
         """
         Fill empty schedule with sessions. This function will begin to fill all
         the lectures and will go on to fill other sessions.
@@ -213,6 +243,17 @@ class Plan():
 
         # Vul eerst met lege sessions
         # counter = 0
+
+        lectures = []
+
+
+
+        random.shuffle(sessions_2d)
+
+
+        for i in range(len(sessions_2d)):
+            for j in range(len(sessions_2d[i])):
+                lectures.append(sessions_2d[i][j])
 
 
         session_counter = 0
@@ -340,7 +381,7 @@ class Plan():
                 # aan de hoeveelheid vakken die er nog moeten worden ingedeeld
                 if lectures_first:
 
-                    amount_sessions = lectures[e].course_object.lecture + lectures[e].course_object.tutorial + lectures[e].course_object.practical
+                    amount_sessions = lectures[e].course_object.lecture + lectures[e].course_object.tutorial + lectures[e].course_object.practicum
                     prohibited_timeslots = amount_sessions - 1 - passed_lectures
 
                     # probleem: er moeten nu teveel plekken open worden gehouden
@@ -350,7 +391,9 @@ class Plan():
                     while not counter == prohibited_timeslots:
                         if not bool(location) or prohibited_timeslots >= len(location):
 
-                            return False, e, problems
+
+                            return False, lectures[e], problems
+
 
                         elif not location[-1][1] == location[-2][1]:
 
@@ -374,7 +417,7 @@ class Plan():
 
                 # plan.schedule_counter += 1
 
-                return False, e, problems
+                return False, lectures[e], problems
                 # return schedule
                 #plan.initialize_schedule(plan.courses)
                 # break
@@ -395,7 +438,7 @@ class Plan():
         else:
             # plan.schedule_counter += 1
 
-            return False, e, problems
+            return False, lectures[e], problems
 
     # def random_schedule(self, schedule, sessions):
     #     """
