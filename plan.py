@@ -458,7 +458,7 @@ class Plan():
         Checkbutton(window, text="Simulated Annealing",
                     variable=var4).grid(row=24, column=2, sticky=W)
         Button(window, text="Make a boxplot!",
-               command=lambda: boxplot()).place(x=440, y=640)
+               command=lambda: boxplot()).place(x=450, y=640)
         Button(window, text='Quit',
                command=window.quit).place(x=600, y=640)
 
@@ -477,7 +477,7 @@ class Plan():
         Label(window, text="Select an algorithm and press enter to view scores.",
               font="Arial 10 bold").grid(row=0, column=2)
         Label(window, text="View the schedule at 'results/schedule.html'.",
-              font="Arial 15 bold").place(x=40, y=640)
+              font="Arial 14 bold").place(x=40, y=640)
 
         window.mainloop()
 
