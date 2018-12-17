@@ -12,7 +12,9 @@ import pandas as pd
 
 def load_courses():
     """
-    Loads all the courses from a csv file.
+    Loads all the courses from a csv file
+
+    Output: list of course objects
     """
 
     course = 'data/vakken.csv'
@@ -62,7 +64,9 @@ def load_courses():
 
 def load_rooms():
     """
-    loads all the rooms from a csv file.
+    Loads all the rooms from a csv file
+
+    Output: list of room objects
     """
     room = 'data/zalen.csv'
 

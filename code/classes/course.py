@@ -4,9 +4,7 @@ import math
 
 class Course(object):
     """
-    Representation of a course in session
-
-    TODO
+    Representation of a course in a schedule
     """
 
     def __init__(self, name, course_id, lecture, tutorial, practicum,
@@ -30,24 +28,26 @@ class Course(object):
         self.session_tutorial = self.load_sessions(self.tutorial, 'tutorial',
                                                    max_students_tutorial,
                                                    expected_students)
-        self.session_practicum = self.load_sessions(self.practicum, 'practicum',
+        self.session_practicum = self.load_sessions(self.practicum,
+                                                    'practicum',
                                                     max_students_practicum,
                                                     expected_students)
         self.sessions_total = self.session_lecture + self.session_tutorial + \
             self.session_practicum
 
-    def load_sessions(self, int_session, type, max_students, expected_students):
+    def load_sessions(self, int_session, type, max_students,
+                      expected_students):
         """
-        Loads all the session types for every course
-        TODO
+        Loads all the session types
 
-        Input: TODO
-        Output: TODO
+        Input: number of sessions of type, type of session, max students per
+        that session, expected number of students per that session
+        Output: list of sessions
         """
         sessions_with_groups = []
         group_id = 0
 
-        # TODO comment
+        # give first session of type a session_id
         if type == 'lecture':
             session_id = 0
         elif type == 'tutorial':
@@ -58,8 +58,10 @@ class Course(object):
         # make session for each lecture, tutorial and practicum.
         for i in range(int_session):
 
-            # make groups for the number of students per course
+            # check if it's necessary to make groups
             if expected_students > max_students:
+
+                # make groups for the number of students per course
                 group_count = math.ceil(float(expected_students/max_students))
                 group_id = 1
 
@@ -90,7 +92,7 @@ class Course(object):
         mutual_courses = []
         row_counter = 0
 
-        # TODO comment
+        # look for x in column of df
         for row in df[coursename]:
             row_counter += 1
 

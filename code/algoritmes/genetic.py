@@ -105,7 +105,7 @@ def choose_parents_KWAY(population, courses, population_size):
         battlefield = []
         for j in range(K):
 
-            # choose random schedule, remove it from population, add to battlefield
+            # choose random schedule, remove from population, add to battlefield
             chosen = random.choice(population)
             population.remove(chosen)
             points = Constraint.get_points(chosen, courses)

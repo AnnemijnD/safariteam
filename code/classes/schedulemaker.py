@@ -19,10 +19,8 @@ def initialize_schedule(courses):
     """
     Initialize schedule using Session()
 
-    Input: TODO
+    Input: list of courses
     Output: a valid schedule
-
-    TODO: (eventueel) andere namen aan lijsten geven want nu erg lang
     """
 
     schedule = [[[[None] for i in range(ROOMS)] for i in range(TIME_SLOTS)]
@@ -40,6 +38,13 @@ def initialize_schedule(courses):
 
         # make a list of lists for each course
         session_list_2d.append(course.sessions_total)
+
+    for course in courses:
+        for i in range(len(session_list_2d)):
+            for j in range(len(session_list_2d[i])):
+                if session_list_2d[i][j].name == course.name:
+
+                    session_list_2d[i][j].course_object = course
 
     # adds overall id's to the sessions
     session_counter = 0
@@ -65,7 +70,8 @@ def initialize_schedule(courses):
             # put all lectures in list and put all other sessions in other list
             if session_list_2d[i][j].type == "lecture":
                 lecture_sessions.append(session_list_2d[i][j])
-            elif session_list_2d[i][j].type == "tutorial" or session_list_2d[i][j].type == "practicum":
+            elif session_list_2d[i][j].type == "tutorial" or \
+                    session_list_2d[i][j].type == "practicum":
                 other_sessions.append(session_list_2d[i][j])
 
     counter_sessions = 0
@@ -87,9 +93,9 @@ def fill_schedule(schedule, sessions_2d, other_sessions, empty_sessions,
     """
     Fills schedule with sessions
 
-    Input: An empty schedule, a 2D-list of all sessions sorted by course, a list
-    of all session objects that are not lectures, a list of empty session objects,
-    a list of course objects
+    Input: An empty schedule, a 2D-list of all sessions sorted by course, a
+    list of all session objects that are not lectures, a list of empty session
+    objects, a list of course objects
     Output: If all sessions were placed in the schedule: a filled schedule.
             Else: a boolean (False).
     """
@@ -107,7 +113,6 @@ def fill_schedule(schedule, sessions_2d, other_sessions, empty_sessions,
                 schedule[day][slot][room] = empty_sessions[session_counter]
                 session_counter += 1
 
-
     passed_lectures = 0
 
     # loop through all sessions that are sorted in a list per course
@@ -120,12 +125,8 @@ def fill_schedule(schedule, sessions_2d, other_sessions, empty_sessions,
         # a boolean that states whether the current session was placed in the schedule
         found = False
 
-        # TODO comment DIT MOET WEG
-        for course in courses:
-            if sessions[session].name == course.name:
-                sessions[session].course_object = course
-                mutual_courses_session = \
-                    sessions[session].course_object.mutual_courses
+        # define mutual course of current session
+        mutual_courses_session = sessions[session].course_object.mutual_courses
 
         # check wether the current session is a lecture
         if sessions[session].type == "lecture":
@@ -144,7 +145,7 @@ def fill_schedule(schedule, sessions_2d, other_sessions, empty_sessions,
                         # from the same course as the current session
                         if sessions[session].name == schedule[day][slot][room].name:
 
-                            # check wether this session is a lecture
+                            # check if this session is a lecture
                             if schedule[day][slot][room].type == "lecture":
 
                                 # delete all previous locations
@@ -156,7 +157,7 @@ def fill_schedule(schedule, sessions_2d, other_sessions, empty_sessions,
                             elif not sessions[session].session_id == \
                                     schedule[day][slot][room].session_id:
 
-                                # check whether the group of students of these sessions
+                                # check whether the groups of this session
                                 # overlap
                                 if sessions[session].group_id == \
                                         schedule[day][slot][room].group_id:
@@ -261,12 +262,11 @@ def fill_schedule(schedule, sessions_2d, other_sessions, empty_sessions,
 
 def delete_location(locations, slot, day):
     """
-    Deletes all locations from locations list that are on the slot and day given
-    Input: list of locations, timeslot and day
-    A location in this list is a coordinate consisting of three integer elements:
-    a day, a slot and a room.
+    Deletes all locations from locations list that are on the slot and day
+    given. A location in this list is a coordinate consisting of three integer
+    elements: a day, a slot and a room.
+    Input: list of locations, timeslot,day
     Output: list with locations
-
     """
     for location in range(len(locations) - 1, -1, -1):
         if locations[location][1] == slot and locations[location][0] == day:

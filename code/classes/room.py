@@ -1,6 +1,6 @@
 class Room(object):
     """
-    Representation of a room in Schedule.
+    Representation of a room in Schedule
     """
 
     def __init__(self, name, room_id, capacity):

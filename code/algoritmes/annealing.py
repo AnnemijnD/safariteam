@@ -6,7 +6,8 @@ import random
 
 def anneal(schedule, courses, total_iterations, t1, t2, type):
     """
-    Simulated annealing algorithm.
+    Simulated annealing algorithm
+
     Input: random schedule, number of iterations, begin- and end
     temperature.
     Output: a schedule that fulfills all hard constraints
