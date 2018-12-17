@@ -23,8 +23,6 @@ matplotlib.use('TkAgg')
 import matplotlib.pyplot as plt
 from matplotlib.pyplot import figure
 
-
-
 TIME_SLOTS = 4
 DAYS = 5
 ROOMS = 7
