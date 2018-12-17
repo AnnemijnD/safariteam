@@ -31,8 +31,6 @@ class Constraint():
         all courses
         Output: list with for every course a dictionary that contains info of
         the sessions of that course
-
-        TODO: [day, slot, room] werkt niet???????????
         """
 
         courses_schedule = []

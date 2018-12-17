@@ -175,7 +175,6 @@ def fill_schedule(schedule, sessions_2d, other_sessions, empty_sessions,
                             break
 
 
-
                     # check if the current session(lecture) overlaps with
                     # a mutual course or its own course
                     elif sessions[session].name == schedule[day][slot][room].name \
@@ -194,7 +193,6 @@ def fill_schedule(schedule, sessions_2d, other_sessions, empty_sessions,
         # check if any location was found for the current session
         if bool(locations):
             counter = 0
-
 
             # check if the current session is a lecture
             if lectures_first:
@@ -266,7 +264,7 @@ def delete_location(locations, slot, day):
     Deletes all locations from locations list that are on the slot and day given
     Input: list of locations, timeslot and day
     A location in this list is a coordinate consisting of three integer elements:
-    a day, a slot and a time.
+    a day, a slot and a room.
     Output: list with locations
 
     """
