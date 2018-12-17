@@ -87,13 +87,23 @@ def fill_schedule(schedule, sessions_2d, other_sessions, empty_sessions,
     """
     Fills schedule with sessions
 
-    Input: TODO
-    Output:
+    Input: An empty schedule, a 2D-list of all sessions sorted by course, a list
+    of all session objects that are not lectures, a list of empty session objects,
+    a list of course objects
+    Output: if all sessions were placed in the schedule: a filled schedule, other
+            return values are irrelevant.
+            if not all sessions were placed in the schedule: a boolean (False),
+            the last session object used, a list of times a certain problem
+            in sorting this last session was found.
+
     """
 
     # shuffle the 2d list and flatten it back to linear list
+    print(type(sessions_2d))
+    print(sessions_2d)
     random.shuffle(sessions_2d)
     sessions = list(itertools.chain(*sessions_2d))
+
 
     # fills schedule with different empty sessions
     session_counter = 0
@@ -244,12 +254,12 @@ def fill_schedule(schedule, sessions_2d, other_sessions, empty_sessions,
 
 def delete_location(locations, slot, day):
     """
-    Deletes location from locations list
-
-    Input: TODO
+    Deletes all locations from locations list that are on the slot and day given
+    Input: list of locations, timeslot and day
+    A location in this list is a coordinate consisting of three integer elements:
+    a day, a slot and a time.
     Output: list with locations
 
-    TODO ANNEMIJN: klopt deze uitleg???
     """
     for location in range(len(locations) - 1, -1, -1):
         if locations[location][1] == slot and locations[location][0] == day:

@@ -94,4 +94,4 @@ def save_html(schedule, loc, spread_points, capacity_points,
         f.write("Friday")
         f.write(html_string.format(table=friday.to_html(classes='style')))
 
-    print("Saved schedule to 'results/schedule.html'")
+    print("Saved (last) schedule to 'results/schedule.html'")
