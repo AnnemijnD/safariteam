@@ -1,9 +1,3 @@
-"""
-Heuristieken 2018 -- Lectures
-Names: Annemijn, Sanne & Rebecca
-This script generates a schedule.
-"""
-
 import os, sys
 
 directory = os.path.dirname(os.path.realpath(__file__))
@@ -28,8 +22,6 @@ import matplotlib
 matplotlib.use('TkAgg')
 import matplotlib.pyplot as plt
 from matplotlib.pyplot import figure
-
-
 
 
 
@@ -121,7 +113,7 @@ class Plan():
             elif algorithm == "Simulated annealing":
                 schedule_temp, points = \
                     annealing.anneal(first_schedule, plan.courses,
-                        x, begin_temperature, end_temperature, type)
+                                     x, begin_temperature, end_temperature, type)
 
                 if max_schedule is None:
                     max_schedule = schedule_temp
@@ -159,7 +151,8 @@ class Plan():
         courses_schedule, spread_points, capacity_points, lecture_points, \
             mutual_course_malus = plan.points_to_print(max_schedule)
         schedule_to_html.save_html(max_schedule, plan.rooms, spread_points,
-                        capacity_points, lecture_points, mutual_course_malus)
+                                   capacity_points, lecture_points,
+                                   mutual_course_malus)
 
         return maxpoints, max_schedule, points
 
@@ -195,13 +188,15 @@ class Plan():
 
         if check_hill2 == 1:
             max_points, max_schedule, points = plan.runalgorithm("hill climber ext",
-                            hillclimber2_x, hillclimber2_n, 0, 0, None, 0, 0, 0, schedule)
+                            hillclimber2_x, hillclimber2_n, 0, 0, None,
+                            0, 0, 0, schedule)
             boxplot_data.append(max_points)
             boxplot_xaxis.append(f"Hillclimber extended \n n = {hillclimber2_n}")
 
         if check_sim == 1:
             max_points, max_schedule, points = plan.runalgorithm("Simulated annealing",
-                                sim_x, sim_n, begin_temp, end_temp, type, 0, 0, 0, schedule)
+                                sim_x, sim_n, begin_temp, end_temp, type,
+                                0, 0, 0, schedule)
             boxplot_data.append(max_points)
             boxplot_xaxis.append(f"Simulated Annealing \n n = {sim_n}")
 
@@ -289,14 +284,14 @@ class Plan():
             # get the schedule points by running a given algorithm
             if algorithm == "hill climber":
                 points = plan.runalgorithm(algorithm, int(x.get()), 1,
-                        float(t1.get()), 0, 0,
+                                           float(t1.get()), 0, 0,
                         0, 0, 0, False)[2]
             elif algorithm == "Simulated annealing":
                 points = plan.runalgorithm(algorithm, int(x2.get()), 1,
-                        float(t1.get()), float(t2.get()), type.get(),
-                        0, 0, 0, False)[2]
+                                           float(t1.get()), float(t2.get()),
+                                           type.get(), 0, 0, 0, False)[2]
             elif algorithm == "both":
-                 # plot a simulated annealing run after hill climber run
+                # plot a simulated annealing run after hill climber run
                 maxpoints, max_schedule, points = plan.runalgorithm("hill climber",
                         int(x.get()), 1, float(t1.get()), float(t2.get()),
                         type.get(), 0, 0, 0, False)
@@ -308,13 +303,13 @@ class Plan():
                 # plot a simulated annealing run after hill climber run
                 schedule = schedulemaker.initialize_schedule(plan.courses)
                 points1 = plan.runalgorithm("hill climber", int(x.get()), 1,
-                        float(t1.get()), 0, 0,
-                        0, 0, 0, schedule)[2]
-                points2 = plan.runalgorithm("hill climber ext",
-                                int(hc2x.get()), 1, 0, 0, None, 0, 0, 0, schedule)[2]
+                                            float(t1.get()), 0, 0,
+                                            0, 0, 0, schedule)[2]
+                points2 = plan.runalgorithm("hill climber ext", int(hc2x.get()),
+                                            1, 0, 0, None, 0, 0, 0, schedule)[2]
                 points3 = plan.runalgorithm("Simulated annealing", int(x2.get()),
-                        1, float(t1.get()), float(t2.get()), type.get(),
-                        0, 0, 0, schedule)[2]
+                                            1, float(t1.get()), float(t2.get()),
+                                            type.get(), 0, 0, 0, schedule)[2]
 
             if algorithm == "all":
                 # make a plot
@@ -466,15 +461,15 @@ class Plan():
 
         # add buttons to plot a line chart
         ttk.Button(window, text="Plot hill climber run",
-                   command=lambda:plot("hill climber"),
+                   command=lambda: plot("hill climber"),
                    padding=4).place(x=40, y=510)
         ttk.Button(window, text="Plot simulated annealing run",
-                   command=lambda:plot("Simulated annealing"),
+                   command=lambda: plot("Simulated annealing"),
                    padding=4).place(x=40, y=540)
         ttk.Button(window, text="Plot simulated annealing after hill climber run",
-                   command=lambda:plot("both"), padding=4).place(x=40, y=570)
+                   command=lambda: plot("both"), padding=4).place(x=40, y=570)
         ttk.Button(window, text="All three algorithmms in one plot",
-                   command=lambda:plot("all"), padding=4).place(x=40, y=600)
+                   command=lambda: plot("all"), padding=4).place(x=40, y=600)
 
         Label(window, text="Select an algorithm and press enter to view scores.",
               font="Arial 10 bold").grid(row=0, column=2)
