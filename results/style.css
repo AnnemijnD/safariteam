@@ -1,6 +1,6 @@
 body {
   padding: 20px;
-  background-color: #191970;
+  background-image: linear-gradient(to bottom, #000080, #B0E0E6);
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
   color: black;
@@ -55,6 +55,7 @@ text {
 }
 
 h1 {
-  font-size: 14pt;
+  font-size: 16pt;
   font-family: Arial;
+  padding: 10px;
 }
