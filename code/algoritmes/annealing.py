@@ -1,10 +1,3 @@
-
-"""
-Simulated annealing algorithm.
-Input is a (valid) schedule, number of iterations, begin- and end temperature.
-Output is a schedule (with more points than the input schedule).
-"""
-
 from constraint import Constraint
 import schedulemaker
 import math
@@ -13,9 +6,11 @@ import random
 
 def anneal(schedule, courses, total_iterations, t1, t2, type):
     """
-    Generates a schedule using a hill climber algorithm.
-    Input is a random schedule, output is a schedule that fulfills all hard-
-    constraints and most soft constraints.
+    Simulated annealing algorithm.
+    Input: random schedule, number of iterations, begin- and end
+    temperature.
+    Output: a schedule that fulfills all hard constraints
+    and most soft constraints.
     """
 
     points = []

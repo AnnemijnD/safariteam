@@ -102,7 +102,6 @@ class Plan():
                     max_schedule = schedule_temp
 
             if algorithm == "hill climber ext":
-                print("ik kom hier")
                 schedule_temp, points = \
                     hillclimberextended.climb(first_schedule, plan.courses, x)
 
@@ -292,37 +291,54 @@ class Plan():
             print("Or 4...")
             print("Exit at any moment using 'ctr + c'.")
 
-            print("ik kom hieeer")
-
             # get the schedule points by running a given algorithm
             if algorithm == "hill climber":
                 points = plan.runalgorithm(algorithm, int(x.get()), 1,
                         float(t1.get()), 0, 0,
                         0, 0, 0, False)[2]
             elif algorithm == "Simulated annealing":
-                points += plan.runalgorithm(algorithm, int(x2.get()), 1,
+                points = plan.runalgorithm(algorithm, int(x2.get()), 1,
                         float(t1.get()), float(t2.get()), type.get(),
                         0, 0, 0, False)[2]
-            else:
-                print("TODO")
+            elif algorithm == "both":
+                 # plot a simulated annealing run after hill climber run
+                maxpoints, max_schedule, points = plan.runalgorithm("hill climber",
+                        int(x.get()), 1, float(t1.get()), float(t2.get()),
+                        type.get(), 0, 0, 0, False)
+                # start simulated annealing with the same schedule
+                points += plan.runalgorithm("Simulated annealing", int(x2.get()),
+                        1, float(t1.get()), float(t2.get()), type.get(),
+                        0, 0, 0, max_schedule)[2]
+            elif algorithm == "all":
                 # plot a simulated annealing run after hill climber run
-                # schedule = schedulemaker.initialize_schedule(plan.courses)
-                # points1 = plan.runalgorithm(algorithm, int(x.get()), 1,
-                #         float(t1.get()), 0, 0,
-                #         0, 0, 0, False)[2]
-                # points2 = plan.runalgorithm("hill climber ext",
-                #                 int(hc2x.get()), 1, 0, 0, None, 0, 0, 0, schedule)[2]
-                # points3 = plan.runalgorithm("Simulated annealing", int(x2.get()),
-                #         1, float(t1.get()), float(t2.get()), type.get(),
-                #         0, 0, 0, schedule)[2]
+                schedule = schedulemaker.initialize_schedule(plan.courses)
+                points1 = plan.runalgorithm("hill climber", int(x.get()), 1,
+                        float(t1.get()), 0, 0,
+                        0, 0, 0, schedule)[2]
+                points2 = plan.runalgorithm("hill climber ext",
+                                int(hc2x.get()), 1, 0, 0, None, 0, 0, 0, schedule)[2]
+                points3 = plan.runalgorithm("Simulated annealing", int(x2.get()),
+                        1, float(t1.get()), float(t2.get()), type.get(),
+                        0, 0, 0, schedule)[2]
 
+            if algorithm == "all":
+                # make a plot
+                plt.plot(points1, "b")
+                plt.plot(points2, "g")
+                plt.plot(points3, "m")
 
-            # make a plot
-            plt.plot(points1, 'b')
-            plt.plot(points2, 'r')
-            plt.plot(points3, 'm')
-            plt.xlabel("Iterations")
-            plt.ylabel("Points")
+                # add a legend
+                plt.plot([1], label="Hill climber", color="b")
+                plt.plot([2], label="Hill climber extended", color="g")
+                plt.plot([3], label="Simulated annealing", color="m")
+                plt.legend(loc='upper left')
+                # plt.legend(blue, red, magenta)
+            else:
+                plt.plot(points, 'b')
+
+            # Add labels
+            plt.xlabel("Iterations", fontsize=12)
+            plt.ylabel("Points", fontsize=12)
             plt.show()
 
         # add labels to the hill climber input
@@ -333,8 +349,10 @@ class Plan():
         n = Entry(window)
         x.grid(row=1, column=1)
         n.grid(row=2, column=1)
-        x.insert(10, "20000")
+        x.insert(10, "1")
         n.insert(10, "1")
+
+        # Print results when enter is pressed
         x.bind('<Return>', lambda _: printresults("hc"))
         n.bind('<Return>', lambda _: printresults("hc"))
 
@@ -347,8 +365,10 @@ class Plan():
         hc2n = Entry(window)
         hc2x.grid(row=4, column=1)
         hc2n.grid(row=5, column=1)
-        hc2x.insert(10, "20000")
+        hc2x.insert(10, "1")
         hc2n.insert(10, "1")
+
+        # Print results when enter is pressed
         hc2x.bind('<Return>', lambda _: printresults("hc2"))
         hc2n.bind('<Return>', lambda _: printresults("hc2"))
 
@@ -368,8 +388,6 @@ class Plan():
         mainframe_sim.rowconfigure(0, weight=1)
         type = StringVar(window)
         choices = {'logarithmic', 'exponential'}
-
-        # defautl function
         type.set('exponential')
         popupMenu = OptionMenu(mainframe_sim, type, *choices)
         popupMenu.grid(row=2, column=1)
@@ -381,10 +399,12 @@ class Plan():
         n2.grid(row=9, column=1)
         t1.grid(row=10, column=1)
         t2.grid(row=11, column=1)
-        x2.insert(10, "20000")
+        x2.insert(10, "1")
         n2.insert(10, "1")
         t1.insert(10, "5")
         t2.insert(10, "0.9")
+
+        # Print results when enter is pressed
         x2.bind('<Return>', lambda _: printresults("sa"))
         n2.bind('<Return>', lambda _: printresults("sa"))
         t1.bind('<Return>', lambda _: printresults("sa"))
@@ -417,6 +437,8 @@ class Plan():
         x3.insert(10, "10")
         n3.insert(10, "1")
         t3.set('k-way')
+
+        # Print results when enter is pressed
         x3.bind('<Return>', lambda _: printresults("genetic"))
         p3.bind('<Return>', lambda _: printresults("genetic"))
         n3.bind('<Return>', lambda _: printresults("genetic"))
@@ -444,24 +466,26 @@ class Plan():
         Checkbutton(window, text="Simulated Annealing",
                     variable=var4).grid(row=24, column=2, sticky=W)
         Button(window, text="Make a boxplot!",
-               command=lambda: boxplot()).grid(row=25, column=2, sticky=W, pady=4)
+               command=lambda: boxplot()).place(x=440, y=640)
         Button(window, text='Quit',
-               command=window.quit).grid(row=25, column=3, sticky=W, pady=4)
+               command=window.quit).place(x=600, y=640)
 
         # add buttons to plot a line chart
         ttk.Button(window, text="Plot hill climber run",
                    command=lambda:plot("hill climber"),
-                   padding=5).place(x=40, y=540)
+                   padding=4).place(x=40, y=510)
         ttk.Button(window, text="Plot simulated annealing run",
                    command=lambda:plot("Simulated annealing"),
-                   padding=5).place(x=40, y=580)
+                   padding=4).place(x=40, y=540)
         ttk.Button(window, text="Plot simulated annealing after hill climber run",
-                   command=lambda:plot("both"), padding=5).place(x=40, y=620)
+                   command=lambda:plot("both"), padding=4).place(x=40, y=570)
+        ttk.Button(window, text="All three algorithmms in one plot",
+                   command=lambda:plot("all"), padding=4).place(x=40, y=600)
 
         Label(window, text="Select an algorithm and press enter to view scores.",
               font="Arial 10 bold").grid(row=0, column=2)
         Label(window, text="View the schedule at 'results/schedule.html'.",
-              font="Arial 15 bold").place(x=40, y=660)
+              font="Arial 15 bold").place(x=40, y=640)
 
         window.mainloop()
 
