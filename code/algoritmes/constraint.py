@@ -5,7 +5,9 @@ DAYS = 5
 ROOMS = 7
 SLOTS = DAYS * TIME_SLOTS * ROOMS
 SLOTS_PER_DAY = ROOMS * TIME_SLOTS
-MPF = 10  # TODO willen we hier uitleg bij???????
+
+# Malus point factor
+MPF = 10
 
 # case specific
 EMPTY_SESSIONS = 11  # kan weg als SESSION_NUM weg is
@@ -14,10 +16,6 @@ MAX_FIT = 1332
 MAX_SPREAD = 440
 WEIGHT = MAX_FIT / MAX_SPREAD
 SESSION_NUM = SLOTS - EMPTY_SESSIONS  # kan weg als alle ongebruikte functies weg zijn
-
-
-# STRAKS AAN ANNEMOIN VRAGEN WAT IK HIERMEE HAD KUNNEN BEDOELEN
-# TODO: class die courses in zich heeft en hier iets over zegt
 
 
 class Constraint():
@@ -65,104 +63,6 @@ class Constraint():
             courses_schedule.append(course_schedule)
 
         return courses_schedule
-
-    def session_spread_check(schedule, courses, courses_schedule):
-        """
-        Calculates the amount of bonuspoints and maluspoints earned by
-        spreading the sessions of a course.
-
-        Input: schedule of which you want to check the constraints, list of all
-        courses, list of dictionaries with info of all the sessions of a course
-        Output: a list with the total amount of points, the amount of
-        bonuspoints, the amount of maluspoints.
-
-        TODO: ANNEMIJN verwijder alles wat we niet meer gebruiken
-        """
-        bonuspoints = 0
-        maluspoints = 0
-        course_dict = {}
-
-        # list with course id, bonus points and malus points
-        course_bonus_malus = []
-
-        for course in courses:
-            id = course.course_id
-            course_mal_points = 0
-            course_bon_points = 0
-            lectures = []
-            sessions = []
-
-            # gets indices of lectures in courses_schedule
-            for i in range(len(courses_schedule[id]["type"])):
-                if courses_schedule[id]["type"][i] == "lecture":
-                    lectures.append(i)
-
-            # checks if a course has groups
-            groups = max(courses_schedule[id]["group_id"])
-            if groups > 0:
-
-                # saves indices of groups together with lectures
-                for i in range(groups):
-                    same_group = [j for j,
-                                  e in enumerate(courses_schedule[id]["group_id"])
-                                  if e == i + 1]
-                    sessions.append(lectures + same_group)
-            else:
-                sessions = [lectures]
-
-            # calculates the spread_bonus per group
-            spread_bonus = SPREAD_BONUS / len(sessions)
-
-            if course.sessions == 2:
-
-                bonuspoints += Constraint.spread_detail(sessions, [0, 3],
-                                                        courses_schedule, id,
-                                                        spread_bonus)
-
-                bonuspoints += Constraint.spread_detail(sessions, [1, 4],
-                                                        courses_schedule, id,
-                                                        spread_bonus)
-
-            elif course.sessions == 3:
-
-                bonuspoints += Constraint.spread_detail(sessions, [0, 2, 4],
-                                                        courses_schedule, id,
-                                                        spread_bonus)
-
-            elif course.sessions == 4:
-
-                bonuspoints += Constraint.spread_detail(sessions, [0, 1, 3, 4],
-                                                        courses_schedule, id,
-                                                        spread_bonus)
-
-            elif course.sessions == 5:
-
-                bonuspoints += Constraint.spread_detail(sessions, [0, 1, 2, 3, 4],
-                                                        courses_schedule, id,
-                                                        spread_bonus)
-
-            #  check the overall spread per group
-            for i in range(len(sessions)):
-                days = []
-
-                # adds the days sessions are given to list days
-                for j in range(len(sessions[i])):
-                    days.append(courses_schedule[id]["day"][sessions[i][j]])
-
-                # if the sessions aren't spread enough increase maluspoints
-                if len(days) - len(set(days)) > 0:
-                    malusfactor = (course.sessions - len(days) - len(set(days)))
-                    maluspoints += (malusfactor * 10) / len(sessions)
-                    course_mal_points += (malusfactor * 10) / len(sessions)
-
-            course_dict.update({id: (round(course_mal_points - course_bon_points))})
-
-        bonuspoints = round(bonuspoints)
-        maluspoints = round(maluspoints)
-        spread_points = maluspoints + bonuspoints
-        Constraint.bonus_malus = course_bonus_malus
-
-        return [spread_points, course_dict, bonuspoints, maluspoints]
 
     def spread_detail(sessions, bonus_days, courses_schedule, id,
                       spread_bonus):
@@ -233,33 +133,18 @@ class Constraint():
                         # if session in this slot is a lecture
                         if schedule[day][slot][room].type == "lecture":
 
-                            # Each slot has a course name and the courses'
-                            # mutual courses. Mutual courses is a list of
-                            # courses that can't be in the same timeslot
-
                             # get list of mutual courses
                             mutual_courses = \
                                 schedule[day][slot][room].course_object.mutual_courses
-
-                            # For every mutual course in the mutual_courses list,
-                            # check if it is placed in the same timeslot.
 
                             # check if session is in same slot as mutual course session
                             for mutual_course in range(len(mutual_courses)):
                                 for i in range(len(schedule[day][slot])):
 
-                                    # If this mutual course is placed in the
-                                    # same timeslot (for example Bioinformatica
-                                    # and Compilerbouw), count one minus point.
-
                                     # if session is in same slot, count 1 minus point
                                     if mutual_courses[mutual_course] in \
                                             schedule[day][slot][i].name:
                                         minus_points += 1
-
-                            # Also, if this course has a session of its own in
-                            # this timeslot (for example: Bioinformatica and
-                            # Bioinformatica) count one minus point.
 
                             # count minus points for session of own course in same slot
                             own_session_counter = 0
@@ -270,9 +155,6 @@ class Constraint():
                                     # count number of sessions in this timeslot
                                     own_session_counter += 1
 
-                                # If own_session_counter is greater than 1, there's
-                                # a conflicting session placed in this timeslot.
-
                                 # if sessions in same slot add minus_point
                                 if own_session_counter > 1:
                                     minus_points += 1
@@ -280,26 +162,16 @@ class Constraint():
                         # if session is practical or tutorial
                         else:
 
-                            # If session is a pratical or tutorial, check if
-                            # groups aren't planned in at the same timeslot
-                            # Check in every timeslot
-
                             # check for every slot if there aren't multiple groups
                             own_session_counter = 0
                             for i in range(len(schedule[day][slot])):
                                 if schedule[day][slot][i].name ==  \
                                         schedule[day][slot][room].name:
 
-                                    # Count one minuspoint if the same group_id
-                                    # is found for this course in this timeslot.
-
                                     # count minuspoint if same group is found
                                     if schedule[day][slot][i].group_id is \
                                             schedule[day][slot][room].group_id:
                                         own_session_counter += 1
-
-                            # own_session_counter will always be 1, so check if
-                            # the counter is higher than 1.
 
                             # if groups in same slot add minus_point
                             if own_session_counter > 1:

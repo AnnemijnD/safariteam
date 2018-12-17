@@ -1,4 +1,3 @@
-
 from constraint import Constraint
 import schedulemaker
 
@@ -17,7 +16,7 @@ def climb(schedule, courses, iterations):
     accept_counter = 0
     points = []
     counter = 0
-    x = 50
+    x = 45
 
     while counter < iterations:
         counter += 1
