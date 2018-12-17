@@ -8,6 +8,7 @@ def climb(schedule, courses, iterations):
     Hill climber algorithm: generates a schedule that fulfills certain
     constraints by accepting a schedule with higher points and accepting lower
     points if x number of schedules were rejected.
+
     Input: random schedule and number of iterations;
     Output is a schedule that fulfills all hard constraints
     and most soft constraints.
@@ -20,6 +21,7 @@ def climb(schedule, courses, iterations):
 
     while counter < iterations:
         counter += 1
+
         # append points to show in a graph when the schedule is made
         points.append(Constraint.get_points(schedule, courses))
 
@@ -42,6 +44,7 @@ def climb(schedule, courses, iterations):
         if schedule2_points >= schedule1_points:
             schedule = schedule2
             accept_counter = 0
+
         # if the second schedule has less points, go back to the old schedule.
         else:
             schedule = schedule1

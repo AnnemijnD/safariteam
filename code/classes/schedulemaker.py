@@ -19,10 +19,8 @@ def initialize_schedule(courses):
     """
     Initialize schedule using Session()
 
-    Input: TODO
+    Input: list of courses
     Output: a valid schedule
-
-    TODO: (eventueel) andere namen aan lijsten geven want nu erg lang
     """
 
     schedule = [[[[None] for i in range(ROOMS)] for i in range(TIME_SLOTS)]
@@ -65,7 +63,8 @@ def initialize_schedule(courses):
             # put all lectures in list and put all other sessions in other list
             if session_list_2d[i][j].type == "lecture":
                 lecture_sessions.append(session_list_2d[i][j])
-            elif session_list_2d[i][j].type == "tutorial" or session_list_2d[i][j].type == "practicum":
+            elif session_list_2d[i][j].type == "tutorial" or \
+                    session_list_2d[i][j].type == "practicum":
                 other_sessions.append(session_list_2d[i][j])
 
     counter_sessions = 0
@@ -87,7 +86,7 @@ def fill_schedule(schedule, sessions_2d, other_sessions, empty_sessions,
     """
     Fills schedule with sessions
 
-    Input: TODO
+    Input: schedule, list with list of sessions per course,
     Output:
     """
 
