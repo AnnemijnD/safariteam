@@ -13,7 +13,6 @@ sys.path.append(os.path.join(directory, "code", "classes"))
 sys.path.append(os.path.join(directory, "code", "algoritmes"))
 
 from constraint import Constraint
-from session import Session
 import loaddata
 import schedulemaker
 import genetic
@@ -22,20 +21,14 @@ import hillclimberextended
 import hillclimber
 import schedule_to_html
 
-import random
-import copy
-import time
 import pandas as pd
-from IPython.display import HTML
 import tkinter as tk
 from tkinter import *
 from tkinter import ttk
-import numpy as np
 import matplotlib
 matplotlib.use('TkAgg')
 import matplotlib.pyplot as plt
 from matplotlib.pyplot import figure
-from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 
 
 TIME_SLOTS = 4
@@ -324,19 +317,18 @@ class Plan():
             if algorithm == "all":
                 # make a plot
                 plt.plot(points1, "b")
-                plt.plot(points2, "g")
-                plt.plot(points3, "m")
+                plt.plot(points2, "r")
+                plt.plot(points3, "yellow")
 
                 # add a legend
                 plt.plot([1], label="Hill climber", color="b")
-                plt.plot([2], label="Hill climber extended", color="g")
-                plt.plot([3], label="Simulated annealing", color="m")
+                plt.plot([2], label="Hill climber extended", color="r")
+                plt.plot([3], label="Simulated annealing", color="yellow")
                 plt.legend(loc='upper left')
-                # plt.legend(blue, red, magenta)
             else:
                 plt.plot(points, 'b')
 
-            # Add labels
+            # add labels
             plt.xlabel("Iterations", fontsize=12)
             plt.ylabel("Points", fontsize=12)
             plt.show()
@@ -349,7 +341,7 @@ class Plan():
         n = Entry(window)
         x.grid(row=1, column=1)
         n.grid(row=2, column=1)
-        x.insert(10, "1")
+        x.insert(10, "30000")
         n.insert(10, "1")
 
         # Print results when enter is pressed
@@ -365,7 +357,7 @@ class Plan():
         hc2n = Entry(window)
         hc2x.grid(row=4, column=1)
         hc2n.grid(row=5, column=1)
-        hc2x.insert(10, "1")
+        hc2x.insert(10, "30000")
         hc2n.insert(10, "1")
 
         # Print results when enter is pressed
@@ -399,7 +391,7 @@ class Plan():
         n2.grid(row=9, column=1)
         t1.grid(row=10, column=1)
         t2.grid(row=11, column=1)
-        x2.insert(10, "1")
+        x2.insert(10, "30000")
         n2.insert(10, "1")
         t1.insert(10, "5")
         t2.insert(10, "0.9")

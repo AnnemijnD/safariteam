@@ -2,7 +2,7 @@ from constraint import Constraint
 import schedulemaker
 
 
-def climb(schedule, courses, itations):
+def climb(schedule, courses, iterations):
     """
     Generates a schedule using a hill climber algorithm.
     Input: random schedule and number of iterations;
