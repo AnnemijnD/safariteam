@@ -121,11 +121,13 @@ class Plan():
                     max_schedule = schedule_temp
 
             elif algorithm == "genetic":
-                # Make schedules
+
+                # make schedules
                 schedules = []
                 for i in range(pop):
                     schedules.append(schedulemaker.initialize_schedule(plan.courses))
-                    # Run the algorithm
+
+                    # run the algorithm
                     schedule_temp, points = genetic.genetic_algorithm(schedules,
                                             plan.courses, pop, gen, gen_type)
                 points = genetic.genetic_algorithm(schedules, plan.courses,
@@ -195,7 +197,7 @@ class Plan():
 
         if check_sim == 1:
             max_points, max_schedule, points = plan.runalgorithm("Simulated annealing",
-                                sim_x, sim_n, 0, 0, None, 0, 0, 0, schedule)
+                                sim_x, sim_n, begin_temp, end_temp, type, 0, 0, 0, schedule)
             boxplot_data.append(max_points)
             boxplot_xaxis.append(f"Simulated Annealing \n n = {sim_n}")
 
@@ -347,7 +349,7 @@ class Plan():
         x.insert(10, "30000")
         n.insert(10, "1")
 
-        # Print results when enter is pressed
+        # print results when enter is pressed
         x.bind('<Return>', lambda _: printresults("hc"))
         n.bind('<Return>', lambda _: printresults("hc"))
 
@@ -363,7 +365,7 @@ class Plan():
         hc2x.insert(10, "30000")
         hc2n.insert(10, "1")
 
-        # Print results when enter is pressed
+        # print results when enter is pressed
         hc2x.bind('<Return>', lambda _: printresults("hc2"))
         hc2n.bind('<Return>', lambda _: printresults("hc2"))
 
@@ -399,7 +401,7 @@ class Plan():
         t1.insert(10, "5")
         t2.insert(10, "0.9")
 
-        # Print results when enter is pressed
+        # print results when enter is pressed
         x2.bind('<Return>', lambda _: printresults("sa"))
         n2.bind('<Return>', lambda _: printresults("sa"))
         t1.bind('<Return>', lambda _: printresults("sa"))

@@ -1,6 +1,4 @@
 A = 65
-
-
 class Session(object):
     """
     Representation of a session

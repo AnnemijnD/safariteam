@@ -39,6 +39,13 @@ def initialize_schedule(courses):
         # make a list of lists for each course
         session_list_2d.append(course.sessions_total)
 
+    for course in courses:
+        for i in range(len(session_list_2d)):
+            for j in range(len(session_list_2d[i])):
+                if session_list_2d[i][j].name == course.name:
+
+                    session_list_2d[i][j].course_object = course
+
     # adds overall id's to the sessions
     session_counter = 0
     for i in range(len(session_list_2d)):
@@ -118,12 +125,8 @@ def fill_schedule(schedule, sessions_2d, other_sessions, empty_sessions,
         # a boolean that states whether the current session was placed in the schedule
         found = False
 
-        # TODO comment DIT MOET WEG
-        for course in courses:
-            if sessions[session].name == course.name:
-                sessions[session].course_object = course
-                mutual_courses_session = \
-                    sessions[session].course_object.mutual_courses
+        # define mutual course of current session
+        mutual_courses_session = sessions[session].course_object.mutual_courses
 
         # check wether the current session is a lecture
         if sessions[session].type == "lecture":
@@ -171,6 +174,7 @@ def fill_schedule(schedule, sessions_2d, other_sessions, empty_sessions,
                             # delete all locations of this day
                             locations = delete_location(locations, slot, day)
                             break
+
 
                     # check if the current session(lecture) overlaps with
                     # a mutual course or its own course
@@ -261,7 +265,6 @@ def delete_location(locations, slot, day):
     Deletes all locations from locations list that are on the slot and day
     given. A location in this list is a coordinate consisting of three integer
     elements: a day, a slot and a room.
-
     Input: list of locations, timeslot,day
     Output: list with locations
     """
