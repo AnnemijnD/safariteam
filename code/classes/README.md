@@ -8,7 +8,7 @@ De class "Course" maakt een object aan voor elk vak. Er zijn 29 courses, dus uit
 Verder worden er in course.py sessies aangemaakt aan de hand van de class Session. Sessies zijn specifieke onderdelen van het vak (hoorcolleges, werkcolleges of practica). In totaal zijn er 129 sessions, waarvan 39 hoorcolleges.
 De hoeveelheid sessies per onderdeel van een vak wordt bepaald door het aantal verachte studenten en het max aantal studenten per type. Een voorbeeld:
 
-Het vak Bioinformatica verwacht 40 studenten. Het max aantal studenten per Bioinformatica-werkcollege is 20. Er worden 40/20 = 2 sessies aangemaakt voor het type werkcollege van het van Bioinformatica.
+Het vak Advanced Heuristics verwacht 22 studenten. Het max aantal studenten per practicum van dit vak is 10. Er worden dus 3 (22/10 = 2,2) sessies aangemaakt voor het type practicum van het vak Advanced Heuristics.
 
 Ook wordt er in course.py de 'mutual courses' ingeladen. Dit zijn de vakken die tegelijkertijd gevolgd moeten kunnen worden.
 
