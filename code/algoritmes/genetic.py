@@ -22,7 +22,9 @@ def genetic_algorithm(schedules, courses, population_size, generations,
     """
     Genetic algorithm
 
-    Input: TODO, sowieso choose uitleggen
+    Input: list of schedules, list of courses, population size (lenght of list
+    of schedules), number of generations, way of choosing the parents (options
+    are "k-way", "rank", "random")
     Output: a list which contains the best schedule of the last generation and
     the amount of points of that schedule
     """
