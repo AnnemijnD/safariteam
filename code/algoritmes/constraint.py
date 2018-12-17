@@ -164,12 +164,16 @@ class Constraint():
 
         return [spread_points, course_dict, bonuspoints, maluspoints]
 
-    def spread_detail(sessions, bonus_days, courses_schedule, id, spread_bonus):
+    def spread_detail(sessions, bonus_days, courses_schedule, id,
+                      spread_bonus):
         """
         Increases bonuspoints when the sessions are spread over the days as
         desired
 
-        Input: TODO
+        Input: list of sessions where you want to check the spread of, days
+        on which the sessions should be scheduled for a bonus, dictionary with
+        info of the sessions of every course, id of course, amount of
+        bonuspoints that should be given
         Output: increased amount of bonuspoints
         """
         bonuspoints = 0
@@ -192,7 +196,8 @@ class Constraint():
         Checks per course if the lectures are scheduled before the other
         sessions
 
-        Input: TODO
+        Input: schedule, list of courses, dictionary with info of the sessions
+        of every course
         Output: amount of lecture points
         """
         lecture_points = 0
@@ -208,63 +213,95 @@ class Constraint():
     def mutual_courses_check(schedule, courses):
         """
         Checks if same courses and  mutual courses aren't scheduled in the
-        same timeslot. Iterates over every course in the schedule.
-        Input is a schedule, output is the number of minus points calculated
-        by the number of conflicting courses.
+        same timeslot.
+
+        Input: schedule, list of courses
+        Output: amount of minus points calculated by number of conflicting
+        courses
         """
 
         minus_points = 0
 
-        # Check every slot in the schedule
+        # check every slot in the schedule
         for day in range(DAYS):
             for slot in range(TIME_SLOTS):
                 for room in range(ROOMS):
-                    # Check if this slot is filled (= check if not None)
+
+                    # check if this slot is filled (= check if not None)
                     if schedule[day][slot][room].course_object:
-                        # Check if session in this slot is a lecture
+
+                        # if session in this slot is a lecture
                         if schedule[day][slot][room].type == "lecture":
+
                             # Each slot has a course name and the courses'
                             # mutual courses. Mutual courses is a list of
                             # courses that can't be in the same timeslot
-                            mutual_courses = schedule[day][slot][room].course_object.mutual_courses
+
+                            # get list of mutual courses
+                            mutual_courses = \
+                                schedule[day][slot][room].course_object.mutual_courses
+
                             # For every mutual course in the mutual_courses list,
                             # check if it is placed in the same timeslot.
+
+                            # check if session is in same slot as mutual course session
                             for mutual_course in range(len(mutual_courses)):
-                                for z in range(len(schedule[day][slot])):
+                                for i in range(len(schedule[day][slot])):
+
                                     # If this mutual course is placed in the
                                     # same timeslot (for example Bioinformatica
                                     # and Compilerbouw), count one minus point.
+
+                                    # if session is in same slot, count 1 minus point
                                     if mutual_courses[mutual_course] in \
-                                            schedule[day][slot][z].name:
+                                            schedule[day][slot][i].name:
                                         minus_points += 1
+
                             # Also, if this course has a session of its own in
                             # this timeslot (for example: Bioinformatica and
                             # Bioinformatica) count one minus point.
+
+                            # count minus points for session of own course in same slot
                             own_session_counter = 0
-                            for z in range(len(schedule[day][slot])):
-                                if schedule[day][slot][z].name == \
+                            for i in range(len(schedule[day][slot])):
+                                if schedule[day][slot][i].name == \
                                         schedule[day][slot][room].name:
-                                    # Count number of sessions in this timeslot
+
+                                    # count number of sessions in this timeslot
                                     own_session_counter += 1
+
                                 # If own_session_counter is greater than 1, there's
                                 # a conflicting session placed in this timeslot.
+
+                                # if sessions in same slot add minus_point
                                 if own_session_counter > 1:
                                     minus_points += 1
+
+                        # if session is practical or tutorial
                         else:
+
                             # If session is a pratical or tutorial, check if
                             # groups aren't planned in at the same timeslot
-                            own_session_counter = 0
                             # Check in every timeslot
-                            for z in range(len(schedule[day][slot])):
-                                if schedule[day][slot][z].name ==  \
+
+                            # check for every slot if there aren't multiple groups
+                            own_session_counter = 0
+                            for i in range(len(schedule[day][slot])):
+                                if schedule[day][slot][i].name ==  \
                                         schedule[day][slot][room].name:
+
                                     # Count one minuspoint if the same group_id
                                     # is found for this course in this timeslot.
-                                    if schedule[day][slot][z].group_id is \
+
+                                    # count minuspoint if same group is found
+                                    if schedule[day][slot][i].group_id is \
                                             schedule[day][slot][room].group_id:
                                         own_session_counter += 1
+
                             # own_session_counter will always be 1, so check if
                             # the counter is higher than 1.
+
+                            # if groups in same slot add minus_point
                             if own_session_counter > 1:
                                 minus_points += 1
 
@@ -275,7 +312,8 @@ class Constraint():
         Calculates per session the number of students that don't fit in the
         classroom (maluspoints)
 
-        Input: TODO
+        Input: schedule, list of courses, dictionary with info of the sessions
+        of every course
         Output: amount of maluspoints
         """
         rooms = loaddata.load_rooms()
@@ -311,7 +349,7 @@ class Constraint():
         Calculates the point of a given schedule. Including the lecture- and
         mutualpoints to make sure validness of a schedule is considered.
 
-        Input:
+        Input: schedule, list of courses
         Output: total amount of points of a schedule
         """
         course_schedule = Constraint.all_constraints(schedule, courses)
@@ -329,7 +367,7 @@ class Constraint():
         Calculates the points of a schedule only considering the 'real' bonus-
         and maluspoints
 
-        Input: TODO
+        Input: schedule, list of courses
         Output: total amount of points of a schedule
         """
         course_schedule = Constraint.all_constraints(schedule, courses)

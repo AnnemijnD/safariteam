@@ -13,26 +13,21 @@ SLOTS = DAYS * ROOMS * TIME_SLOTS
 
 K = 5
 MUTATIONS = 10
-PERCENTAGE = 52
+PERCENTAGE = 0.3 * SLOTS
 SWITCHES = 3
 
 
-def genetic_algorithm(schedules, courses, population_size, generations, choose):
+def genetic_algorithm(schedules, courses, population_size, generations,
+                      choose):
     """
     Genetic algorithm
 
-    Input: TODO, sowieso choose uitleggen
+    Input: list of schedules, list of courses, population size (lenght of list
+    of schedules), number of generations, way of choosing the parents (options
+    are "k-way", "rank", "random")
     Output: a list which contains the best schedule of the last generation and
     the amount of points of that schedule
     """
-    # TODO: deze gaat weg als we geen improvement meer willen!!!
-    # population_points = []
-    # for i in range(0, population_size):
-    #     points = Constraint.get_points(schedules[i], courses)
-    #     population_points.append(points)
-    #
-    # saved = max(population_points)
-
     population = schedules
 
     for generation in range(generations):
@@ -49,7 +44,7 @@ def genetic_algorithm(schedules, courses, population_size, generations, choose):
         for i in range(0, population_size, 2):
             parent_pair = [parents[i], parents[i + 1]]
 
-            # transform the schedule in a linear list
+            # transform the schedule to a linear list
             parent1 = np.array(parent_pair[0]).flatten().tolist()
             parent2 = np.array(parent_pair[1]).flatten().tolist()
 
@@ -80,14 +75,13 @@ def genetic_algorithm(schedules, courses, population_size, generations, choose):
         # choose new population out of the parents and children
         population = choose_parents_KWAY(population, courses, population_size)
 
+    # get a list with both schedule and points from every individual
     population_points = []
     for i in range(0, population_size):
         points = Constraint.get_points(population[i], courses)
         population_points.append((population[i], points))
 
-    # TODO deze weghalen als we geen improvement meer willen!
-    # return max(population_points) - saved
-
+    # get the best schedule and it's points
     best_schedule = sorted(population_points, key=itemgetter(1))[-1][0]
     best_schedule = np.array(best_schedule)
     best_schedule = best_schedule.reshape(DAYS, TIME_SLOTS, ROOMS).tolist()
@@ -101,7 +95,7 @@ def choose_parents_KWAY(population, courses, population_size):
     """
     Choose parents with a K-way tournament
 
-    Input: TODO
+    Input: list of schedules, list of courses, population size
     Output: list of parents
     """
     parents = []
@@ -125,13 +119,6 @@ def choose_parents_KWAY(population, courses, population_size):
         for j in range(K):
             population.append(battlefield[j][0])
 
-    # TODO dit verwijderen maar pas als we hebben gekeken welke ouders kiezen beter is
-    # print_list = []
-    # for i in range(len(parents)):
-    #     print_list.append(Constraint.get_points(parents[i], courses))
-    #
-    # print(max(print_list), min(print_list), sum(print_list) / len(print_list))
-
     return parents
 
 
@@ -139,7 +126,7 @@ def choose_parents_random(population, population_size):
     """
     Choose the parents randomly
 
-    Input: TODO
+    Input: list of schedules, population size
     Output: list of parents
     """
     parents = []
@@ -153,7 +140,7 @@ def choose_parents_rank(population, courses, population_size):
     """
     Choose the parents with a ranking system
 
-    Input: TODO
+    Input: list of schedules, list of courses, population size
     Output: list of parents
     """
     parents = []
@@ -222,28 +209,29 @@ def create_cycles(parent1_id, parent2_id):
 def make_children(cycles, parent1, parent1_id, parent2, parent2_id):
     """
     Use the cycles to make children out of the two parents
+
+    Input: list of cycles between two schedules, two schedules of which the
+    cycles list is. These are in 3D format and 1D format. The 1D format
+    contains only the overall_id's
+    Output: two schedules
     """
     # copy the parents into the children
     child1 = copy.deepcopy(parent1)
     child2 = copy.deepcopy(parent2)
 
-    # len(cycles)
-
     # add every other cycle of parent_i to the child_j
     cycle_len = []
     cycles.sort(key=len)
-    # print(cycles)
     for index, cycle in enumerate(cycles):
         cycle_len += cycle
-        if len(cycle_len) <= PERCENTAGE:
-            # print(f"cycle length first {len(cycle_len)}")
-        # if index // 4 == 0:
-            for overall_id in cycle:
-                child1[parent1_id.index(overall_id)] = parent2[parent2_id.index(overall_id)]
-                child2[parent2_id.index(overall_id)] = parent1[parent1_id.index(overall_id)]
-        # else:
-        #     print(f"cycle length after {len(cycle_len)}")
 
+        # give child1 PERCENTAGE of parent2 and child2 PERCENTAGE of parent1
+        if len(cycle_len) <= PERCENTAGE:
+            for overall_id in cycle:
+                child1[parent1_id.index(overall_id)] = \
+                    parent2[parent2_id.index(overall_id)]
+                child2[parent2_id.index(overall_id)] = \
+                    parent1[parent1_id.index(overall_id)]
 
     # convert the children to 3D lists
     child1 = np.asarray(child1).reshape(DAYS, TIME_SLOTS, ROOMS).tolist()
@@ -254,7 +242,10 @@ def make_children(cycles, parent1, parent1_id, parent2, parent2_id):
 
 def mutate_children(children):
     """
-    Mutate a random amount of children
+    Switches a random amount of sessions in a random amount of children
+
+    Input: list of schedules
+    Output: list of schedules
     """
     mutations = randint(1, MUTATIONS)
     for mutation in range(mutations):
